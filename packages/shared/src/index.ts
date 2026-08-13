@@ -4,4 +4,5 @@ export * from './events';
 export * from './env';
 export * from './contracts/api';
 export * from './contracts/jobs';
+export * from './contracts/artifacts';
 export * from './queue-names';

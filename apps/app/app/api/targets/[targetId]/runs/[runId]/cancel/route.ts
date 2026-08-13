@@ -1,16 +1,16 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@flank/database';
 import { TargetRunParams } from '@flank/shared';
-import { withApiGuard } from '../../../../../../lib/api-guard';
-import { successResponse, errorResponse } from '../../../../../../lib/api-response';
-import { requireWorkspaceMember } from '../../../../../../lib/access';
-import { enqueueRunCancel } from '../../../../../../lib/queue-producer';
+import { withApiGuard } from '@/lib/api-guard';
+import { successResponse, errorResponse } from '@/lib/api-response';
+import { requireWorkspaceMember } from '@/lib/access';
+import { enqueueRunCancel } from '@/lib/queue-producer';
 
 export const POST = withApiGuard(
   {
     paramsSchema: TargetRunParams,
   },
-  async (req: NextRequest, { params, session }) => {
+  async (req: NextRequest, { params, session }: any) => {
     const { targetId, runId } = params;
     
     const run = await prisma.run.findUnique({
@@ -22,7 +22,7 @@ export const POST = withApiGuard(
       return errorResponse('NOT_FOUND', 'Run not found', 404);
     }
 
-    const isMember = await requireWorkspaceMember(session.user.id, run.target.workspace.slug);
+    const isMember = await requireWorkspaceMember(run.target.workspace.slug);
     if (!isMember) {
       return errorResponse('NOT_FOUND', 'Run not found', 404);
     }
@@ -34,7 +34,7 @@ export const POST = withApiGuard(
     const updatedRun = await prisma.run.update({
       where: { id: runId },
       data: {
-        status: 'CANCELLING',
+        status: 'CANCELLED',
         cancelRequestedAt: new Date(),
       }
     });

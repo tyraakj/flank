@@ -5,12 +5,11 @@ import {
   RunExecuteJob, 
   StageExecuteJob, 
   StageReplayJob, 
-  RunCancelJob,
-  env
+  RunCancelJob
 } from '@flank/shared';
 
 // Parse redis URL from environment
-const redisUrl = env.REDIS_URL || 'redis://localhost:6379';
+const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
 
 // Setup isolated redis connection for the producer
 const connection = new Redis(redisUrl, {

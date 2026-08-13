@@ -1,17 +1,16 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@flank/database';
 import { TargetParams } from '@flank/shared';
-import { withApiGuard } from '../../../../lib/api-guard';
-import { successResponse, errorResponse } from '../../../../lib/api-response';
-import { requireWorkspaceMember } from '../../../../lib/access';
-import { enqueueRunExecute } from '../../../../lib/queue-producer';
-import { v4 as uuidv4 } from 'uuid';
+import { withApiGuard } from '@/lib/api-guard';
+import { successResponse, errorResponse } from '@/lib/api-response';
+import { requireWorkspaceMember } from '@/lib/access';
+import { enqueueRunExecute } from '@/lib/queue-producer';
 
 export const POST = withApiGuard(
   {
     paramsSchema: TargetParams,
   },
-  async (req: NextRequest, { params, session }) => {
+  async (req: NextRequest, { params, session }: any) => {
     const { targetId } = params;
     
     // Validate target ownership
@@ -24,7 +23,7 @@ export const POST = withApiGuard(
       return errorResponse('NOT_FOUND', 'Target not found', 404);
     }
 
-    const isMember = await requireWorkspaceMember(session.user.id, target.workspace.slug);
+    const isMember = await requireWorkspaceMember(target.workspace.slug);
     if (!isMember) {
       return errorResponse('NOT_FOUND', 'Target not found', 404);
     }
@@ -36,8 +35,8 @@ export const POST = withApiGuard(
         status: 'QUEUED',
         stages: {
           create: [
-            { key: 'profiler', order: 10, status: 'QUEUED' },
-            { key: 'discovery', order: 20, status: 'QUEUED' },
+            { key: 'PROFILER', attempt: 0, status: 'QUEUED' },
+            { key: 'DISCOVERY', attempt: 0, status: 'QUEUED' },
           ]
         }
       }

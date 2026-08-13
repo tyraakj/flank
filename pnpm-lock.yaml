@@ -48,6 +48,9 @@ importers:
       '@flank/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@flank/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@prisma/client':
         specifier: ^5.22.0
         version: 5.22.0(prisma@5.22.0)
@@ -115,6 +118,12 @@ importers:
 
   apps/worker:
     dependencies:
+      '@flank/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      '@flank/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       bullmq:
         specifier: ^6.1.0
         version: 6.1.0(ioredis@6.0.0(supports-color@7.2.0))
@@ -153,6 +162,9 @@ importers:
 
   packages/shared:
     dependencies:
+      '@flank/database':
+        specifier: workspace:*
+        version: link:../database
       zod:
         specifier: ^3.22.4
         version: 3.25.76

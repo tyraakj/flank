@@ -14,6 +14,7 @@ export async function handleDeadLetter(job: Job, error: Error) {
     {
       runId: job.data.runId || 'unknown',
       idempotencyKey: `dl-${job.id}`,
+      version: 1,
       failedJobName: job.name,
       failedJobId: job.id || 'unknown',
       error: error.message,

@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@flank/database';
 import { z } from 'zod';
-import { withApiGuard } from '../../../../../../../lib/api-guard';
-import { successResponse, errorResponse } from '../../../../../../../lib/api-response';
-import { requireWorkspaceMember } from '../../../../../../../lib/access';
+import { withApiGuard } from '@/lib/api-guard';
+import { successResponse, errorResponse } from '@/lib/api-response';
+import { requireWorkspaceMember } from '@/lib/access';
 
 const ReportSectionParams = z.object({
   targetId: z.string(),
@@ -15,7 +15,7 @@ export const GET = withApiGuard(
   {
     paramsSchema: ReportSectionParams,
   },
-  async (req: NextRequest, { params, session }) => {
+  async (req: NextRequest, { params, session }: any) => {
     const { targetId, runId, section } = params;
     
     const run = await prisma.run.findUnique({
@@ -27,7 +27,7 @@ export const GET = withApiGuard(
       return errorResponse('NOT_FOUND', 'Report not found', 404);
     }
 
-    const isMember = await requireWorkspaceMember(session.user.id, run.target.workspace.slug);
+    const isMember = await requireWorkspaceMember(run.targetId);
     if (!isMember) {
       return errorResponse('NOT_FOUND', 'Report not found', 404);
     }

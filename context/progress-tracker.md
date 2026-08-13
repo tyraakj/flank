@@ -28,7 +28,7 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 | 05 | Data Model | ✅ Complete |
 | 06 | BFF API Surface | ✅ Complete |
 | 07 | Queue and Worker Runtime | ✅ Complete |
-| 08 | Run Orchestration | ⬜ Not started |
+| 08 | Run Orchestration | ✅ Complete |
 | 09 | SSE Progress Channel | ⬜ Not started |
 | 10 | Provider Abstraction Layer | ⬜ Not started |
 
@@ -92,19 +92,20 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 - ✅ **Unit 05** — Data Model: Complete Prisma schema with workspace ownership, targeting, running, and all domain constraints enforced inside `migration.sql` with check conditions.
 - ✅ **Unit 06 & 07** — BFF API Surface and Queue Worker Runtime: Implemented BullMQ queues, standard API handlers with Zod schema validation, API guards, worker entrypoint, shutdown, and dead-letter queue. Upstash Redis configuration added to architecture context.
 - ✅ **Unit 42** — CI Workflows: Configured GitHub Actions for typechecking, linting, building, and dependency review. Defined branch protection rules (excluding evals per user request).
+- ✅ **Unit 08** — Run Orchestration: Implemented BullMQ orchestrator state machine (`run-service`, `execute-stage`, `replay-stage`, `cancellation`) using real agent dispatchers and transaction safety.
 
 ---
 
 ## In Progress
 
-- 🏗️ **Unit 08** — Run Orchestration (Next up)
+- 🏗️ **Unit 09** — SSE Progress Channel (Next up)
 
 ---
 
 ## Next Up
 
-1. **Unit 08** — Run Orchestration: Implement the state machine processors and agent dispatchers.
-2. **Unit 09** — SSE Progress Channel: Add live progress stream to UI.
+1. **Unit 09** — SSE Progress Channel: Add live progress stream to UI.
+2. **Unit 10** — Provider Abstraction Layer: Implement LLM abstraction.
 
 ---
 

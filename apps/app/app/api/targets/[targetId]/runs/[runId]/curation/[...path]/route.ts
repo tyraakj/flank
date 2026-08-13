@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@flank/database';
 import { z } from 'zod';
-import { withApiGuard } from '../../../../../../../../lib/api-guard';
-import { successResponse, errorResponse } from '../../../../../../../../lib/api-response';
-import { requireWorkspaceMember } from '../../../../../../../../lib/access';
-import { enqueueStageReplay } from '../../../../../../../../lib/queue-producer';
+import { withApiGuard } from '@/lib/api-guard';
+import { successResponse, errorResponse } from '@/lib/api-response';
+import { requireWorkspaceMember } from '@/lib/access';
+import { enqueueStageReplay } from '@/lib/queue-producer';
 
 const CurationParams = z.object({
   targetId: z.string(),
@@ -20,7 +20,7 @@ async function verifyRunAccess(targetId: string, runId: string, userId: string) 
 
   if (!run) return null;
 
-  const isMember = await requireWorkspaceMember(userId, run.target.workspace.slug);
+  const isMember = await requireWorkspaceMember(run.targetId);
   if (!isMember) return null;
 
   return run;
@@ -28,7 +28,7 @@ async function verifyRunAccess(targetId: string, runId: string, userId: string) 
 
 export const PATCH = withApiGuard(
   { paramsSchema: CurationParams },
-  async (req: NextRequest, { params, session, body }) => {
+  async (req: NextRequest, { params, session, body }: any) => {
     const { targetId, runId, path } = params;
     
     const run = await verifyRunAccess(targetId, runId, session.user.id);
@@ -40,7 +40,7 @@ export const PATCH = withApiGuard(
       // Handle target-profile mutation (using body)
       await enqueueStageReplay({
         runId,
-        stageKey: 'profiler',
+        stageKey: 'PROFILER',
         requestedBy: session.user.id,
         idempotencyKey: `replay-profiler-${Date.now()}`,
         version: 1,
@@ -55,7 +55,7 @@ export const PATCH = withApiGuard(
       // Request re-synthesis from verifier
       await enqueueStageReplay({
         runId,
-        stageKey: 'verifier',
+        stageKey: 'VERIFIER',
         requestedBy: session.user.id,
         idempotencyKey: `replay-verifier-${Date.now()}`,
         version: 1,
@@ -69,7 +69,7 @@ export const PATCH = withApiGuard(
 
 export const POST = withApiGuard(
   { paramsSchema: CurationParams },
-  async (req: NextRequest, { params, session, body }) => {
+  async (req: NextRequest, { params, session, body }: any) => {
     const { targetId, runId, path } = params;
     
     const run = await verifyRunAccess(targetId, runId, session.user.id);
@@ -82,7 +82,7 @@ export const POST = withApiGuard(
       // Request re-synthesis
       await enqueueStageReplay({
         runId,
-        stageKey: 'strategist',
+        stageKey: 'STRATEGIST',
         requestedBy: session.user.id,
         idempotencyKey: `replay-strategist-${Date.now()}`,
         version: 1,
