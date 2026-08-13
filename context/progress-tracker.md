@@ -30,7 +30,7 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 | 07 | Queue and Worker Runtime | ✅ Complete |
 | 08 | Run Orchestration | ✅ Complete |
 | 09 | SSE Progress Channel | ✅ Complete |
-| 10 | Provider Abstraction Layer | ⬜ Not started |
+| 10 | Provider Abstraction Layer | ✅ Complete |
 
 ### Intelligence
 
@@ -96,16 +96,20 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 
 ---
 
+- ✅ **Unit 10** — Provider Abstraction Layer: Created core interfaces, DuckDuckGo search, HTTP/Playwright readers, Gemini LLM with Vercel AI SDK, and R2/Postgres caching.
+
+---
+
 ## In Progress
 
-- 🏗️ **Unit 10** — Provider Abstraction Layer (Next up)
+- 🏗️ **Unit 11** — Profiler Agent (Next up)
 
 ---
 
 ## Next Up
 
-1. **Unit 10** — Provider Abstraction Layer: Implement LLM abstraction.
-2. **Unit 11** — Profiler Agent: Implement the first intelligent agent.
+1. **Unit 11** — Profiler Agent: Implement the first intelligent agent.
+2. **Unit 12** — Discovery Agent: Implement search discovery.
 
 ---
 

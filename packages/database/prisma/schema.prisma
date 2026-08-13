@@ -614,3 +614,32 @@ model ApiKey {
   @@index([prefix])
   @@map("api_keys")
 }
+
+// ============================================================================
+// Provider & Caching Models
+// ============================================================================
+
+enum CacheType {
+  SEARCH
+  PAGE_READ
+}
+
+model ProviderCache {
+  id          String    @id @default(cuid())
+  cacheKey    String    @unique
+  provider    String
+  type        CacheType
+  url         String?   @db.Text
+  query       String?   @db.Text
+  contentHash String
+  snapshotKey String?
+  metadata    Json?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([type, cacheKey])
+  @@index([provider])
+  @@index([expiresAt])
+  @@map("provider_caches")
+}

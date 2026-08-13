@@ -8,3 +8,4 @@ export * from './contracts/artifacts';
 export * from './contracts/progress-client';
 export * from './events/run-progress';
 export * from './queue-names';
+export * from './contracts/providers';
