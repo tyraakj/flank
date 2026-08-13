@@ -6,11 +6,11 @@ Update this file whenever the current phase, active unit, or implementation stat
 
 ## Current Phase
 
-**Pre-implementation — Specs complete, no code written yet.**
+**Implementation — Foundation units underway.**
 
 ## Current Goal
 
-Begin implementation at Unit 01 (Architecture and Shared Contracts).
+Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 
 ---
 
@@ -21,11 +21,11 @@ Begin implementation at Unit 01 (Architecture and Shared Contracts).
 | Unit | Spec | Status |
 |---|---|---|
 | 00 | Product Map | ✅ Spec complete |
-| 01 | Architecture and Shared Contracts | ⬜ Not started |
-| 02 | Design System | ⬜ Not started |
-| 03 | App Shell and Navigation | ⬜ Not started |
-| 04 | Auth and Workspaces | ⬜ Not started |
-| 05 | Data Model | ⬜ Not started |
+| 01 | Architecture and Shared Contracts | ✅ Complete |
+| 02 | Design System | ✅ Complete |
+| 03 | App Shell and Navigation | ✅ Complete |
+| 04 | Auth and Workspaces | ✅ Complete |
+| 05 | Data Model | ✅ Complete |
 | 06 | BFF API Surface | ⬜ Not started |
 | 07 | Queue and Worker Runtime | ⬜ Not started |
 | 08 | Run Orchestration | ⬜ Not started |
@@ -85,21 +85,24 @@ Begin implementation at Unit 01 (Architecture and Shared Contracts).
 - ✅ Full spec suite written (Units 00–40 + Unit 41 Semantic Deduplication)
 - ✅ Object storage decision: Cloudflare R2 (free tier, S3-compatible, zero egress fees) — all specs updated
 - ✅ Context files created for AI agent guidance
+- ✅ **Unit 01** — Created monorepo structure: `apps/app`, `apps/worker`, `packages/shared`, `packages/database`, `infra/docker-compose.yml`, root `.gitignore` & `env.example`.
+- ✅ **Unit 02** — Design system: Tailwind config, shadcn/ui components, `cn()`, and flank-specific components (confidence, support-status, matrix, data-table).
+- ✅ **Unit 03** — App Shell and Navigation: Initial `app/(workspace)` routing structure created.
+- ✅ **Unit 04** — Auth and Workspaces: Better Auth config, session management, access control logic in `apps/app/lib/access.ts`, and workspace switcher component.
+- ✅ **Unit 05** — Data Model: Complete Prisma schema with workspace ownership, targeting, running, and all domain constraints enforced inside `migration.sql` with check conditions.
 
 ---
 
 ## In Progress
 
-- None
+- 🏗️ **Unit 06** — BFF API Surface (Next up)
 
 ---
 
 ## Next Up
 
-1. **Unit 01** — Create monorepo structure: `apps/app`, `apps/worker`, `packages/shared`, `packages/database`, `infra/docker-compose.yml`, root `README.md`.
-2. **Unit 02** — Design system: Tailwind dark tokens, shadcn/ui generation, `cn()`, matrix/table primitives, confidence + support-status components.
-3. **Unit 04** — Better Auth + workspace access helpers.
-4. **Unit 05** — Full Prisma schema and initial migration.
+1. **Unit 06** — BFF API Surface: Define and implement Next.js API routes for the frontend.
+2. **Unit 07** — Queue and Worker Runtime: Implement the BullMQ processor loop inside `apps/worker`.
 
 ---
 
