@@ -4,9 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "typecheck": "pnpm -r --parallel exec tsc --noEmit",
+    "lint": "eslint .",
+    "test": "pnpm --filter shared test",
+    "build": "pnpm --filter app build && pnpm --filter worker build",
+    "db:generate": "pnpm --filter database exec prisma generate",
+    "db:migrate": "pnpm --filter database exec prisma migrate deploy",
+    "db:reset": "pnpm --filter database exec prisma migrate reset --force"
   },
   "dependencies": {
     "next": "16.3.0",

@@ -91,6 +91,7 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 - ✅ **Unit 04** — Auth and Workspaces: Better Auth config, session management, access control logic in `apps/app/lib/access.ts`, and workspace switcher component.
 - ✅ **Unit 05** — Data Model: Complete Prisma schema with workspace ownership, targeting, running, and all domain constraints enforced inside `migration.sql` with check conditions.
 - ✅ **Unit 06 & 07** — BFF API Surface and Queue Worker Runtime: Implemented BullMQ queues, standard API handlers with Zod schema validation, API guards, worker entrypoint, shutdown, and dead-letter queue. Upstash Redis configuration added to architecture context.
+- ✅ **Unit 42** — CI Workflows: Configured GitHub Actions for typechecking, linting, building, and dependency review. Defined branch protection rules (excluding evals per user request).
 
 ---
 
