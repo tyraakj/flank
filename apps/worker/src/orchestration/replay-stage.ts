@@ -4,6 +4,7 @@ import { Queue } from 'bullmq';
 import { queueOptions } from '../queue-options';
 import { connection } from '../queue';
 import { QUEUE_NAMES, StageExecuteJob } from '@flank/shared';
+import { publishRunEvent } from '../progress/publisher';
 
 const stageQueue = new Queue(QUEUE_NAMES.STAGE_EXECUTE, { connection, ...queueOptions });
 
@@ -70,7 +71,21 @@ export async function handleStageReplay(runId: string, stageKey: StageKey, reque
     });
   });
 
-  // 5. Enqueue the targeted stage
+  const targetId = (await prisma.run.findUnique({ where: { id: runId }, select: { targetId: true } }))?.targetId || '';
+
+  if (targetId) {
+    await publishRunEvent(runId, {
+      type: 'RETRY',
+      runId,
+      targetId,
+      stageKey,
+      stageStatus: 'QUEUED',
+      timestamp: new Date().toISOString(),
+      summary: `Replaying stage ${stageKey}`
+    });
+  }
+
+  // 2. Enqueue the execution
   const payload: StageExecuteJob = {
     runId,
     stageKey,

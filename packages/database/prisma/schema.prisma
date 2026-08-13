@@ -140,6 +140,7 @@ model Target {
   featureClaims   FeatureClaim[]
   positionings    Positioning[]
   diffs           Diff[]
+  events          RunEvent[]
 
   @@unique([workspaceId, canonicalDomain])
   @@index([workspaceId, createdAt])
@@ -194,6 +195,7 @@ model Run {
   positionings     Positioning[]
   opportunities    Opportunity[]
   evidences        Evidence[]
+  events           RunEvent[]
   qualityReport    QualityReport?
   diffsFrom        Diff[]        @relation("DiffFrom")
   diffsTo          Diff[]        @relation("DiffTo")
@@ -246,6 +248,28 @@ model Stage {
   @@index([runId, key])
   @@index([status])
   @@map("stages")
+}
+
+model RunEvent {
+  id          String   @id @default(cuid())
+  eventId     Int      // Monotonic ID per run
+  runId       String
+  targetId    String
+  type        String
+  stageKey    String?
+  stageStatus String?
+  summary     String
+  elapsedMs   Int?
+  payload     Json?
+  timestamp   DateTime @default(now())
+
+  run         Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
+  target      Target   @relation(fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([runId, eventId])
+  @@index([runId, eventId])
+  @@index([targetId])
+  @@map("run_events")
 }
 
 // ============================================================================

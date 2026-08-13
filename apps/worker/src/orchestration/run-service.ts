@@ -5,6 +5,7 @@ import { connection } from '../queue';
 import { QUEUE_NAMES, StageExecuteJob } from '@flank/shared';
 import { STAGE_SEQUENCE, getNextStage } from './stage-definitions';
 import { StageKey } from '@flank/database';
+import { publishRunEvent } from '../progress/publisher';
 
 const stageQueue = new Queue(QUEUE_NAMES.STAGE_EXECUTE, { connection, ...queueOptions });
 
@@ -34,6 +35,14 @@ export async function initializeRun(runId: string, targetId: string, userId: str
     });
   });
 
+  await publishRunEvent(runId, {
+    type: 'RUN_STATUS',
+    runId,
+    targetId,
+    timestamp: new Date().toISOString(),
+    summary: 'Run started'
+  });
+
   const firstStage = STAGE_SEQUENCE[0];
   await enqueueStage(runId, firstStage, userId);
 }
@@ -50,6 +59,20 @@ export async function advanceRun(runId: string, currentStageKey: StageKey, userI
         finishedAt: new Date()
       }
     });
+
+    // We don't have targetId handy without querying it, let's fetch it or let advanceRun accept it.
+    // Since advanceRun doesn't take targetId, let's query the run quickly outside the tx
+    const run = await prisma.run.findUnique({ where: { id: runId }, select: { targetId: true } });
+    if (run) {
+      await publishRunEvent(runId, {
+        type: 'RUN_STATUS',
+        runId,
+        targetId: run.targetId,
+        timestamp: new Date().toISOString(),
+        summary: 'Run completed successfully'
+      });
+    }
+
     return;
   }
 

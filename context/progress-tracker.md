@@ -29,7 +29,7 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 | 06 | BFF API Surface | ✅ Complete |
 | 07 | Queue and Worker Runtime | ✅ Complete |
 | 08 | Run Orchestration | ✅ Complete |
-| 09 | SSE Progress Channel | ⬜ Not started |
+| 09 | SSE Progress Channel | ✅ Complete |
 | 10 | Provider Abstraction Layer | ⬜ Not started |
 
 ### Intelligence
@@ -98,14 +98,14 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 
 ## In Progress
 
-- 🏗️ **Unit 09** — SSE Progress Channel (Next up)
+- 🏗️ **Unit 10** — Provider Abstraction Layer (Next up)
 
 ---
 
 ## Next Up
 
-1. **Unit 09** — SSE Progress Channel: Add live progress stream to UI.
-2. **Unit 10** — Provider Abstraction Layer: Implement LLM abstraction.
+1. **Unit 10** — Provider Abstraction Layer: Implement LLM abstraction.
+2. **Unit 11** — Profiler Agent: Implement the first intelligent agent.
 
 ---
 

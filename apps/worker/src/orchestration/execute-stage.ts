@@ -1,15 +1,17 @@
-import { prisma, StageKey, Prisma } from '@flank/database';
+import { prisma, StageKey, Prisma, Stage } from '@flank/database';
 import { checkCancellation } from './cancellation';
 import { advanceRun } from './run-service';
 import { routeCriticFeedback } from './critic-router';
 import { dispatchAgent } from '../agents/dispatcher';
+import { publishRunEvent } from '../progress/publisher';
 
 export async function executeStage(runId: string, stageKey: StageKey, userId: string) {
   // 1. Transactionally claim the stage
-  const stage = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  const res = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     // Check if cancellation is requested before even claiming
     const run = await tx.run.findUnique({ where: { id: runId } });
-    if (run?.cancelRequestedAt) {
+    if (!run) throw new Error('Run not found');
+    if (run.cancelRequestedAt) {
       throw new Error('Run cancelled'); // caught below
     }
 
@@ -22,13 +24,27 @@ export async function executeStage(runId: string, stageKey: StageKey, userId: st
       throw new Error(`Stage ${stageKey} not found or not in QUEUED state`);
     }
 
-    return await tx.stage.update({
+    const updatedStage = await tx.stage.update({
       where: { id: s.id },
       data: {
         status: 'RUNNING',
         startedAt: new Date()
       }
     });
+
+    return { stage: updatedStage, targetId: run.targetId };
+  });
+
+  const { stage, targetId } = res;
+
+  await publishRunEvent(runId, {
+    type: 'STAGE_TRANSITION',
+    runId,
+    targetId,
+    stageKey,
+    stageStatus: 'RUNNING',
+    timestamp: new Date().toISOString(),
+    summary: `Started stage ${stageKey}`
   });
 
   try {
@@ -39,7 +55,7 @@ export async function executeStage(runId: string, stageKey: StageKey, userId: st
     // In a real run, this fetches the artifacts from the upstream stages.
     
     // 4. Execute the agent module
-    const agentOutput = await dispatchAgent(stageKey, stage.inputArtifact);
+    const agentOutput = await dispatchAgent(stageKey, stage.inputArtifact as any);
 
     // 5. Cancellation check before commit
     await checkCancellation(runId);
@@ -55,13 +71,16 @@ export async function executeStage(runId: string, stageKey: StageKey, userId: st
           finishedAt: new Date()
         }
       });
+    });
 
-      // Special handling if this is the Critic stage
-      if (stageKey === 'CRITIC') {
-        // Will route replay if needed, or complete run. Note: this would ideally
-        // be part of the transaction, but Prisma nested updates limit complex logic.
-        // We do it immediately after.
-      }
+    await publishRunEvent(runId, {
+      type: 'STAGE_TRANSITION',
+      runId,
+      targetId,
+      stageKey,
+      stageStatus: 'COMPLETED',
+      timestamp: new Date().toISOString(),
+      summary: `Completed stage ${stageKey}`
     });
 
     if (stageKey === 'CRITIC') {
@@ -90,6 +109,18 @@ export async function executeStage(runId: string, stageKey: StageKey, userId: st
           status: 'FAILED',
           finishedAt: new Date()
         }
+      });
+    }
+
+    if (targetId) {
+      await publishRunEvent(runId, {
+        type: isCancel ? 'CANCELLATION' : 'FAILURE',
+        runId,
+        targetId,
+        stageKey,
+        stageStatus: isCancel ? 'SKIPPED' : 'FAILED',
+        timestamp: new Date().toISOString(),
+        summary: isCancel ? `Cancelled stage ${stageKey}` : `Failed stage ${stageKey}: ${err.message}`
       });
     }
   }
