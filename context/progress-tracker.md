@@ -26,8 +26,8 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 | 03 | App Shell and Navigation | ✅ Complete |
 | 04 | Auth and Workspaces | ✅ Complete |
 | 05 | Data Model | ✅ Complete |
-| 06 | BFF API Surface | ⬜ Not started |
-| 07 | Queue and Worker Runtime | ⬜ Not started |
+| 06 | BFF API Surface | ✅ Complete |
+| 07 | Queue and Worker Runtime | ✅ Complete |
 | 08 | Run Orchestration | ⬜ Not started |
 | 09 | SSE Progress Channel | ⬜ Not started |
 | 10 | Provider Abstraction Layer | ⬜ Not started |
@@ -90,19 +90,20 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 - ✅ **Unit 03** — App Shell and Navigation: Initial `app/(workspace)` routing structure created.
 - ✅ **Unit 04** — Auth and Workspaces: Better Auth config, session management, access control logic in `apps/app/lib/access.ts`, and workspace switcher component.
 - ✅ **Unit 05** — Data Model: Complete Prisma schema with workspace ownership, targeting, running, and all domain constraints enforced inside `migration.sql` with check conditions.
+- ✅ **Unit 06 & 07** — BFF API Surface and Queue Worker Runtime: Implemented BullMQ queues, standard API handlers with Zod schema validation, API guards, worker entrypoint, shutdown, and dead-letter queue. Upstash Redis configuration added to architecture context.
 
 ---
 
 ## In Progress
 
-- 🏗️ **Unit 06** — BFF API Surface (Next up)
+- 🏗️ **Unit 08** — Run Orchestration (Next up)
 
 ---
 
 ## Next Up
 
-1. **Unit 06** — BFF API Surface: Define and implement Next.js API routes for the frontend.
-2. **Unit 07** — Queue and Worker Runtime: Implement the BullMQ processor loop inside `apps/worker`.
+1. **Unit 08** — Run Orchestration: Implement the state machine processors and agent dispatchers.
+2. **Unit 09** — SSE Progress Channel: Add live progress stream to UI.
 
 ---
 
