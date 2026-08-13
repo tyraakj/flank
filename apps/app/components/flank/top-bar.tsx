@@ -2,20 +2,25 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Plus, Settings, Plug2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { WorkspaceSwitcher } from './workspace-switcher';
+
+interface Workspace {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 interface TopBarProps {
   workspaceSlug: string;
   workspaceName: string;
+  workspaces: Workspace[];
 }
 
-export function TopBar({ workspaceSlug, workspaceName }: TopBarProps) {
+export function TopBar({ workspaceSlug, workspaceName, workspaces }: TopBarProps) {
   return (
     <header className="flex h-14 items-center justify-between border-b bg-card px-4">
-      <div className="flex items-center gap-4">
-        {/* Workspace switcher trigger - will be implemented in Unit 04 */}
-        <Button variant="ghost" size="sm" className="font-medium">
-          {workspaceName}
-        </Button>
+      <div className="flex items-center gap-4 w-64">
+        <WorkspaceSwitcher workspaces={workspaces} activeSlug={workspaceSlug} />
       </div>
       
       <div className="flex items-center gap-2">

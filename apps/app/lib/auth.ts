@@ -17,9 +17,6 @@ export const auth = betterAuth({
       maxAge: 5 * 60, // 5 minutes
     },
   },
-  advanced: {
-    generateId: () => crypto.randomUUID(),
-  },
 });
 
 export type Session = typeof auth.$Infer.Session;
