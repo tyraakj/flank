@@ -195,6 +195,8 @@ model Run {
   opportunities    Opportunity[]
   evidences        Evidence[]
   qualityReport    QualityReport?
+  diffsFrom        Diff[]        @relation("DiffFrom")
+  diffsTo          Diff[]        @relation("DiffTo")
 
   @@index([targetId, createdAt])
   @@index([status])
@@ -499,11 +501,11 @@ model Evidence {
   updatedAt   DateTime        @updatedAt
 
   run         Run             @relation(fields: [runId], references: [id], onDelete: Cascade)
-  competitor   Competitor?     @relation(fields: [claimId], references: [id], onDelete: Cascade)
-  pricingPlan PricingPlan?    @relation(fields: [claimId], references: [id], onDelete: Cascade)
-  featureClaim FeatureClaim?  @relation(fields: [claimId], references: [id], onDelete: Cascade)
-  positioning  Positioning?    @relation(fields: [claimId], references: [id], onDelete: Cascade)
-  opportunity  Opportunity?    @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  competitor   Competitor?     @relation(fields: [claimId], references: [id], onDelete: Cascade, map: "evidences_competitor_claimId_fkey")
+  pricingPlan PricingPlan?    @relation(fields: [claimId], references: [id], onDelete: Cascade, map: "evidences_pricingPlan_claimId_fkey")
+  featureClaim FeatureClaim?  @relation(fields: [claimId], references: [id], onDelete: Cascade, map: "evidences_featureClaim_claimId_fkey")
+  positioning  Positioning?    @relation(fields: [claimId], references: [id], onDelete: Cascade, map: "evidences_positioning_claimId_fkey")
+  opportunity  Opportunity?    @relation(fields: [claimId], references: [id], onDelete: Cascade, map: "evidences_opportunity_claimId_fkey")
 
   @@index([claimType, claimId])
   @@index([url])

@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@flank/database": "workspace:*",
+    "@prisma/client": "^5.22.0",
     "better-auth": "^1.6.27",
     "clsx": "^2.1.1",
     "framer-motion": "^13.1.0",
