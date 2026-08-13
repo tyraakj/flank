@@ -51,7 +51,7 @@ They share:
 
 - **Postgres (via Prisma)**: all relational domain data — Workspaces, Targets, Runs, Stages, Candidates, Competitors, PricingPlans, FeatureClaims, Positioning, Opportunities, Evidence, QualityReports, Confidence, Diffs, Integrations, ApiKeys, RunMetrics, StageMetrics, CandidateEmbeddings.
 - **Cloudflare R2**: raw public-page snapshots (content-hash keyed), PDF export files. Metadata and storage keys are stored in Postgres; the worker is the only component that writes to R2.
-- **Redis**: BullMQ job queues and pub/sub channels for SSE progress events. Not a source of truth — all authoritative state lives in Postgres.
+- **Redis (Upstash)**: BullMQ job queues and pub/sub channels for SSE progress events. Hosted via Upstash Serverless Redis (standard TCP connection). Not a source of truth — all authoritative state lives in Postgres.
 - **pgvector**: vector column on `CandidateEmbedding` in Postgres; HNSW index for cosine nearest-neighbour queries during semantic deduplication.
 
 ## Auth and Ownership Model

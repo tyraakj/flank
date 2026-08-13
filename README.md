@@ -67,7 +67,7 @@ packages/
   evals/      — Golden-set fixtures, precision/recall scoring, CI regression gate.
 
 infra/
-  docker-compose.yml — Local Postgres + Redis with persistent volumes and health checks.
+  docker-compose.yml — Local Postgres with persistent volumes and health checks. (Redis is hosted on Upstash, but can also be run locally here).
 ```
 
 **Key invariants:**
@@ -119,7 +119,7 @@ cp .env.example .env
 #           R2_SECRET_ACCESS_KEY, BETTER_AUTH_SECRET, BETTER_AUTH_URL,
 #           GEMINI_API_KEY (free tier at aistudio.google.com)
 
-# Start local services
+# Start local services (Postgres, or optionally use a cloud Postgres/Upstash instead)
 docker compose -f infra/docker-compose.yml up -d
 
 # Run database migrations
