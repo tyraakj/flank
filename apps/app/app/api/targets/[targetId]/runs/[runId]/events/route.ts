@@ -9,7 +9,7 @@ export const runtime = 'nodejs';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { targetId: string; runId: string } }
+  { params }: { params: Promise<{ targetId: string; runId: string }> }
 ) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
@@ -17,7 +17,7 @@ export async function GET(
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    const { targetId, runId } = params;
+    const { targetId, runId } = await params;
 
     const run = await prisma.run.findUnique({
       where: { id: runId, targetId },
