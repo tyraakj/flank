@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // The envelope stored in Stage.outputArtifact
 export const ArtifactEnvelope = z.object({
@@ -9,11 +9,13 @@ export const ArtifactEnvelope = z.object({
   generatedAt: z.string().datetime(),
   data: z.unknown(), // The actual artifact, validated by the specific stage
   storageKey: z.string().optional(), // If saved in R2 instead of postgres
-  provenance: z.object({
-    model: z.string().optional(),
-    tokens: z.number().optional(),
-    ms: z.number().optional()
-  }).optional()
+  provenance: z
+    .object({
+      model: z.string().optional(),
+      tokens: z.number().optional(),
+      ms: z.number().optional(),
+    })
+    .optional(),
 });
 
 export type ArtifactEnvelopeData = z.infer<typeof ArtifactEnvelope>;

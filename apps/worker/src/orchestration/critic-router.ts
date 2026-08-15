@@ -1,8 +1,8 @@
-import { prisma, StageKey } from '@flank/database';
-import { Queue } from 'bullmq';
-import { queueOptions } from '../queue-options';
-import { connection } from '../queue';
-import { QUEUE_NAMES, StageReplayJob } from '@flank/shared';
+import { prisma, StageKey } from "@flank/database";
+import { Queue } from "bullmq";
+import { queueOptions } from "../queue-options";
+import { connection } from "../queue";
+import { QUEUE_NAMES, StageReplayJob } from "@flank/shared";
 
 const stageReplayQueue = new Queue(QUEUE_NAMES.STAGE_REPLAY, { connection, ...queueOptions });
 
@@ -15,9 +15,9 @@ export async function routeCriticFeedback(runId: string, criticOutputArtifact: a
     await prisma.run.update({
       where: { id: runId },
       data: {
-        status: 'COMPLETED',
-        finishedAt: new Date()
-      }
+        status: "COMPLETED",
+        finishedAt: new Date(),
+      },
     });
     // In the future, compute diffs against previous run here.
     return;
@@ -27,7 +27,7 @@ export async function routeCriticFeedback(runId: string, criticOutputArtifact: a
   // First, check the retry budget
   const run = await prisma.run.findUnique({
     where: { id: runId },
-    select: { retryBudget: true }
+    select: { retryBudget: true },
   });
 
   if (!run || run.retryBudget <= 0) {
@@ -35,9 +35,9 @@ export async function routeCriticFeedback(runId: string, criticOutputArtifact: a
     await prisma.run.update({
       where: { id: runId },
       data: {
-        status: 'COMPLETED', // Completed with warnings
-        finishedAt: new Date()
-      }
+        status: "COMPLETED", // Completed with warnings
+        finishedAt: new Date(),
+      },
     });
     return;
   }
@@ -46,21 +46,21 @@ export async function routeCriticFeedback(runId: string, criticOutputArtifact: a
   await prisma.run.update({
     where: { id: runId },
     data: {
-      retryBudget: { decrement: 1 }
-    }
+      retryBudget: { decrement: 1 },
+    },
   });
 
   // Enqueue a replay for the targeted stage
   const payload: StageReplayJob = {
     runId,
     stageKey: rerunStage,
-    requestedBy: 'system', // the Critic agent
+    requestedBy: "system", // the Critic agent
     reason: JSON.stringify(issues),
     idempotencyKey: `critic-retry-${runId}-${rerunStage}-${run.retryBudget}`,
-    version: 1
+    version: 1,
   };
 
   await stageReplayQueue.add(payload.idempotencyKey, payload, {
-    jobId: payload.idempotencyKey
+    jobId: payload.idempotencyKey,
   });
 }

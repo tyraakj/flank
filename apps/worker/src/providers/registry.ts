@@ -1,11 +1,11 @@
-import { SearchProvider, PageReader, LlmProvider } from './interfaces';
+import { SearchProvider, PageReader, LlmProvider } from "./interfaces";
 
-import { DuckDuckGoSearchProvider } from './search/duckduckgo';
-import { BraveSearchProvider } from './search/brave';
-import { HttpPageReader } from './reader/http';
-import { PlaywrightPageReader } from './reader/playwright';
-import { GeminiLlmProvider } from './llm/gemini';
-import { FailoverSearchProvider, FailoverPageReader } from './failover';
+import { DuckDuckGoSearchProvider } from "./search/duckduckgo";
+import { BraveSearchProvider } from "./search/brave";
+import { HttpPageReader } from "./reader/http";
+import { PlaywrightPageReader } from "./reader/playwright";
+import { GeminiLlmProvider } from "./llm/gemini";
+import { FailoverSearchProvider, FailoverPageReader } from "./failover";
 
 class ProviderRegistry {
   private searchProvider: SearchProvider | null = null;
@@ -17,7 +17,7 @@ class ProviderRegistry {
     if (!this.searchProvider) {
       const duckduckgo = new DuckDuckGoSearchProvider();
       const braveApiKey = process.env.BRAVE_API_KEY;
-      
+
       if (braveApiKey) {
         const brave = new BraveSearchProvider(braveApiKey);
         this.searchProvider = new FailoverSearchProvider(brave, duckduckgo);

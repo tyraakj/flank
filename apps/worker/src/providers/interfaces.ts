@@ -4,8 +4,8 @@ import {
   PageReadRequest,
   PageReadResult,
   LlmRequest,
-  LlmResult
-} from '@flank/shared';
+  LlmResult,
+} from "@flank/shared";
 
 /**
  * Interface for Web Search providers (e.g. DuckDuckGo, Brave)

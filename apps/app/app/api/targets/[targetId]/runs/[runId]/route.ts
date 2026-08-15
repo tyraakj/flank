@@ -1,9 +1,9 @@
-import { NextRequest } from 'next/server';
-import { prisma } from '@flank/database';
-import { TargetRunParams } from '@flank/shared';
-import { withApiGuard } from '@/lib/api-guard';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { requireWorkspaceMember } from '@/lib/access';
+import { NextRequest } from "next/server";
+import { prisma } from "@flank/database";
+import { TargetRunParams } from "@flank/shared";
+import { withApiGuard } from "@/lib/api-guard";
+import { successResponse, errorResponse } from "@/lib/api-response";
+import { requireWorkspaceMember } from "@/lib/access";
 
 export const GET = withApiGuard(
   {
@@ -11,32 +11,32 @@ export const GET = withApiGuard(
   },
   async (req: NextRequest, { params, session }: any) => {
     const { targetId, runId } = params;
-    
+
     // Verify run belongs to target
     const run = await prisma.run.findUnique({
       where: { id: runId, targetId },
       include: {
         stages: {
-          orderBy: { attempt: 'desc' }
+          orderBy: { attempt: "desc" },
         },
         target: {
-          include: { workspace: true }
-        }
-      }
+          include: { workspace: true },
+        },
+      },
     });
 
     if (!run) {
-      return errorResponse('NOT_FOUND', 'Run not found', 404);
+      return errorResponse("NOT_FOUND", "Run not found", 404);
     }
 
     const isMember = await requireWorkspaceMember(run.targetId);
     if (!isMember) {
-      return errorResponse('NOT_FOUND', 'Run not found', 404);
+      return errorResponse("NOT_FOUND", "Run not found", 404);
     }
 
     // Strip out target before sending
     const { target, ...runData } = run;
 
     return successResponse(runData);
-  }
+  },
 );

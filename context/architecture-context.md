@@ -2,24 +2,24 @@
 
 ## Stack
 
-| Layer | Technology | Role |
-|---|---|---|
-| App framework | Next.js (App Router) + TypeScript | Full-stack application, React Server Components, BFF route handlers |
-| UI | React Server Components + Tailwind CSS + custom component primitives | Data-dense report surfaces, matrices, real-time progress |
-| Auth | Better Auth (session cookies) | Session management, workspace access control |
-| Database | Postgres 16 + Prisma | Hosted on Neon free tier (0.5 GB); Prisma connects via `DATABASE_URL` |
-| Cache / queue | Redis 7 + BullMQ | Hosted on Upstash free tier (10K cmds/day); TLS `rediss://` connection |
-| Worker | Standalone Node/TypeScript process | Deployed on Fly.io free tier — always-on Docker container, no sleep |
-| App hosting | Vercel Hobby | Free tier — Next.js app, unlimited deploys, 100 GB bandwidth |
-| Progress transport | Server-Sent Events (SSE) via BFF | Live run progress from worker → Redis pub/sub → BFF → browser |
-| Object storage | Cloudflare R2 (free tier) | Raw page snapshots, PDF exports — S3-compatible API, zero egress |
-| LLM access | Vercel AI SDK, provider-agnostic | Structured output via Zod; default: Gemini free tier |
-| Embeddings | Vercel AI SDK (Gemini text-embedding) + pgvector | Semantic candidate deduplication in Discovery stage |
-| Search | DuckDuckGo HTML (default), Brave API (optional) | Competitor discovery; no key required for default |
-| Page reading | HTTP reader + Playwright (JS-rendered pages) | Public page extraction; robots.txt respected |
-| Monorepo | pnpm workspaces | `apps/app`, `apps/worker`, `packages/shared`, `packages/database` |
-| Containers | Docker (multi-stage builds) | Separate images for app and worker; pushed to ghcr.io |
-| Container registry | GitHub Container Registry (ghcr.io) | Free with GitHub Actions |
+| Layer              | Technology                                                           | Role                                                                   |
+| ------------------ | -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| App framework      | Next.js (App Router) + TypeScript                                    | Full-stack application, React Server Components, BFF route handlers    |
+| UI                 | React Server Components + Tailwind CSS + custom component primitives | Data-dense report surfaces, matrices, real-time progress               |
+| Auth               | Better Auth (session cookies)                                        | Session management, workspace access control                           |
+| Database           | Postgres 16 + Prisma                                                 | Hosted on Neon free tier (0.5 GB); Prisma connects via `DATABASE_URL`  |
+| Cache / queue      | Redis 7 + BullMQ                                                     | Hosted on Upstash free tier (10K cmds/day); TLS `rediss://` connection |
+| Worker             | Standalone Node/TypeScript process                                   | Deployed on Fly.io free tier — always-on Docker container, no sleep    |
+| App hosting        | Vercel Hobby                                                         | Free tier — Next.js app, unlimited deploys, 100 GB bandwidth           |
+| Progress transport | Server-Sent Events (SSE) via BFF                                     | Live run progress from worker → Redis pub/sub → BFF → browser          |
+| Object storage     | Cloudflare R2 (free tier)                                            | Raw page snapshots, PDF exports — S3-compatible API, zero egress       |
+| LLM access         | Vercel AI SDK, provider-agnostic                                     | Structured output via Zod; default: Gemini free tier                   |
+| Embeddings         | Vercel AI SDK (Gemini text-embedding) + pgvector                     | Semantic candidate deduplication in Discovery stage                    |
+| Search             | DuckDuckGo HTML (default), Brave API (optional)                      | Competitor discovery; no key required for default                      |
+| Page reading       | HTTP reader + Playwright (JS-rendered pages)                         | Public page extraction; robots.txt respected                           |
+| Monorepo           | pnpm workspaces                                                      | `apps/app`, `apps/worker`, `packages/shared`, `packages/database`      |
+| Containers         | Docker (multi-stage builds)                                          | Separate images for app and worker; pushed to ghcr.io                  |
+| Container registry | GitHub Container Registry (ghcr.io)                                  | Free with GitHub Actions                                               |
 
 ## Deployables
 
@@ -29,23 +29,24 @@ Two and only two deployables:
 - **`apps/worker`** — Standalone Node process. Owns BullMQ consumers, all agent modules, provider implementations, pipeline orchestration, and snapshot writes. Never renders UI or exports React components.
 
 They share:
+
 - **`packages/shared`** — Zod contracts: request/response, job payloads, stage artifacts, SSE events, provider interfaces, domain schemas, environment validators.
 - **`packages/database`** — Prisma schema, generated client, and cached client export. The only Prisma boundary.
 
 ## System Boundaries
 
-| Boundary | Owns |
-|---|---|
-| `apps/app/app/api/` | BFF route handlers — auth, validation, ownership, job enqueueing, report reads |
-| `apps/app/lib/` | `access.ts` (auth helpers), `api-guard.ts`, `queue-producer.ts` (server-only), `api-response.ts` |
-| `apps/app/app/(workspace)/` | RSC page tree, report screens, progress UI |
-| `apps/worker/src/agents/` | Individual agent modules — one per pipeline role |
-| `apps/worker/src/stages/` | Stage runner entry points wiring agents to the orchestration layer |
-| `apps/worker/src/orchestration/` | Stage machine, run service, replay, critic router, cancellation |
-| `apps/worker/src/providers/` | Search, page reader, LLM, embedding implementations and registry |
-| `apps/worker/src/services/` | Evidence store, confidence scorer, domain trust, semantic clusterer, opportunity ranker |
-| `packages/shared/src/contracts/` | All shared Zod schemas and inferred TypeScript types |
-| `packages/evals/` | Golden-set fixtures, scoring, regression gate, CI harness |
+| Boundary                         | Owns                                                                                             |
+| -------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `apps/app/app/api/`              | BFF route handlers — auth, validation, ownership, job enqueueing, report reads                   |
+| `apps/app/lib/`                  | `access.ts` (auth helpers), `api-guard.ts`, `queue-producer.ts` (server-only), `api-response.ts` |
+| `apps/app/app/(workspace)/`      | RSC page tree, report screens, progress UI                                                       |
+| `apps/worker/src/agents/`        | Individual agent modules — one per pipeline role                                                 |
+| `apps/worker/src/stages/`        | Stage runner entry points wiring agents to the orchestration layer                               |
+| `apps/worker/src/orchestration/` | Stage machine, run service, replay, critic router, cancellation                                  |
+| `apps/worker/src/providers/`     | Search, page reader, LLM, embedding implementations and registry                                 |
+| `apps/worker/src/services/`      | Evidence store, confidence scorer, domain trust, semantic clusterer, opportunity ranker          |
+| `packages/shared/src/contracts/` | All shared Zod schemas and inferred TypeScript types                                             |
+| `packages/evals/`                | Golden-set fixtures, scoring, regression gate, CI harness                                        |
 
 ## Storage Model
 

@@ -1,12 +1,12 @@
-import { PageReader } from '../interfaces';
-import { PageReadRequest, PageReadResult } from '@flank/shared';
-import * as cheerio from 'cheerio';
-import { isAllowedByRobots } from './robots';
-import { providerMetrics } from '../metrics';
-import * as crypto from 'crypto';
+import { PageReader } from "../interfaces";
+import { PageReadRequest, PageReadResult } from "@flank/shared";
+import * as cheerio from "cheerio";
+import { isAllowedByRobots } from "./robots";
+import { providerMetrics } from "../metrics";
+import * as crypto from "crypto";
 
 export class HttpPageReader implements PageReader {
-  readonly name = 'http-reader';
+  readonly name = "http-reader";
 
   async read(request: PageReadRequest): Promise<PageReadResult> {
     const startTime = Date.now();
@@ -22,9 +22,10 @@ export class HttpPageReader implements PageReader {
       const response = await fetch(request.url, {
         signal: controller.signal,
         headers: {
-          'User-Agent': 'FlankBot/1.0',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8'
-        }
+          "User-Agent": "FlankBot/1.0",
+          Accept:
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        },
       });
       clearTimeout(timeoutId);
 
@@ -33,16 +34,16 @@ export class HttpPageReader implements PageReader {
       }
 
       const html = await response.text();
-      
-      const $ = cheerio.load(html);
-      
-      // Remove unwanted elements
-      $('script, style, noscript, iframe, img, svg, video').remove();
-      
-      const title = $('title').text().trim();
-      const text = $('body').text().replace(/\s+/g, ' ').trim();
 
-      const contentHash = crypto.createHash('sha256').update(text).digest('hex');
+      const $ = cheerio.load(html);
+
+      // Remove unwanted elements
+      $("script, style, noscript, iframe, img, svg, video").remove();
+
+      const title = $("title").text().trim();
+      const text = $("body").text().replace(/\s+/g, " ").trim();
+
+      const contentHash = crypto.createHash("sha256").update(text).digest("hex");
 
       const latencyMs = Date.now() - startTime;
       providerMetrics.recordPageRead(this.name, request.url, latencyMs, false, html.length);
@@ -55,7 +56,7 @@ export class HttpPageReader implements PageReader {
         fetchedAt: new Date().toISOString(),
         contentHash,
         providerName: this.name,
-        cached: false
+        cached: false,
       };
     } catch (err: any) {
       providerMetrics.recordError(this.name, `read(${request.url})`, err);

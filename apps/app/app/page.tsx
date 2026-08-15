@@ -1,42 +1,59 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Confidence } from "@/components/flank/confidence"
-import { SupportStatus } from "@/components/flank/support-status"
-import { Search, BarChart3, Target, Shield, Menu, ArrowRight, Zap, Globe, Lock, Sparkles, TrendingUp, Database, Cpu, Network } from "lucide-react"
-import { motion } from "framer-motion"
-import { useEffect, useRef, useState } from "react"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Confidence } from "@/components/flank/confidence";
+import { SupportStatus } from "@/components/flank/support-status";
+import {
+  Search,
+  BarChart3,
+  Target,
+  Shield,
+  Menu,
+  ArrowRight,
+  Zap,
+  Globe,
+  Lock,
+  Sparkles,
+  TrendingUp,
+  Database,
+  Cpu,
+  Network,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
-  const heroRef = useRef<HTMLDivElement>(null)
-  const featuresRef = useRef<HTMLDivElement>(null)
-  const cardsRef = useRef<HTMLDivElement>(null)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const heroRef = useRef<HTMLDivElement>(null);
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   useEffect(() => {
     // Hero animations
-    gsap.fromTo(heroRef.current, 
+    gsap.fromTo(
+      heroRef.current,
       { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
-    )
+      { opacity: 1, y: 0, duration: 1, ease: "power3.out" },
+    );
 
     // Features scroll animation
-    gsap.fromTo(featuresRef.current,
+    gsap.fromTo(
+      featuresRef.current,
       { opacity: 0, y: 50 },
       {
         opacity: 1,
@@ -46,14 +63,15 @@ export default function Home() {
         scrollTrigger: {
           trigger: featuresRef.current,
           start: "top 80%",
-        }
-      }
-    )
+        },
+      },
+    );
 
     // Staggered card animations
     if (cardsRef.current) {
-      const cards = cardsRef.current.children
-      gsap.fromTo(cards,
+      const cards = cardsRef.current.children;
+      gsap.fromTo(
+        cards,
         { opacity: 0, y: 30 },
         {
           opacity: 1,
@@ -64,25 +82,25 @@ export default function Home() {
           scrollTrigger: {
             trigger: cardsRef.current,
             start: "top 80%",
-          }
-        }
-      )
+          },
+        },
+      );
     }
 
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    }
-  }, [])
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
-  }
+        staggerChildren: 0.1,
+      },
+    },
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -90,19 +108,34 @@ export default function Home() {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.5
-      }
-    }
-  }
+        duration: 0.5,
+      },
+    },
+  };
 
   const floatingElements = [
     { icon: Target, color: "bg-blue-500/20", position: { top: "20%", left: "10%" }, delay: 0 },
-    { icon: BarChart3, color: "bg-purple-500/20", position: { top: "30%", right: "15%" }, delay: 0.2 },
-    { icon: Shield, color: "bg-green-500/20", position: { bottom: "25%", left: "20%" }, delay: 0.4 },
-    { icon: TrendingUp, color: "bg-orange-500/20", position: { bottom: "35%", right: "10%" }, delay: 0.6 },
+    {
+      icon: BarChart3,
+      color: "bg-purple-500/20",
+      position: { top: "30%", right: "15%" },
+      delay: 0.2,
+    },
+    {
+      icon: Shield,
+      color: "bg-green-500/20",
+      position: { bottom: "25%", left: "20%" },
+      delay: 0.4,
+    },
+    {
+      icon: TrendingUp,
+      color: "bg-orange-500/20",
+      position: { bottom: "35%", right: "10%" },
+      delay: 0.6,
+    },
     { icon: Database, color: "bg-pink-500/20", position: { top: "50%", left: "5%" }, delay: 0.8 },
     { icon: Cpu, color: "bg-cyan-500/20", position: { top: "60%", right: "8%" }, delay: 1 },
-  ]
+  ];
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 overflow-hidden">
@@ -119,7 +152,7 @@ export default function Home() {
           transition={{
             duration: 8,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: "easeInOut",
           }}
         />
         <motion.div
@@ -133,7 +166,7 @@ export default function Home() {
           transition={{
             duration: 10,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: "easeInOut",
           }}
         />
       </div>
@@ -153,7 +186,7 @@ export default function Home() {
               duration: 6 + index * 0.5,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: element.delay
+              delay: element.delay,
             }}
           >
             <element.icon className="h-8 w-8 text-foreground/70" />
@@ -162,7 +195,7 @@ export default function Home() {
       </div>
 
       {/* Navbar */}
-      <motion.nav 
+      <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
@@ -170,7 +203,7 @@ export default function Home() {
       >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <motion.div 
+            <motion.div
               className="flex items-center gap-2"
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400 }}
@@ -182,7 +215,7 @@ export default function Home() {
                 Flank
               </span>
             </motion.div>
-            
+
             <div className="hidden md:flex items-center gap-6">
               {["Features", "Demo", "About"].map((item) => (
                 <motion.a
@@ -237,8 +270,8 @@ export default function Home() {
               Competitive Intelligence Platform
             </Badge>
           </motion.div>
-          
-          <motion.h1 
+
+          <motion.h1
             className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -246,16 +279,17 @@ export default function Home() {
           >
             One input: your product's URL
           </motion.h1>
-          
-          <motion.p 
+
+          <motion.p
             className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
           >
-            Get a live, fully cited competitive analysis report with pricing, positioning, feature matrix, and concrete edge recommendations.
+            Get a live, fully cited competitive analysis report with pricing, positioning, feature
+            matrix, and concrete edge recommendations.
           </motion.p>
-          
+
           {/* URL Input Card */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -266,12 +300,9 @@ export default function Home() {
             <Card className="border-2 border-primary/20 shadow-2xl bg-background/80 backdrop-blur-lg">
               <CardContent className="pt-6">
                 <div className="flex gap-2">
-                  <motion.div 
-                    className="flex-1"
-                    whileFocus={{ scale: 1.02 }}
-                  >
-                    <Input 
-                      placeholder="https://your-product.com" 
+                  <motion.div className="flex-1" whileFocus={{ scale: 1.02 }}>
+                    <Input
+                      placeholder="https://your-product.com"
                       className="flex-1 border-primary/30 focus:border-primary"
                       disabled
                     />
@@ -291,7 +322,7 @@ export default function Home() {
           </motion.div>
 
           {/* Animated Stats */}
-          <motion.div 
+          <motion.div
             className="mt-16 grid grid-cols-3 gap-8 max-w-3xl mx-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -300,7 +331,7 @@ export default function Home() {
             {[
               { icon: Globe, label: "Real-time", value: "Competitors" },
               { icon: Shield, label: "100%", value: "Cited" },
-              { icon: Zap, label: "AI-Powered", value: "Analysis" }
+              { icon: Zap, label: "AI-Powered", value: "Analysis" },
             ].map((stat, index) => (
               <motion.div
                 key={index}
@@ -326,7 +357,7 @@ export default function Home() {
       {/* Features Section */}
       <section ref={featuresRef} id="features" className="container mx-auto px-4 py-24">
         <div className="max-w-6xl mx-auto">
-          <motion.h2 
+          <motion.h2
             className="text-4xl font-bold text-center mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -334,7 +365,7 @@ export default function Home() {
           >
             What You'll Get
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -342,13 +373,29 @@ export default function Home() {
           >
             Automated competitive intelligence that saves you weeks of manual research
           </motion.p>
-          
+
           <div ref={cardsRef} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: Target, title: "Competitor Discovery", desc: "Automatic multi-angle web search to find your real competitors" },
-              { icon: BarChart3, title: "Pricing Matrix", desc: "Side-by-side pricing comparison with plans, tiers, and limits" },
-              { icon: Shield, title: "Full Evidence", desc: "Every fact links to its source page with excerpts and snapshots" },
-              { icon: Search, title: "Edge Opportunities", desc: "Ranked strategic recommendations with evidence and impact scores" }
+              {
+                icon: Target,
+                title: "Competitor Discovery",
+                desc: "Automatic multi-angle web search to find your real competitors",
+              },
+              {
+                icon: BarChart3,
+                title: "Pricing Matrix",
+                desc: "Side-by-side pricing comparison with plans, tiers, and limits",
+              },
+              {
+                icon: Shield,
+                title: "Full Evidence",
+                desc: "Every fact links to its source page with excerpts and snapshots",
+              },
+              {
+                icon: Search,
+                title: "Edge Opportunities",
+                desc: "Ranked strategic recommendations with evidence and impact scores",
+              },
             ].map((feature, index) => (
               <motion.div
                 key={index}
@@ -356,7 +403,7 @@ export default function Home() {
               >
                 <Card className="h-full border-2 border-transparent hover:border-primary/20 transition-all shadow-lg hover:shadow-xl bg-gradient-to-br from-background to-muted/30">
                   <CardHeader>
-                    <motion.div 
+                    <motion.div
                       className="h-12 w-12 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg flex items-center justify-center mb-2"
                       whileHover={{ rotate: 360, transition: { duration: 0.6 } }}
                     >
@@ -375,9 +422,12 @@ export default function Home() {
       </section>
 
       {/* Design System Demo Section */}
-      <section id="demo" className="container mx-auto px-4 py-24 bg-gradient-to-b from-muted/50 to-background">
+      <section
+        id="demo"
+        className="container mx-auto px-4 py-24 bg-gradient-to-b from-muted/50 to-background"
+      >
         <div className="max-w-4xl mx-auto">
-          <motion.h2 
+          <motion.h2
             className="text-4xl font-bold text-center mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -385,7 +435,7 @@ export default function Home() {
           >
             Design System Preview
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-muted-foreground text-center mb-8"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -393,7 +443,7 @@ export default function Home() {
           >
             Premium components built with custom Tailwind and CSS variables
           </motion.p>
-          
+
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -419,7 +469,7 @@ export default function Home() {
                       { score: 95, label: "High" },
                       { score: 75, label: "Normal" },
                       { score: 55, label: "Low", reason: "Limited sources" },
-                      { score: 25, label: "Insufficient", reason: "No credible data" }
+                      { score: 25, label: "Insufficient", reason: "No credible data" },
                     ].map((conf, index) => (
                       <motion.div
                         key={index}
@@ -458,15 +508,17 @@ export default function Home() {
                     Button Variants
                   </h3>
                   <div className="flex gap-2 flex-wrap">
-                    {["default", "destructive", "outline", "secondary", "ghost", "link"].map((variant, index) => (
-                      <motion.div
-                        key={index}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Button variant={variant as any}>{variant}</Button>
-                      </motion.div>
-                    ))}
+                    {["default", "destructive", "outline", "secondary", "ghost", "link"].map(
+                      (variant, index) => (
+                        <motion.div
+                          key={index}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Button variant={variant as any}>{variant}</Button>
+                        </motion.div>
+                      ),
+                    )}
                   </div>
                 </motion.div>
 
@@ -497,7 +549,7 @@ export default function Home() {
       {/* About Section */}
       <section id="about" className="container mx-auto px-4 py-24">
         <div className="max-w-4xl mx-auto">
-          <motion.h2 
+          <motion.h2
             className="text-4xl font-bold text-center mb-8"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -513,22 +565,31 @@ export default function Home() {
             <Card className="border-2 border-primary/20 shadow-2xl bg-gradient-to-br from-background to-muted/30">
               <CardContent className="pt-6">
                 <p className="text-muted-foreground mb-4 text-lg">
-                  Flank is a competitive intelligence platform that helps you understand your market landscape. 
-                  Simply paste your product's URL and get a comprehensive analysis of your competitors, their pricing, 
-                  positioning, and features—all with full source citations.
+                  Flank is a competitive intelligence platform that helps you understand your market
+                  landscape. Simply paste your product's URL and get a comprehensive analysis of
+                  your competitors, their pricing, positioning, and features—all with full source
+                  citations.
                 </p>
                 <p className="text-muted-foreground mb-6 text-lg">
-                  Built with modern technologies including Next.js, TypeScript, and a custom design system, 
-                  Flank provides actionable insights to help you find your edge in the market.
+                  Built with modern technologies including Next.js, TypeScript, and a custom design
+                  system, Flank provides actionable insights to help you find your edge in the
+                  market.
                 </p>
                 <div className="flex gap-4 flex-wrap">
-                  {["Next.js 16", "TypeScript", "Tailwind CSS", "Custom UI", "GSAP", "Framer Motion"].map((tech, index) => (
+                  {[
+                    "Next.js 16",
+                    "TypeScript",
+                    "Tailwind CSS",
+                    "Custom UI",
+                    "GSAP",
+                    "Framer Motion",
+                  ].map((tech, index) => (
                     <motion.div
                       key={index}
                       whileHover={{ scale: 1.05, rotate: 2 }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      <Badge 
+                      <Badge
                         variant={index % 2 === 0 ? "default" : "secondary"}
                         className="text-sm"
                       >
@@ -555,10 +616,15 @@ export default function Home() {
             <CardContent className="pt-12 pb-12">
               <h2 className="text-3xl font-bold mb-4">Ready to find your competitive edge?</h2>
               <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-                Get started with Flank and discover what your competitors are doing, how they position themselves, and what opportunities you're missing.
+                Get started with Flank and discover what your competitors are doing, how they
+                position themselves, and what opportunities you're missing.
               </p>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button size="lg" disabled className="bg-gradient-to-r from-primary to-primary/80 text-lg px-8">
+                <Button
+                  size="lg"
+                  disabled
+                  className="bg-gradient-to-r from-primary to-primary/80 text-lg px-8"
+                >
                   Get Started Free
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
@@ -574,7 +640,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="container mx-auto px-4 py-12 border-t">
         <div className="max-w-4xl mx-auto text-center">
-          <motion.div 
+          <motion.div
             className="flex items-center justify-center gap-2 mb-4"
             whileHover={{ scale: 1.05 }}
           >
@@ -583,9 +649,7 @@ export default function Home() {
             </div>
             <span className="text-xl font-bold">Flank</span>
           </motion.div>
-          <p className="text-sm text-muted-foreground mb-2">
-            Competitive Intelligence Platform
-          </p>
+          <p className="text-sm text-muted-foreground mb-2">Competitive Intelligence Platform</p>
           <p className="text-xs text-muted-foreground">
             Built with Next.js, TypeScript, GSAP, and Framer Motion
           </p>

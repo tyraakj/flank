@@ -1,10 +1,10 @@
-import { NextRequest } from 'next/server';
-import { prisma } from '@flank/database';
-import { TargetParams } from '@flank/shared';
-import { withApiGuard } from '@/lib/api-guard';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { requireWorkspaceMember } from '@/lib/access';
-import { enqueueRunExecute } from '@/lib/queue-producer';
+import { NextRequest } from "next/server";
+import { prisma } from "@flank/database";
+import { TargetParams } from "@flank/shared";
+import { withApiGuard } from "@/lib/api-guard";
+import { successResponse, errorResponse } from "@/lib/api-response";
+import { requireWorkspaceMember } from "@/lib/access";
+import { enqueueRunExecute } from "@/lib/queue-producer";
 
 export const POST = withApiGuard(
   {
@@ -12,34 +12,34 @@ export const POST = withApiGuard(
   },
   async (req: NextRequest, { params, session }: any) => {
     const { targetId } = params;
-    
+
     // Validate target ownership
     const target = await prisma.target.findUnique({
       where: { id: targetId },
-      include: { workspace: true }
+      include: { workspace: true },
     });
 
     if (!target) {
-      return errorResponse('NOT_FOUND', 'Target not found', 404);
+      return errorResponse("NOT_FOUND", "Target not found", 404);
     }
 
     const isMember = await requireWorkspaceMember(target.workspace.slug);
     if (!isMember) {
-      return errorResponse('NOT_FOUND', 'Target not found', 404);
+      return errorResponse("NOT_FOUND", "Target not found", 404);
     }
 
     // Create the run and pre-populate stages (mock stages for now, these will be fleshed out in orchestrator)
     const run = await prisma.run.create({
       data: {
         targetId,
-        status: 'QUEUED',
+        status: "QUEUED",
         stages: {
           create: [
-            { key: 'PROFILER', attempt: 0, status: 'QUEUED' },
-            { key: 'DISCOVERY', attempt: 0, status: 'QUEUED' },
-          ]
-        }
-      }
+            { key: "PROFILER", attempt: 0, status: "QUEUED" },
+            { key: "DISCOVERY", attempt: 0, status: "QUEUED" },
+          ],
+        },
+      },
     });
 
     // Enqueue job via Unit 07 producer
@@ -52,5 +52,5 @@ export const POST = withApiGuard(
     });
 
     return successResponse(run, undefined, 201);
-  }
+  },
 );

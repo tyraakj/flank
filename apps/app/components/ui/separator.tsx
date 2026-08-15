@@ -1,8 +1,8 @@
-import { cn } from "@/lib/utils"
-import { HTMLAttributes, forwardRef } from "react"
+import { cn } from "@/lib/utils";
+import { HTMLAttributes, forwardRef } from "react";
 
 export interface SeparatorProps extends HTMLAttributes<HTMLDivElement> {
-  orientation?: "horizontal" | "vertical"
+  orientation?: "horizontal" | "vertical";
 }
 
 const Separator = forwardRef<HTMLDivElement, SeparatorProps>(
@@ -16,13 +16,13 @@ const Separator = forwardRef<HTMLDivElement, SeparatorProps>(
             "h-[1px] w-full": orientation === "horizontal",
             "h-full w-[1px]": orientation === "vertical",
           },
-          className
+          className,
         )}
         {...props}
       />
-    )
-  }
-)
-Separator.displayName = "Separator"
+    );
+  },
+);
+Separator.displayName = "Separator";
 
-export { Separator }
+export { Separator };

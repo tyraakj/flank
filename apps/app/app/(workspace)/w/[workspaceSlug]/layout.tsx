@@ -1,7 +1,7 @@
-import { TopBar } from '@/components/flank/top-bar';
-import { LeftNav } from '@/components/flank/left-nav';
-import { requireWorkspaceMember } from '@/lib/access';
-import { getUserWorkspaces } from '@/lib/workspaces';
+import { TopBar } from "@/components/flank/top-bar";
+import { LeftNav } from "@/components/flank/left-nav";
+import { requireWorkspaceMember } from "@/lib/access";
+import { getUserWorkspaces } from "@/lib/workspaces";
 
 interface WorkspaceLayoutProps {
   children: React.ReactNode;
@@ -17,12 +17,14 @@ export default async function WorkspaceLayout({ children, params }: WorkspaceLay
 
   return (
     <div className="flex h-screen flex-col">
-      <TopBar workspaceSlug={workspaceSlug} workspaceName={context.workspace.name} workspaces={workspaces} />
+      <TopBar
+        workspaceSlug={workspaceSlug}
+        workspaceName={context.workspace.name}
+        workspaces={workspaces}
+      />
       <div className="flex flex-1 overflow-hidden">
         <LeftNav workspaceSlug={workspaceSlug} />
-        <main className="flex-1 overflow-auto">
-          {children}
-        </main>
+        <main className="flex-1 overflow-auto">{children}</main>
       </div>
     </div>
   );

@@ -1,17 +1,17 @@
-import { prisma } from '@flank/database';
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { prisma } from "@flank/database";
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 
 // Initialize S3 Client pointing to Cloudflare R2 if configured
 const s3Client = new S3Client({
-  region: 'auto',
+  region: "auto",
   endpoint: process.env.R2_ENDPOINT,
   credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+    accessKeyId: process.env.R2_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
   },
 });
 
-const BUCKET_NAME = process.env.R2_BUCKET || 'flank-snapshots';
+const BUCKET_NAME = process.env.R2_BUCKET || "flank-snapshots";
 
 export class ProviderCacheService {
   /**
@@ -19,32 +19,39 @@ export class ProviderCacheService {
    */
   async getSearchCache(cacheKey: string) {
     return prisma.providerCache.findUnique({
-      where: { cacheKey }
+      where: { cacheKey },
     });
   }
 
   /**
    * Set a cached search result
    */
-  async setSearchCache(cacheKey: string, provider: string, query: string, contentHash: string, metadata: any, ttlSeconds: number) {
+  async setSearchCache(
+    cacheKey: string,
+    provider: string,
+    query: string,
+    contentHash: string,
+    metadata: any,
+    ttlSeconds: number,
+  ) {
     const expiresAt = new Date(Date.now() + ttlSeconds * 1000);
-    
+
     await prisma.providerCache.upsert({
       where: { cacheKey },
       update: {
         contentHash,
         metadata,
-        expiresAt
+        expiresAt,
       },
       create: {
         cacheKey,
         provider,
-        type: 'SEARCH',
+        type: "SEARCH",
         query,
         contentHash,
         metadata,
-        expiresAt
-      }
+        expiresAt,
+      },
     });
   }
 
@@ -53,7 +60,7 @@ export class ProviderCacheService {
    */
   async getPageReadCache(cacheKey: string) {
     const cache = await prisma.providerCache.findUnique({
-      where: { cacheKey }
+      where: { cacheKey },
     });
 
     if (!cache) return null;
@@ -73,7 +80,7 @@ export class ProviderCacheService {
     contentHash: string,
     text: string,
     html?: string,
-    ttlSeconds?: number
+    ttlSeconds?: number,
   ) {
     const expiresAt = ttlSeconds ? new Date(Date.now() + ttlSeconds * 1000) : null;
     let snapshotKey: string | undefined = undefined;
@@ -82,14 +89,16 @@ export class ProviderCacheService {
     if (html && process.env.R2_ACCESS_KEY_ID) {
       snapshotKey = `snapshots/${cacheKey}.html`;
       try {
-        await s3Client.send(new PutObjectCommand({
-          Bucket: BUCKET_NAME,
-          Key: snapshotKey,
-          Body: html,
-          ContentType: 'text/html'
-        }));
+        await s3Client.send(
+          new PutObjectCommand({
+            Bucket: BUCKET_NAME,
+            Key: snapshotKey,
+            Body: html,
+            ContentType: "text/html",
+          }),
+        );
       } catch (err) {
-        console.error('[ProviderCache] Failed to upload snapshot to R2:', err);
+        console.error("[ProviderCache] Failed to upload snapshot to R2:", err);
         snapshotKey = undefined;
       }
     }
@@ -100,20 +109,20 @@ export class ProviderCacheService {
         contentHash,
         snapshotKey,
         metadata: { text },
-        expiresAt
+        expiresAt,
       },
       create: {
         cacheKey,
         provider,
-        type: 'PAGE_READ',
+        type: "PAGE_READ",
         url,
         contentHash,
         snapshotKey,
         metadata: { text },
-        expiresAt
-      }
+        expiresAt,
+      },
     });
-    
+
     return snapshotKey;
   }
 }

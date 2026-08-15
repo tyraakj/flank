@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function WorkspaceLoading() {
   return (
@@ -12,7 +12,7 @@ export default function WorkspaceLoading() {
           <Skeleton className="h-10 w-10" />
         </div>
       </div>
-      
+
       <div className="flex flex-1 overflow-hidden">
         {/* Left nav skeleton */}
         <nav className="flex w-56 flex-col border-r bg-card py-4">
@@ -22,7 +22,7 @@ export default function WorkspaceLoading() {
             ))}
           </div>
         </nav>
-        
+
         {/* Main content skeleton */}
         <main className="flex-1 overflow-auto p-6">
           <Skeleton className="h-8 w-64 mb-4" />

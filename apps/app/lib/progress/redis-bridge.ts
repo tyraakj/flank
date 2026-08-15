@@ -1,13 +1,16 @@
-import Redis from 'ioredis';
-import { RunProgressEvent, RunProgressEventSchema } from '@flank/shared';
-import { prisma } from '@flank/database';
+import Redis from "ioredis";
+import { RunProgressEvent, RunProgressEventSchema } from "@flank/shared";
+import { prisma } from "@flank/database";
 
 // A single shared redis connection for pub/sub is not possible for subscriptions because a subscriber connection cannot issue standard commands.
-// Thus, we instantiate a new Redis connection per stream or use a connection pool. 
+// Thus, we instantiate a new Redis connection per stream or use a connection pool.
 // For SSE, it's better to create a subscriber per request so they don't block each other.
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 
-export async function createProgressStream(runId: string, lastEventId?: number): Promise<ReadableStream> {
+export async function createProgressStream(
+  runId: string,
+  lastEventId?: number,
+): Promise<ReadableStream> {
   const channelName = `run-events:${runId}`;
   const subscriber = new Redis(redisUrl, { maxRetriesPerRequest: null });
 
@@ -19,12 +22,12 @@ export async function createProgressStream(runId: string, lastEventId?: number):
     const events = await prisma.runEvent.findMany({
       where: {
         runId,
-        eventId: { gt: lastEventId }
+        eventId: { gt: lastEventId },
       },
-      orderBy: { eventId: 'asc' }
+      orderBy: { eventId: "asc" },
     });
 
-    missedEvents = events.map(e => ({
+    missedEvents = events.map((e) => ({
       eventId: e.eventId,
       type: e.type as any,
       runId: e.runId,
@@ -34,7 +37,7 @@ export async function createProgressStream(runId: string, lastEventId?: number):
       summary: e.summary,
       elapsedMs: e.elapsedMs,
       payload: e.payload as any,
-      timestamp: e.timestamp.toISOString()
+      timestamp: e.timestamp.toISOString(),
     }));
   }
 
@@ -44,7 +47,9 @@ export async function createProgressStream(runId: string, lastEventId?: number):
     async start(controller) {
       // 1. Send missed events first
       for (const event of missedEvents) {
-        controller.enqueue(`id: ${event.eventId}\nevent: message\ndata: ${JSON.stringify(event)}\n\n`);
+        controller.enqueue(
+          `id: ${event.eventId}\nevent: message\ndata: ${JSON.stringify(event)}\n\n`,
+        );
       }
 
       // 2. Subscribe to live events
@@ -54,7 +59,7 @@ export async function createProgressStream(runId: string, lastEventId?: number):
         }
       });
 
-      subscriber.on('message', (channel, message) => {
+      subscriber.on("message", (channel, message) => {
         if (channel === channelName) {
           try {
             const rawEvent = JSON.parse(message);
@@ -63,13 +68,15 @@ export async function createProgressStream(runId: string, lastEventId?: number):
             if (lastEventId !== undefined && event.eventId <= lastEventId) {
               return;
             }
-            if (missedEvents.some(m => m.eventId === event.eventId)) {
+            if (missedEvents.some((m) => m.eventId === event.eventId)) {
               return;
             }
 
-            controller.enqueue(`id: ${event.eventId}\nevent: message\ndata: ${JSON.stringify(event)}\n\n`);
+            controller.enqueue(
+              `id: ${event.eventId}\nevent: message\ndata: ${JSON.stringify(event)}\n\n`,
+            );
           } catch (err) {
-            console.error('[Redis Bridge] Invalid event received:', err);
+            console.error("[Redis Bridge] Invalid event received:", err);
           }
         }
       });
@@ -83,7 +90,7 @@ export async function createProgressStream(runId: string, lastEventId?: number):
       subscriber.unsubscribe(channelName);
       subscriber.quit();
       clearInterval(heartbeatInterval);
-    }
+    },
   });
 
   return stream;

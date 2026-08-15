@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // Shared environment variables
 const sharedEnvSchema = z.object({
@@ -19,7 +19,7 @@ export const appEnvSchema = z.object({
 // Worker-specific environment variables
 export const workerEnvSchema = sharedEnvSchema.extend({
   DATABASE_URL: z.string().url(),
-  WORKER_CONCURRENCY: z.string().default('1'),
+  WORKER_CONCURRENCY: z.string().default("1"),
   // Provider keys will be added in Unit 10
 });
 

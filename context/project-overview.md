@@ -24,36 +24,36 @@ Paste URL → Profile product → Discover candidates → Verify competitors
 
 ## Agent Roster
 
-| # | Agent | Job |
-|---|---|---|
-| 1 | **Profiler** | Reads the target URL; determines category, ICP, pricing model, value props |
-| 2 | **Discovery** | Generates multi-angle search queries; harvests candidate competitor domains |
-| 2b | **Semantic Dedup** | Clusters candidates by embedding similarity; eliminates duplicates before verification |
-| 3 | **Verifier** | Rejects false positives; deduplicates entities; classifies competitor type |
-| 4 | **Pricing** | Reads pricing pages; extracts plans, tiers, limits, and add-ons |
-| 5 | **Feature** | Extracts features per competitor; normalizes into a shared taxonomy |
-| 6 | **Positioning** | Derives ICP, messaging axes, market clusters per competitor |
-| 7 | **Strategist** | Identifies gaps; produces ranked edge opportunities with evidence |
-| 8 | **Critic** | Deterministic quality gates; can force targeted stage replays within a retry budget |
+| #   | Agent              | Job                                                                                    |
+| --- | ------------------ | -------------------------------------------------------------------------------------- |
+| 1   | **Profiler**       | Reads the target URL; determines category, ICP, pricing model, value props             |
+| 2   | **Discovery**      | Generates multi-angle search queries; harvests candidate competitor domains            |
+| 2b  | **Semantic Dedup** | Clusters candidates by embedding similarity; eliminates duplicates before verification |
+| 3   | **Verifier**       | Rejects false positives; deduplicates entities; classifies competitor type             |
+| 4   | **Pricing**        | Reads pricing pages; extracts plans, tiers, limits, and add-ons                        |
+| 5   | **Feature**        | Extracts features per competitor; normalizes into a shared taxonomy                    |
+| 6   | **Positioning**    | Derives ICP, messaging axes, market clusters per competitor                            |
+| 7   | **Strategist**     | Identifies gaps; produces ranked edge opportunities with evidence                      |
+| 8   | **Critic**         | Deterministic quality gates; can force targeted stage replays within a retry budget    |
 
 ## Screens
 
-| ID | Screen |
-|---|---|
-| S1 | Landing / New Analysis — URL input, inline validation, optional context |
-| S2 | Run Progress — live stage list, competitor pop-in, log strip, partial access after verify |
-| S3 | Report Overview — target card, headline stats, top opportunities, competitor grid |
-| S4 | Competitors — sortable table, competitor drawer with full evidence |
-| S5 | Pricing — side-by-side pricing matrix, band chart, anomaly callouts |
-| S6 | Features — feature matrix with evidence hover, gap/strength filters |
-| S7 | Positioning — 2×2 map, cluster shading, messaging comparison table |
-| S8 | Edge — ranked opportunity cards with move, evidence, and integration actions |
-| S9 | Sources — every evidence row, filterable by competitor and stage |
-| S10 | History / Changes — run timeline, diff view, monitoring toggle |
-| S11 | Workspace Home — target list with last run and open opportunities |
-| S12 | Integrations — Slack, Notion, Linear/Jira, webhooks, API keys, MCP |
-| S13 | Share — public read-only report links with scope, expiry, and password |
-| S14 | Settings / Usage — plan, quota, cost signal, member management |
+| ID  | Screen                                                                                    |
+| --- | ----------------------------------------------------------------------------------------- |
+| S1  | Landing / New Analysis — URL input, inline validation, optional context                   |
+| S2  | Run Progress — live stage list, competitor pop-in, log strip, partial access after verify |
+| S3  | Report Overview — target card, headline stats, top opportunities, competitor grid         |
+| S4  | Competitors — sortable table, competitor drawer with full evidence                        |
+| S5  | Pricing — side-by-side pricing matrix, band chart, anomaly callouts                       |
+| S6  | Features — feature matrix with evidence hover, gap/strength filters                       |
+| S7  | Positioning — 2×2 map, cluster shading, messaging comparison table                        |
+| S8  | Edge — ranked opportunity cards with move, evidence, and integration actions              |
+| S9  | Sources — every evidence row, filterable by competitor and stage                          |
+| S10 | History / Changes — run timeline, diff view, monitoring toggle                            |
+| S11 | Workspace Home — target list with last run and open opportunities                         |
+| S12 | Integrations — Slack, Notion, Linear/Jira, webhooks, API keys, MCP                        |
+| S13 | Share — public read-only report links with scope, expiry, and password                    |
+| S14 | Settings / Usage — plan, quota, cost signal, member management                            |
 
 ## Scope
 

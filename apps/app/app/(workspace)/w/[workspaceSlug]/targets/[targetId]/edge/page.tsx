@@ -1,4 +1,8 @@
-export default function EdgePage({ params }: { params: { workspaceSlug: string; targetId: string } }) {
+export default function EdgePage({
+  params,
+}: {
+  params: { workspaceSlug: string; targetId: string };
+}) {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold">Edge</h1>

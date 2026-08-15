@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export default function WorkspaceNotFound() {
   return (
@@ -14,7 +14,7 @@ export default function WorkspaceNotFound() {
           className={cn(
             "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors",
             "h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           )}
         >
           Go to home

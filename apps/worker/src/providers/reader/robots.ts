@@ -1,6 +1,9 @@
-import robotsParser from 'robots-parser';
+import robotsParser from "robots-parser";
 
-export async function isAllowedByRobots(url: string, userAgent: string = 'FlankBot/1.0'): Promise<boolean> {
+export async function isAllowedByRobots(
+  url: string,
+  userAgent: string = "FlankBot/1.0",
+): Promise<boolean> {
   try {
     const targetUrl = new URL(url);
     const robotsUrl = `${targetUrl.protocol}//${targetUrl.host}/robots.txt`;
@@ -10,9 +13,9 @@ export async function isAllowedByRobots(url: string, userAgent: string = 'FlankB
 
     const res = await fetch(robotsUrl, {
       signal: controller.signal,
-      headers: { 'User-Agent': userAgent }
+      headers: { "User-Agent": userAgent },
     });
-    
+
     clearTimeout(id);
 
     if (res.ok) {

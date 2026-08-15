@@ -1,9 +1,9 @@
-import { NextRequest } from 'next/server';
-import { prisma } from '@flank/database';
-import { CreateTargetRequest, WorkspaceSlugParam } from '@flank/shared';
-import { withApiGuard } from '@/lib/api-guard';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { requireWorkspaceMember } from '@/lib/access';
+import { NextRequest } from "next/server";
+import { prisma } from "@flank/database";
+import { CreateTargetRequest, WorkspaceSlugParam } from "@flank/shared";
+import { withApiGuard } from "@/lib/api-guard";
+import { successResponse, errorResponse } from "@/lib/api-response";
+import { requireWorkspaceMember } from "@/lib/access";
 
 export const POST = withApiGuard(
   {
@@ -12,22 +12,22 @@ export const POST = withApiGuard(
   },
   async (req: NextRequest, { body, params, session }: any) => {
     const { workspaceSlug } = params;
-    
+
     // Ensure the user is a member of the workspace
     const isMember = await requireWorkspaceMember(workspaceSlug);
     if (!isMember) {
-      return errorResponse('NOT_FOUND', 'Workspace not found', 404);
+      return errorResponse("NOT_FOUND", "Workspace not found", 404);
     }
 
     const workspace = await prisma.workspace.findUnique({ where: { slug: workspaceSlug } });
-    if (!workspace) return errorResponse('NOT_FOUND', 'Workspace not found', 404);
+    if (!workspace) return errorResponse("NOT_FOUND", "Workspace not found", 404);
 
     // Normalize URL
     let parsedUrl: URL;
     try {
       parsedUrl = new URL(body.url);
     } catch {
-      return errorResponse('VALIDATION_ERROR', 'Invalid URL format', 422);
+      return errorResponse("VALIDATION_ERROR", "Invalid URL format", 422);
     }
     const domain = parsedUrl.hostname;
 
@@ -41,5 +41,5 @@ export const POST = withApiGuard(
     });
 
     return successResponse(target, undefined, 201);
-  }
+  },
 );

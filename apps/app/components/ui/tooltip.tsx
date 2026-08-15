@@ -1,13 +1,13 @@
-import { cn } from "@/lib/utils"
-import { HTMLAttributes, useState, forwardRef } from "react"
+import { cn } from "@/lib/utils";
+import { HTMLAttributes, useState, forwardRef } from "react";
 
 export interface TooltipProps extends HTMLAttributes<HTMLDivElement> {
-  content: string
+  content: string;
 }
 
 const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
   ({ className, content, children, ...props }, ref) => {
-    const [isVisible, setIsVisible] = useState(false)
+    const [isVisible, setIsVisible] = useState(false);
 
     return (
       <div
@@ -24,9 +24,9 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
           </div>
         )}
       </div>
-    )
-  }
-)
-Tooltip.displayName = "Tooltip"
+    );
+  },
+);
+Tooltip.displayName = "Tooltip";
 
-export { Tooltip }
+export { Tooltip };

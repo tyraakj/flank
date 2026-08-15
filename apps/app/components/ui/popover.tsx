@@ -1,23 +1,23 @@
-import { cn } from "@/lib/utils"
-import { HTMLAttributes, useState, forwardRef } from "react"
+import { cn } from "@/lib/utils";
+import { HTMLAttributes, useState, forwardRef } from "react";
 
 export interface PopoverProps extends HTMLAttributes<HTMLDivElement> {
-  trigger: React.ReactNode
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
+  trigger: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const Popover = forwardRef<HTMLDivElement, PopoverProps>(
   ({ className, trigger, open, onOpenChange, children, ...props }, ref) => {
-    const [internalOpen, setInternalOpen] = useState(false)
-    const isOpen = open !== undefined ? open : internalOpen
+    const [internalOpen, setInternalOpen] = useState(false);
+    const isOpen = open !== undefined ? open : internalOpen;
 
     const handleOpenChange = (newOpen: boolean) => {
-      onOpenChange?.(newOpen)
+      onOpenChange?.(newOpen);
       if (open === undefined) {
-        setInternalOpen(newOpen)
+        setInternalOpen(newOpen);
       }
-    }
+    };
 
     return (
       <div ref={ref} className={cn("relative", className)} {...props}>
@@ -28,16 +28,14 @@ const Popover = forwardRef<HTMLDivElement, PopoverProps>(
           </div>
         )}
       </div>
-    )
-  }
-)
-Popover.displayName = "Popover"
+    );
+  },
+);
+Popover.displayName = "Popover";
 
 const PopoverContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("", className)} {...props} />
-  )
-)
-PopoverContent.displayName = "PopoverContent"
+  ({ className, ...props }, ref) => <div ref={ref} className={cn("", className)} {...props} />,
+);
+PopoverContent.displayName = "PopoverContent";
 
-export { Popover, PopoverContent }
+export { Popover, PopoverContent };

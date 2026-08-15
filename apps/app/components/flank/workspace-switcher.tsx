@@ -34,7 +34,9 @@ export function WorkspaceSwitcher({ workspaces, activeSlug }: WorkspaceSwitcherP
         }
       }}
     >
-      <option value="" disabled>Select a workspace</option>
+      <option value="" disabled>
+        Select a workspace
+      </option>
       {workspaces.map((ws) => (
         <option key={ws.id} value={ws.slug}>
           {ws.name}

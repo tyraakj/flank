@@ -3,7 +3,7 @@ import { requireSession } from "./access";
 
 export async function getUserWorkspaces() {
   const session = await requireSession();
-  
+
   const members = await prisma.workspaceMember.findMany({
     where: {
       userId: session.user.id,
