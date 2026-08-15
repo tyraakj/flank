@@ -1,14 +1,12 @@
 import { cn } from "@/lib/utils";
 import { HTMLAttributes, TableHTMLAttributes, forwardRef } from "react";
 
-export interface DataTableProps extends TableHTMLAttributes<HTMLTableElement> {
-  [key: string]: any;
-}
+export interface DataTableProps extends TableHTMLAttributes<HTMLTableElement>  { [key: string]: unknown; }
 
 const DataTable = forwardRef<HTMLTableElement, DataTableProps>(({ className, ...props }, ref) => {
   return (
     <div className="relative w-full overflow-auto">
-      <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
+      <table ref={ref} className={cn("w-full caption-bottom text-sm", className as string)} {...props} />
     </div>
   );
 });
@@ -18,13 +16,13 @@ const DataTableHeader = forwardRef<
   HTMLTableSectionElement,
   HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+  <thead ref={ref} className={cn("[&_tr]:border-b", className as string)} {...props} />
 ));
 DataTableHeader.displayName = "DataTableHeader";
 
 const DataTableBody = forwardRef<HTMLTableSectionElement, HTMLAttributes<HTMLTableSectionElement>>(
   ({ className, ...props }, ref) => (
-    <tbody ref={ref} className={cn("[&_tr:last-child]:border-0", className)} {...props} />
+    <tbody ref={ref} className={cn("[&_tr:last-child]:border-0", className as string)} {...props} />
   ),
 );
 DataTableBody.displayName = "DataTableBody";
@@ -61,7 +59,7 @@ const DataTableCell = forwardRef<HTMLTableCellElement, HTMLAttributes<HTMLTableC
   ({ className, ...props }, ref) => (
     <td
       ref={ref}
-      className={cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", className)}
+      className={cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", className as string)}
       {...props}
     />
   ),

@@ -2,11 +2,12 @@ import { cn } from "@/lib/utils";
 import { HTMLAttributes, TableHTMLAttributes, forwardRef } from "react";
 
 export interface MatrixProps extends TableHTMLAttributes<HTMLTableElement> {
-  pinnedFirstColumn?: boolean;
+  _pinnedFirstColumn?: boolean;
 }
 
 const Matrix = forwardRef<HTMLTableElement, MatrixProps>(
-  ({ className, pinnedFirstColumn = true, ...props }, ref) => {
+  ({ className, _pinnedFirstColumn = false, ...props }, ref) => {
+    void _pinnedFirstColumn;
     return (
       <div className="relative w-full overflow-auto">
         <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />

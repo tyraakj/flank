@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { HTMLAttributes, useState, forwardRef } from "react";
+import { HTMLAttributes, forwardRef } from "react";
 
 export interface SheetProps extends HTMLAttributes<HTMLDivElement> {
   open?: boolean;

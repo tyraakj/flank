@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { HTMLAttributes, useState, forwardRef } from "react";
+import React, { HTMLAttributes, useState, forwardRef } from "react";
 
 export interface TabsProps extends HTMLAttributes<HTMLDivElement> {
   defaultValue?: string;
@@ -11,24 +11,24 @@ const Tabs = forwardRef<HTMLDivElement, TabsProps>(
 
     return (
       <div ref={ref} className={cn("", className)} {...props}>
-        {Array.isArray(children)
-          ? children.map((child: any) => {
-              if (child.type === TabsList) {
-                return (
-                  <child.type
-                    key="list"
-                    {...child.props}
-                    activeTab={activeTab}
-                    setActiveTab={setActiveTab}
-                  />
-                );
-              }
-              if (child.type === TabsContent) {
-                return child.props.value === activeTab ? child : null;
-              }
-              return child;
-            })
-          : children}
+        {React.Children.map(children, (c) => {
+          if (!React.isValidElement(c)) return c;
+          const child = c as React.ReactElement<{ value: string }>;
+          if (child.type === TabsList) {
+            return (
+              <TabsList
+                key="list"
+                {...child.props}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+              />
+            );
+          }
+          if (child.type === TabsContent) {
+            return child.props.value === activeTab ? child : null;
+          }
+          return child;
+        })}
       </div>
     );
   },
@@ -51,16 +51,19 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
         )}
         {...props}
       >
-        {Array.isArray(children)
-          ? children.map((child: any) => (
-              <child.type
-                key={child.props.value}
-                {...child.props}
-                isActive={child.props.value === activeTab}
-                onClick={() => setActiveTab?.(child.props.value)}
-              />
-            ))
-          : children}
+        {React.Children.map(children, (c) => {
+          if (!React.isValidElement(c)) return c;
+          const child = c as React.ReactElement<{ value: string }>;
+          return (
+            <TabsTrigger
+              key={child.props.value}
+              {...child.props}
+              value={child.props.value}
+              isActive={child.props.value === activeTab}
+              onClick={() => setActiveTab?.(child.props.value)}
+            />
+          );
+        })}
       </div>
     );
   },
@@ -73,7 +76,7 @@ interface TabsTriggerProps extends HTMLAttributes<HTMLButtonElement> {
 }
 
 const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(
-  ({ className, value, isActive, children, ...props }, ref) => {
+  ({ className, isActive, children, ...props }, ref) => {
     return (
       <button
         ref={ref}
@@ -98,7 +101,7 @@ interface TabsContentProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const TabsContent = forwardRef<HTMLDivElement, TabsContentProps>(
-  ({ className, value, children, ...props }, ref) => {
+  ({ className, children, ...props }, ref) => {
     return (
       <div
         ref={ref}

@@ -28,7 +28,7 @@ export function WorkspaceSwitcher({ workspaces, activeSlug }: WorkspaceSwitcherP
   return (
     <Select
       value={activeSlug || ""}
-      onChange={(e: any) => {
+      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
         if (e.target.value) {
           router.push(`/w/${e.target.value}`);
         }
