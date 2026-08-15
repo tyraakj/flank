@@ -66,7 +66,7 @@ export class PlaywrightPageReader implements PageReader {
         providerName: this.name,
         cached: false,
       };
-    } catch (err: any) {
+    } catch (err: unknown) {
       providerMetrics.recordError(this.name, `read(${request.url})`, err);
       throw err;
     }

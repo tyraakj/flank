@@ -34,7 +34,7 @@ function start() {
     async (job) => {
       const { runId, stageKey, requestedBy } = job.data as StageExecuteJob;
       if (!stageKey) throw new Error("stageKey is required");
-      await executeStage(runId, stageKey as any, requestedBy || "system");
+      await executeStage(runId, stageKey as unknown, requestedBy || "system");
     },
     { connection, concurrency: concurrency * 2 },
   );
@@ -44,7 +44,7 @@ function start() {
     async (job) => {
       const { runId, stageKey, requestedBy, reason } = job.data as StageReplayJob;
       if (!stageKey) throw new Error("stageKey is required");
-      await handleStageReplay(runId, stageKey as any, requestedBy || "system", reason);
+      await handleStageReplay(runId, stageKey as unknown, requestedBy || "system", reason);
     },
     { connection, concurrency },
   );
@@ -52,7 +52,7 @@ function start() {
   const runCancelWorker = new Worker(
     QUEUE_NAMES.RUN_CANCEL,
     async (job) => {
-      const { runId, requestedBy } = job.data as RunCancelJob;
+      const { runId, _requestedBy } = job.data as RunCancelJob;
       await handleRunCancellation(runId, "Cancelled via API");
     },
     { connection, concurrency },
@@ -74,7 +74,7 @@ function start() {
       if (job) {
         if (job.attemptsMade >= (job.opts.attempts || 1)) {
           // Exhausted all attempts
-          await handleDeadLetter(job as any, err);
+          await handleDeadLetter(job as unknown, err);
         } else {
           console.error(
             `[Worker] Job ${job.id} failed, will retry. Attempt: ${job.attemptsMade}`,

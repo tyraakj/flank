@@ -5,7 +5,7 @@ import { BraveSearchProvider } from "./search/brave";
 import { HttpPageReader } from "./reader/http";
 import { PlaywrightPageReader } from "./reader/playwright";
 import { GeminiLlmProvider } from "./llm/gemini";
-import { FailoverSearchProvider, FailoverPageReader } from "./failover";
+import { FailoverSearchProvider, _FailoverPageReader } from "./failover";
 
 class ProviderRegistry {
   private searchProvider: SearchProvider | null = null;

@@ -10,7 +10,7 @@ export const POST = withApiGuard(
     bodySchema: CreateTargetRequest,
     paramsSchema: WorkspaceSlugParam,
   },
-  async (req: NextRequest, { body, params, session }: any) => {
+  async (req: NextRequest, { body, params, _session }: unknown) => {
     const { workspaceSlug } = params;
 
     // Ensure the user is a member of the workspace

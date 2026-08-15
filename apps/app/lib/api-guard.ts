@@ -23,7 +23,7 @@ export function withApiGuard<
     ctx: {
       body: z.infer<BodySchema>;
       params: z.infer<ParamsSchema>;
-      session: any; // The session object
+      session: unknown; // The session object
     },
   ) => Promise<NextResponse>,
 ) {
@@ -67,7 +67,7 @@ export function withApiGuard<
         let bodyData;
         try {
           bodyData = await req.json();
-        } catch (e) {
+        } catch (_e) {
           return errorResponse("BAD_REQUEST", "Invalid JSON body", 400);
         }
 
@@ -85,7 +85,7 @@ export function withApiGuard<
 
       // Execute handler
       return await handler(req, { body: parsedBody, params: parsedParams, session });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("[API Error]", error);
       // Don't leak internal stacks in response
       return errorResponse("INTERNAL_ERROR", "An unexpected error occurred", 500);

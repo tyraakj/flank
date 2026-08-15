@@ -3,7 +3,7 @@ import { ApiResponse } from "@flank/shared";
 
 export function successResponse<T>(
   data: T,
-  meta?: Record<string, any>,
+  meta?: Record<string, unknown>,
   status = 200,
 ): NextResponse<ApiResponse<T>> {
   return NextResponse.json(
@@ -21,8 +21,8 @@ export function errorResponse(
   code: string,
   message: string,
   status: number,
-  fields?: Record<string, any>,
-): NextResponse<ApiResponse<any>> {
+  fields?: Record<string, unknown>,
+): NextResponse<ApiResponse<unknown>> {
   return NextResponse.json(
     { error: { code, message, fields } },
     {

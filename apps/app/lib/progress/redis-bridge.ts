@@ -29,14 +29,14 @@ export async function createProgressStream(
 
     missedEvents = events.map((e) => ({
       eventId: e.eventId,
-      type: e.type as any,
+      type: e.type as unknown,
       runId: e.runId,
       targetId: e.targetId,
       stageKey: e.stageKey,
       stageStatus: e.stageStatus,
       summary: e.summary,
       elapsedMs: e.elapsedMs,
-      payload: e.payload as any,
+      payload: e.payload as unknown,
       timestamp: e.timestamp.toISOString(),
     }));
   }
@@ -53,7 +53,7 @@ export async function createProgressStream(
       }
 
       // 2. Subscribe to live events
-      await subscriber.subscribe(channelName, (err, count) => {
+      await subscriber.subscribe(channelName, (err, _count) => {
         if (err) {
           console.error(`[Redis Bridge] Failed to subscribe to ${channelName}:`, err);
         }

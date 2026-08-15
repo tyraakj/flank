@@ -40,7 +40,7 @@ export class DuckDuckGoSearchProvider implements SearchProvider {
         // DuckDuckGo redirects links through their own domain, so we need to parse the real URL
         // In html.duckduckgo.com, the href is usually something like //duckduckgo.com/l/?uddg=...
         // For simplicity, we can extract it from the display URL or parse the query param.
-        let rawHref = titleNode.attr("href") || "";
+        const rawHref = titleNode.attr("href") || "";
         let realUrl = "";
 
         if (rawHref.includes("uddg=")) {
@@ -75,7 +75,7 @@ export class DuckDuckGoSearchProvider implements SearchProvider {
         cached: false,
         fetchedAt: new Date().toISOString(),
       };
-    } catch (err: any) {
+    } catch (err: unknown) {
       providerMetrics.recordError(this.name, "search", err);
       throw err;
     }

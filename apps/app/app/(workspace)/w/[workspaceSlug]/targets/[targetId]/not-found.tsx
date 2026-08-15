@@ -13,7 +13,7 @@ export default function TargetNotFound({ params }: TargetNotFoundProps) {
       <div className="text-center">
         <h1 className="text-2xl font-bold mb-2">Target not found</h1>
         <p className="text-muted-foreground mb-6">
-          The target you're looking for doesn't exist or you don't have access to it.
+          The target you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
         </p>
         <Link
           href={`/${params.workspaceSlug}`}

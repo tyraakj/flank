@@ -32,7 +32,7 @@ export class BraveSearchProvider implements SearchProvider {
       const data = await response.json();
 
       const results: SearchResultItem[] = (data.web?.results || []).map(
-        (res: any, index: number) => ({
+        (res: unknown, index: number) => ({
           title: res.title,
           url: res.url,
           snippet: res.description,
@@ -51,7 +51,7 @@ export class BraveSearchProvider implements SearchProvider {
         cached: false,
         fetchedAt: new Date().toISOString(),
       };
-    } catch (err: any) {
+    } catch (err: unknown) {
       providerMetrics.recordError(this.name, "search", err);
       throw err;
     }

@@ -10,7 +10,7 @@ export const POST = withApiGuard(
   {
     paramsSchema: TargetParams,
   },
-  async (req: NextRequest, { params, session }: any) => {
+  async (req: NextRequest, { params, session }: unknown) => {
     const { targetId } = params;
 
     // Validate target ownership

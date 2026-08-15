@@ -12,7 +12,7 @@ export async function handleStageReplay(
   runId: string,
   stageKey: StageKey,
   requestedBy: string,
-  reason?: string,
+  _reason?: string,
 ) {
   const targetIndex = STAGE_SEQUENCE.indexOf(stageKey);
   if (targetIndex === -1) {

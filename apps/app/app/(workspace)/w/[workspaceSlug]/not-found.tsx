@@ -7,7 +7,7 @@ export default function WorkspaceNotFound() {
       <div className="text-center">
         <h1 className="text-2xl font-bold mb-2">Workspace not found</h1>
         <p className="text-muted-foreground mb-6">
-          The workspace you're looking for doesn't exist or you don't have access to it.
+          The workspace you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
         </p>
         <Link
           href="/"

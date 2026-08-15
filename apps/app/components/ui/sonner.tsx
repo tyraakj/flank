@@ -10,7 +10,7 @@ export interface SonnerProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const Sonner = forwardRef<HTMLDivElement, SonnerProps>(({ className, toast, ...props }, ref) => {
-  const [isVisible, setIsVisible] = useState(!!toast);
+  const [isVisible, _setIsVisible] = useState(!!toast);
 
   if (!toast || !isVisible) return null;
 

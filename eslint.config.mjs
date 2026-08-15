@@ -7,13 +7,31 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   prettierConfig,
+  {
+    settings: {
+      next: {
+        rootDir: "apps/app/",
+      },
+    },
+    rules: {
+      "@next/next/no-html-link-for-pages": ["error", "apps/app/app"],
+      "@typescript-eslint/no-unused-vars": ["warn", { 
+        "argsIgnorePattern": "^_", 
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }]
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
+    "**/.next/**",
+    "**/out/**",
+    "**/build/**",
+    "**/next-env.d.ts",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/coverage/**"
   ]),
 ]);
 

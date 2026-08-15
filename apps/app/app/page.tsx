@@ -20,7 +20,7 @@ import {
   TrendingUp,
   Database,
   Cpu,
-  Network,
+  _Network,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
@@ -277,7 +277,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
           >
-            One input: your product's URL
+            One input: your product&apos;s URL
           </motion.h1>
 
           <motion.p
@@ -363,7 +363,7 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            What You'll Get
+            What You&apos;ll Get
           </motion.h2>
           <motion.p
             className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto"
@@ -495,7 +495,7 @@ export default function Home() {
                         whileHover={{ scale: 1.05 }}
                         transition={{ type: "spring", stiffness: 400 }}
                       >
-                        <SupportStatus status={status as any} />
+                        <SupportStatus status={status as unknown} />
                       </motion.div>
                     ))}
                   </div>
@@ -515,7 +515,7 @@ export default function Home() {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <Button variant={variant as any}>{variant}</Button>
+                          <Button variant={variant as unknown}>{variant}</Button>
                         </motion.div>
                       ),
                     )}
@@ -535,7 +535,7 @@ export default function Home() {
                         whileHover={{ scale: 1.05 }}
                         transition={{ type: "spring", stiffness: 400 }}
                       >
-                        <Badge variant={variant as any}>{variant}</Badge>
+                        <Badge variant={variant as unknown}>{variant}</Badge>
                       </motion.div>
                     ))}
                   </div>
@@ -566,7 +566,7 @@ export default function Home() {
               <CardContent className="pt-6">
                 <p className="text-muted-foreground mb-4 text-lg">
                   Flank is a competitive intelligence platform that helps you understand your market
-                  landscape. Simply paste your product's URL and get a comprehensive analysis of
+                  landscape. Simply paste your product&apos;s URL and get a comprehensive analysis of
                   your competitors, their pricing, positioning, and features—all with full source
                   citations.
                 </p>
@@ -617,7 +617,7 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-4">Ready to find your competitive edge?</h2>
               <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
                 Get started with Flank and discover what your competitors are doing, how they
-                position themselves, and what opportunities you're missing.
+                position themselves, and what opportunities you&apos;re missing.
               </p>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button

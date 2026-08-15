@@ -24,7 +24,7 @@ export async function isAllowedByRobots(
       const isAllowed = robots.isAllowed(url, userAgent);
       return isAllowed === undefined ? true : isAllowed;
     }
-  } catch (err) {
+  } catch (_err) {
     // If robots.txt fails to load (timeout, 404, etc), assume allowed but log warning if desired
   }
   return true;
