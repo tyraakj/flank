@@ -10,7 +10,7 @@ export const POST = withApiGuard(
   {
     paramsSchema: TargetRunParams,
   },
-  async (req: NextRequest, { params, session }: any) => {
+  async (req: NextRequest, { params, session }) => {
     const { targetId, runId } = params;
 
     const run = await prisma.run.findUnique({

@@ -4,7 +4,7 @@ import { requireSession } from "./access";
 import { errorResponse } from "./api-response";
 
 type HandlerContext = {
-  params?: any;
+  params?: Promise<Record<string, string | string[]>>;
 };
 
 type ApiGuardOptions<BodySchema extends z.ZodTypeAny, ParamsSchema extends z.ZodTypeAny> = {
@@ -23,7 +23,7 @@ export function withApiGuard<
     ctx: {
       body: z.infer<BodySchema>;
       params: z.infer<ParamsSchema>;
-      session: unknown; // The session object
+      session: NonNullable<Awaited<ReturnType<typeof requireSession>>>;
     },
   ) => Promise<NextResponse>,
 ) {
@@ -84,7 +84,7 @@ export function withApiGuard<
       }
 
       // Execute handler
-      return await handler(req, { body: parsedBody, params: parsedParams, session });
+      return await handler(req, { body: parsedBody, params: parsedParams, session: session! });
     } catch (error: unknown) {
       console.error("[API Error]", error);
       // Don't leak internal stacks in response

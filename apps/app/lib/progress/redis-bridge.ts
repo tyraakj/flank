@@ -29,14 +29,14 @@ export async function createProgressStream(
 
     missedEvents = events.map((e) => ({
       eventId: e.eventId,
-      type: e.type as any,
+      type: e.type as import("@flank/shared").RunProgressEvent["type"],
       runId: e.runId,
       targetId: e.targetId,
       stageKey: e.stageKey,
       stageStatus: e.stageStatus,
       summary: e.summary,
       elapsedMs: e.elapsedMs,
-      payload: e.payload as any,
+      payload: e.payload as import("@flank/shared").RunProgressEvent["payload"],
       timestamp: e.timestamp.toISOString(),
     }));
   }

@@ -10,7 +10,7 @@ export const POST = withApiGuard(
   {
     paramsSchema: TargetParams,
   },
-  async (req: NextRequest, { params, session }: any) => {
+  async (req: NextRequest, { params, session }) => {
     const { targetId } = params;
 
     // Validate target ownership
@@ -23,6 +23,7 @@ export const POST = withApiGuard(
       return errorResponse("NOT_FOUND", "Target not found", 404);
     }
 
+    void target;
     const isMember = await requireWorkspaceMember(target.workspace.slug);
     if (!isMember) {
       return errorResponse("NOT_FOUND", "Target not found", 404);

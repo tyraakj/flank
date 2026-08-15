@@ -9,7 +9,7 @@ export const GET = withApiGuard(
   {
     paramsSchema: TargetRunParams,
   },
-  async (req: NextRequest, { params, session }: any) => {
+  async (req: NextRequest, { params, session: _session }) => {
     const { targetId, runId } = params;
 
     // Verify run belongs to target
@@ -35,7 +35,7 @@ export const GET = withApiGuard(
     }
 
     // Strip out target before sending
-    const { target, ...runData } = run;
+    const { target: _target, ...runData } = run;
 
     return successResponse(runData);
   },
