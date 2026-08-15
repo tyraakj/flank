@@ -566,8 +566,8 @@ export default function Home() {
               <CardContent className="pt-6">
                 <p className="text-muted-foreground mb-4 text-lg">
                   Flank is a competitive intelligence platform that helps you understand your market
-                  landscape. Simply paste your product&apos;s URL and get a comprehensive analysis of
-                  your competitors, their pricing, positioning, and features—all with full source
+                  landscape. Simply paste your product&apos;s URL and get a comprehensive analysis
+                  of your competitors, their pricing, positioning, and features—all with full source
                   citations.
                 </p>
                 <p className="text-muted-foreground mb-6 text-lg">

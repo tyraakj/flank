@@ -15,11 +15,14 @@ const eslintConfig = defineConfig([
     },
     rules: {
       "@next/next/no-html-link-for-pages": ["error", "apps/app/app"],
-      "@typescript-eslint/no-unused-vars": ["warn", { 
-        "argsIgnorePattern": "^_", 
-        "varsIgnorePattern": "^_",
-        "caughtErrorsIgnorePattern": "^_"
-      }]
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
     },
   },
   // Override default ignores of eslint-config-next.
@@ -31,7 +34,7 @@ const eslintConfig = defineConfig([
     "**/next-env.d.ts",
     "**/node_modules/**",
     "**/dist/**",
-    "**/coverage/**"
+    "**/coverage/**",
   ]),
 ]);
 
