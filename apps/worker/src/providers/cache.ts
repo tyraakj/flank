@@ -1,4 +1,4 @@
-import { prisma } from "@flank/database";
+import { prisma, Prisma } from "@flank/database";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 // Initialize S3 Client pointing to Cloudflare R2 if configured
@@ -40,7 +40,7 @@ export class ProviderCacheService {
       where: { cacheKey },
       update: {
         contentHash,
-        metadata: metadata as any,
+        metadata: metadata as Prisma.InputJsonValue,
         expiresAt,
       },
       create: {
@@ -49,7 +49,7 @@ export class ProviderCacheService {
         type: "SEARCH",
         query,
         contentHash,
-        metadata: metadata as any,
+        metadata: metadata as Prisma.InputJsonValue,
         expiresAt,
       },
     });

@@ -1,12 +1,9 @@
-import { Worker } from "bullmq";
+import { Worker, Job } from "bullmq";
+import { z } from "zod";
+import { StageKey } from "@flank/database";
 import {
   QUEUE_NAMES,
-  RunExecuteJob,
-  StageExecuteJob,
-  RunCancelJob,
-  StageReplayJob,
-  DeadLetterReviewJob,
-} from "@flank/shared";
+  } from "@flank/shared";
 import { connection } from "./queue";
 import { registerGracefulShutdown } from "./shutdown";
 import { handleDeadLetter } from "./dead-letter";
@@ -14,6 +11,36 @@ import { initializeRun } from "./orchestration/run-service";
 import { executeStage } from "./orchestration/execute-stage";
 import { handleRunCancellation } from "./orchestration/cancellation";
 import { handleStageReplay } from "./orchestration/replay-stage";
+
+const RunExecuteJobSchema = z.object({
+  runId: z.string(),
+  targetId: z.string(),
+  requestedBy: z.string().optional(),
+});
+
+const StageExecuteJobSchema = z.object({
+  runId: z.string(),
+  stageKey: z.string(),
+  requestedBy: z.string().optional(),
+});
+
+const StageReplayJobSchema = z.object({
+  runId: z.string(),
+  stageKey: z.string(),
+  requestedBy: z.string().optional(),
+  reason: z.string().optional(),
+});
+
+const RunCancelJobSchema = z.object({
+  runId: z.string(),
+  requestedBy: z.string().optional(),
+});
+
+const DeadLetterReviewJobSchema = z.object({
+  runId: z.string(),
+  stageKey: z.string().optional(),
+  issues: z.any().optional(),
+});
 
 function start() {
   console.log("[Worker] Starting up...");
@@ -23,7 +50,7 @@ function start() {
   const runWorker = new Worker(
     QUEUE_NAMES.RUN_EXECUTE,
     async (job) => {
-      const { runId, targetId, requestedBy } = job.data as any as RunExecuteJob;
+      const { runId, targetId, requestedBy } = RunExecuteJobSchema.parse(job.data);
       await initializeRun(runId, targetId, requestedBy || "system");
     },
     { connection, concurrency },
@@ -32,9 +59,9 @@ function start() {
   const stageWorker = new Worker(
     QUEUE_NAMES.STAGE_EXECUTE,
     async (job) => {
-      const { runId, stageKey, requestedBy } = job.data as any as StageExecuteJob;
+      const { runId, stageKey, requestedBy } = StageExecuteJobSchema.parse(job.data);
       if (!stageKey) throw new Error("stageKey is required");
-      await executeStage(runId, stageKey as any, requestedBy || "system");
+      await executeStage(runId, stageKey as StageKey, requestedBy || "system");
     },
     { connection, concurrency: concurrency * 2 },
   );
@@ -42,9 +69,9 @@ function start() {
   const stageReplayWorker = new Worker(
     QUEUE_NAMES.STAGE_REPLAY,
     async (job) => {
-      const { runId, stageKey, requestedBy, reason } = job.data as any as StageReplayJob;
+      const { runId, stageKey, requestedBy, reason } = StageReplayJobSchema.parse(job.data);
       if (!stageKey) throw new Error("stageKey is required");
-      await handleStageReplay(runId, stageKey as any, requestedBy || "system", reason);
+      await handleStageReplay(runId, stageKey as StageKey, requestedBy || "system", reason);
     },
     { connection, concurrency },
   );
@@ -52,7 +79,7 @@ function start() {
   const runCancelWorker = new Worker(
     QUEUE_NAMES.RUN_CANCEL,
     async (job) => {
-      const { runId, requestedBy: _requestedBy } = job.data as any as RunCancelJob;
+      const { runId } = RunCancelJobSchema.parse(job.data);
       await handleRunCancellation(runId, "Cancelled via API");
     },
     { connection, concurrency },
@@ -61,7 +88,7 @@ function start() {
   const deadLetterWorker = new Worker(
     QUEUE_NAMES.DEAD_LETTER_REVIEW,
     async (job) => {
-      const payload = job.data as any as DeadLetterReviewJob;
+      const payload = DeadLetterReviewJobSchema.parse(job.data);
       console.error("[Worker] Dead letter requires review:", payload);
     },
     { connection, concurrency },
@@ -74,7 +101,7 @@ function start() {
       if (job) {
         if (job.attemptsMade >= (job.opts.attempts || 1)) {
           // Exhausted all attempts
-          await handleDeadLetter(job as any, err);
+          await handleDeadLetter(job as Job<unknown, unknown, string>, err);
         } else {
           console.error(
             `[Worker] Job ${job.id} failed, will retry. Attempt: ${job.attemptsMade}`,

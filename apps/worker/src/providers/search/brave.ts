@@ -1,6 +1,13 @@
 import { SearchProvider } from "../interfaces";
 import { SearchRequest, SearchResult, SearchResultItem } from "@flank/shared";
 import { providerMetrics } from "../metrics";
+import { z } from "zod";
+
+const BraveResultSchema = z.object({
+  title: z.string(),
+  url: z.string(),
+  description: z.string().optional().default(""),
+});
 
 export class BraveSearchProvider implements SearchProvider {
   readonly name = "brave-search";
@@ -32,13 +39,16 @@ export class BraveSearchProvider implements SearchProvider {
       const data = await response.json();
 
       const results: SearchResultItem[] = (data.web?.results || []).map(
-        (res: unknown, index: number) => ({
-          title: (res as any).title,
-          url: (res as any).url,
-          snippet: (res as any).description,
-          rank: index + 1,
-          discoveredAt: new Date().toISOString(),
-        }),
+        (res: unknown, index: number) => {
+          const parsed = BraveResultSchema.parse(res);
+          return {
+            title: parsed.title,
+            url: parsed.url,
+            snippet: parsed.description,
+            rank: index + 1,
+            discoveredAt: new Date().toISOString(),
+          };
+        },
       );
 
       const latencyMs = Date.now() - startTime;
@@ -51,9 +61,10 @@ export class BraveSearchProvider implements SearchProvider {
         cached: false,
         fetchedAt: new Date().toISOString(),
       };
-    } catch (err: any) {
-      providerMetrics.recordError(this.name, "search", err);
-      throw err;
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      providerMetrics.recordError(this.name, "search", error);
+      throw error;
     }
   }
 }

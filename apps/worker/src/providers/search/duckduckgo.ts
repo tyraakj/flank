@@ -75,9 +75,10 @@ export class DuckDuckGoSearchProvider implements SearchProvider {
         cached: false,
         fetchedAt: new Date().toISOString(),
       };
-    } catch (err: any) {
-      providerMetrics.recordError(this.name, "search", err);
-      throw err;
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      providerMetrics.recordError(this.name, "search", error);
+      throw error;
     }
   }
 }

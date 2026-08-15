@@ -3,12 +3,18 @@ import { Queue } from "bullmq";
 import { queueOptions } from "../queue-options";
 import { connection } from "../queue";
 import { QUEUE_NAMES, StageReplayJob } from "@flank/shared";
+import { z } from "zod";
+
+const CriticOutputSchema = z.object({
+  rerunStage: z.string().nullable().optional(),
+  issues: z.array(z.string()).optional(),
+});
 
 const stageReplayQueue = new Queue(QUEUE_NAMES.STAGE_REPLAY, { connection, ...queueOptions });
 
 export async function routeCriticFeedback(runId: string, criticOutputArtifact: unknown) {
   // Check if Critic rejected and provided a rerun target
-  const { rerunStage, issues } = criticOutputArtifact as any; // In a real app we parse with Zod
+  const { rerunStage, issues } = CriticOutputSchema.parse(criticOutputArtifact); // Parsed properly with Zod
 
   if (!rerunStage) {
     // Critic accepted the output, the run is complete!

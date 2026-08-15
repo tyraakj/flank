@@ -55,7 +55,7 @@ export async function executeStage(runId: string, stageKey: StageKey, userId: st
     // In a real run, this fetches the artifacts from the upstream stages.
 
     // 4. Execute the agent module
-    const agentOutput = await dispatchAgent(stageKey, stage.inputArtifact as any);
+    const agentOutput = await dispatchAgent(stageKey, stage.inputArtifact);
 
     // 5. Cancellation check before commit
     await checkCancellation(runId);
@@ -67,7 +67,7 @@ export async function executeStage(runId: string, stageKey: StageKey, userId: st
         where: { id: stage.id },
         data: {
           status: "COMPLETED",
-          outputArtifact: agentOutput as any,
+          outputArtifact: agentOutput as import('@flank/database').Prisma.InputJsonValue,
           finishedAt: new Date(),
         },
       });
@@ -88,14 +88,15 @@ export async function executeStage(runId: string, stageKey: StageKey, userId: st
     } else {
       await advanceRun(runId, stageKey, userId);
     }
-  } catch (err: any) {
-    const isCancel = err.name === "CancellationError" || err.message === "Run cancelled";
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    const isCancel = error.name === "CancellationError" || error.message === "Run cancelled";
 
     await prisma.stage.update({
       where: { id: stage.id },
       data: {
         status: isCancel ? "SKIPPED" : "FAILED",
-        error: isCancel ? "Cancelled by user" : err.message,
+        error: isCancel ? "Cancelled by user" : error.message,
         finishedAt: new Date(),
       },
     });
@@ -121,7 +122,7 @@ export async function executeStage(runId: string, stageKey: StageKey, userId: st
         timestamp: new Date().toISOString(),
         summary: isCancel
           ? `Cancelled stage ${stageKey}`
-          : `Failed stage ${stageKey}: ${err.message}`,
+          : `Failed stage ${stageKey}: ${error.message}`,
       });
     }
   }

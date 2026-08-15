@@ -40,17 +40,23 @@ export class GeminiLlmProvider implements LlmProvider {
 
       const latencyMs = Date.now() - startTime;
 
-      const warnings = aiWarnings?.map((w) =>
-        "message" in w ? String((w as any).message) : String((w as any).details || w.type),
-      );
+      const warnings = aiWarnings?.map((w) => {
+        if (typeof w === "object" && w !== null) {
+          const rec = w as Record<string, unknown>;
+          if ("message" in rec) return String(rec.message);
+          if ("details" in rec) return String(rec.details);
+          if ("type" in rec) return String(rec.type);
+        }
+        return String(w);
+      });
 
-      const u = usage as any;
+      const u = usage as Record<string, unknown> | undefined;
       providerMetrics.recordLlmGeneration(
         this.name,
         this.modelName,
         latencyMs,
-        u?.promptTokens || 0,
-        u?.completionTokens || 0,
+        Number(u?.promptTokens || 0),
+        Number(u?.completionTokens || 0),
       );
 
       return {
@@ -59,16 +65,17 @@ export class GeminiLlmProvider implements LlmProvider {
         model: this.modelName,
         tokens: u
           ? {
-              prompt: u.promptTokens || 0,
-              completion: u.completionTokens || 0,
-              total: u.totalTokens || 0,
+              prompt: Number(u.promptTokens || 0),
+              completion: Number(u.completionTokens || 0),
+              total: Number(u.totalTokens || 0),
             }
           : undefined,
         latencyMs,
         warnings,
       };
-    } catch (err: any) {
-      providerMetrics.recordError(this.name, `generateStructured(${request.schemaName})`, err);
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      providerMetrics.recordError(this.name, `generateStructured(${request.schemaName})`, error);
 
       // Attempt repair or fallback if defined
       if (request.fallback !== undefined) {
@@ -77,11 +84,11 @@ export class GeminiLlmProvider implements LlmProvider {
           providerName: this.name,
           model: this.modelName,
           latencyMs: Date.now() - startTime,
-          warnings: ["Generation failed, using deterministic fallback. Error: " + err.message],
+          warnings: ["Generation failed, using deterministic fallback. Error: " + error.message],
         };
       }
 
-      throw err;
+      throw error;
     }
   }
 }

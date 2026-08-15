@@ -12,9 +12,10 @@ export class FailoverSearchProvider implements SearchProvider {
   async search(request: SearchRequest): Promise<SearchResult> {
     try {
       return await this.primary.search(request);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
       console.warn(
-        `[Failover] Primary search (${this.primary.name}) failed. Failing over to ${this.fallback.name}. Error: ${err.message}`,
+        `[Failover] Primary search (${this.primary.name}) failed. Failing over to ${this.fallback.name}. Error: ${error.message}`,
       );
       const result = await this.fallback.search(request);
       result.warnings = result.warnings || [];
@@ -35,9 +36,10 @@ export class FailoverPageReader implements PageReader {
   async read(request: PageReadRequest): Promise<PageReadResult> {
     try {
       return await this.primary.read(request);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
       console.warn(
-        `[Failover] Primary reader (${this.primary.name}) failed. Failing over to ${this.fallback.name}. Error: ${err.message}`,
+        `[Failover] Primary reader (${this.primary.name}) failed. Failing over to ${this.fallback.name}. Error: ${error.message}`,
       );
       const result = await this.fallback.read(request);
       // We don't have a warnings field on PageReadResult yet, but we could add it

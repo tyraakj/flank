@@ -58,9 +58,10 @@ export class HttpPageReader implements PageReader {
         providerName: this.name,
         cached: false,
       };
-    } catch (err: any) {
-      providerMetrics.recordError(this.name, `read(${request.url})`, err);
-      throw err;
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      providerMetrics.recordError(this.name, `read(${request.url})`, error);
+      throw error;
     }
   }
 }
