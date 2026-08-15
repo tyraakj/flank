@@ -41,10 +41,10 @@ export class GeminiLlmProvider implements LlmProvider {
       const latencyMs = Date.now() - startTime;
 
       const warnings = aiWarnings?.map((w) =>
-        "message" in w ? String((w as unknown).message) : String((w as unknown).details || w.type),
+        "message" in w ? String((w as any).message) : String((w as any).details || w.type),
       );
 
-      const u = usage as unknown;
+      const u = usage as any;
       providerMetrics.recordLlmGeneration(
         this.name,
         this.modelName,
@@ -67,7 +67,7 @@ export class GeminiLlmProvider implements LlmProvider {
         latencyMs,
         warnings,
       };
-    } catch (err: unknown) {
+    } catch (err: any) {
       providerMetrics.recordError(this.name, `generateStructured(${request.schemaName})`, err);
 
       // Attempt repair or fallback if defined

@@ -1,4 +1,4 @@
-import { prisma, StageKey, Prisma, _Stage } from "@flank/database";
+import { prisma, StageKey, Prisma } from "@flank/database";
 import { checkCancellation } from "./cancellation";
 import { advanceRun } from "./run-service";
 import { routeCriticFeedback } from "./critic-router";
@@ -55,7 +55,7 @@ export async function executeStage(runId: string, stageKey: StageKey, userId: st
     // In a real run, this fetches the artifacts from the upstream stages.
 
     // 4. Execute the agent module
-    const agentOutput = await dispatchAgent(stageKey, stage.inputArtifact as unknown);
+    const agentOutput = await dispatchAgent(stageKey, stage.inputArtifact as any);
 
     // 5. Cancellation check before commit
     await checkCancellation(runId);
@@ -67,7 +67,7 @@ export async function executeStage(runId: string, stageKey: StageKey, userId: st
         where: { id: stage.id },
         data: {
           status: "COMPLETED",
-          outputArtifact: agentOutput as unknown,
+          outputArtifact: agentOutput as any,
           finishedAt: new Date(),
         },
       });
@@ -88,7 +88,7 @@ export async function executeStage(runId: string, stageKey: StageKey, userId: st
     } else {
       await advanceRun(runId, stageKey, userId);
     }
-  } catch (err: unknown) {
+  } catch (err: any) {
     const isCancel = err.name === "CancellationError" || err.message === "Run cancelled";
 
     await prisma.stage.update({

@@ -1,4 +1,4 @@
-import { prisma, _RunStatus } from "@flank/database";
+import { prisma } from "@flank/database";
 import { Queue } from "bullmq";
 import { queueOptions } from "../queue-options";
 import { connection } from "../queue";

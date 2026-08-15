@@ -4,7 +4,7 @@ import { requireSession } from "./access";
 import { errorResponse } from "./api-response";
 
 type HandlerContext = {
-  params?: Record<string, string> | Promise<Record<string, string>>;
+  params?: any;
 };
 
 type ApiGuardOptions<BodySchema extends z.ZodTypeAny, ParamsSchema extends z.ZodTypeAny> = {

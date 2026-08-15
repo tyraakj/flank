@@ -23,7 +23,7 @@ function start() {
   const runWorker = new Worker(
     QUEUE_NAMES.RUN_EXECUTE,
     async (job) => {
-      const { runId, targetId, requestedBy } = job.data as RunExecuteJob;
+      const { runId, targetId, requestedBy } = job.data as any as RunExecuteJob;
       await initializeRun(runId, targetId, requestedBy || "system");
     },
     { connection, concurrency },
@@ -32,9 +32,9 @@ function start() {
   const stageWorker = new Worker(
     QUEUE_NAMES.STAGE_EXECUTE,
     async (job) => {
-      const { runId, stageKey, requestedBy } = job.data as StageExecuteJob;
+      const { runId, stageKey, requestedBy } = job.data as any as StageExecuteJob;
       if (!stageKey) throw new Error("stageKey is required");
-      await executeStage(runId, stageKey as unknown, requestedBy || "system");
+      await executeStage(runId, stageKey as any, requestedBy || "system");
     },
     { connection, concurrency: concurrency * 2 },
   );
@@ -42,9 +42,9 @@ function start() {
   const stageReplayWorker = new Worker(
     QUEUE_NAMES.STAGE_REPLAY,
     async (job) => {
-      const { runId, stageKey, requestedBy, reason } = job.data as StageReplayJob;
+      const { runId, stageKey, requestedBy, reason } = job.data as any as StageReplayJob;
       if (!stageKey) throw new Error("stageKey is required");
-      await handleStageReplay(runId, stageKey as unknown, requestedBy || "system", reason);
+      await handleStageReplay(runId, stageKey as any, requestedBy || "system", reason);
     },
     { connection, concurrency },
   );
@@ -52,7 +52,7 @@ function start() {
   const runCancelWorker = new Worker(
     QUEUE_NAMES.RUN_CANCEL,
     async (job) => {
-      const { runId, _requestedBy } = job.data as RunCancelJob;
+      const { runId, requestedBy: _requestedBy } = job.data as any as RunCancelJob;
       await handleRunCancellation(runId, "Cancelled via API");
     },
     { connection, concurrency },
@@ -61,7 +61,7 @@ function start() {
   const deadLetterWorker = new Worker(
     QUEUE_NAMES.DEAD_LETTER_REVIEW,
     async (job) => {
-      const payload = job.data as DeadLetterReviewJob;
+      const payload = job.data as any as DeadLetterReviewJob;
       console.error("[Worker] Dead letter requires review:", payload);
     },
     { connection, concurrency },
@@ -74,7 +74,7 @@ function start() {
       if (job) {
         if (job.attemptsMade >= (job.opts.attempts || 1)) {
           // Exhausted all attempts
-          await handleDeadLetter(job as unknown, err);
+          await handleDeadLetter(job as any, err);
         } else {
           console.error(
             `[Worker] Job ${job.id} failed, will retry. Attempt: ${job.attemptsMade}`,

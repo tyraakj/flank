@@ -20,7 +20,7 @@ import {
   TrendingUp,
   Database,
   Cpu,
-  _Network,
+  Network,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
@@ -489,13 +489,13 @@ export default function Home() {
                     Support Status
                   </h3>
                   <div className="flex gap-4 flex-wrap">
-                    {["yes", "partial", "no", "unknown"].map((status, index) => (
+                    {["yes", "partial", "no", "any"].map((status, index) => (
                       <motion.div
                         key={index}
                         whileHover={{ scale: 1.05 }}
                         transition={{ type: "spring", stiffness: 400 }}
                       >
-                        <SupportStatus status={status as unknown} />
+                        <SupportStatus status={status as any} />
                       </motion.div>
                     ))}
                   </div>
@@ -515,7 +515,7 @@ export default function Home() {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <Button variant={variant as unknown}>{variant}</Button>
+                          <Button variant={variant as any}>{variant}</Button>
                         </motion.div>
                       ),
                     )}
@@ -535,7 +535,7 @@ export default function Home() {
                         whileHover={{ scale: 1.05 }}
                         transition={{ type: "spring", stiffness: 400 }}
                       >
-                        <Badge variant={variant as unknown}>{variant}</Badge>
+                        <Badge variant={variant as any}>{variant}</Badge>
                       </motion.div>
                     ))}
                   </div>

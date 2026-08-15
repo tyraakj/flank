@@ -1,6 +1,6 @@
 import { z } from "zod";
 // We do not import directly from @flank/database here to avoid tightly coupling shared to the DB in a way that breaks client boundary if not careful, but we can import enums.
-import { _EvidenceClaimType } from "@flank/database";
+
 
 export type ApiResponse<T> =
   | { data: T; meta?: Record<string, unknown> }

@@ -1,4 +1,4 @@
-import { prisma, _Prisma } from "@flank/database";
+import { prisma } from "@flank/database";
 import { publishRunEvent } from "../progress/publisher";
 
 export class CancellationError extends Error {

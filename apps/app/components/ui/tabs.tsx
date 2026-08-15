@@ -12,7 +12,7 @@ const Tabs = forwardRef<HTMLDivElement, TabsProps>(
     return (
       <div ref={ref} className={cn("", className)} {...props}>
         {Array.isArray(children)
-          ? children.map((child: unknown) => {
+          ? children.map((child: any) => {
               if (child.type === TabsList) {
                 return (
                   <child.type
@@ -52,7 +52,7 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
         {...props}
       >
         {Array.isArray(children)
-          ? children.map((child: unknown) => (
+          ? children.map((child: any) => (
               <child.type
                 key={child.props.value}
                 {...child.props}
@@ -73,7 +73,7 @@ interface TabsTriggerProps extends HTMLAttributes<HTMLButtonElement> {
 }
 
 const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(
-  ({ className, _value, isActive, children, ...props }, ref) => {
+  ({ className, value, isActive, children, ...props }, ref) => {
     return (
       <button
         ref={ref}
@@ -98,7 +98,7 @@ interface TabsContentProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const TabsContent = forwardRef<HTMLDivElement, TabsContentProps>(
-  ({ className, _value, children, ...props }, ref) => {
+  ({ className, value, children, ...props }, ref) => {
     return (
       <div
         ref={ref}

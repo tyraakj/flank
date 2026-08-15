@@ -1,5 +1,5 @@
 import { prisma } from "@flank/database";
-import { S3Client, PutObjectCommand, _GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 // Initialize S3 Client pointing to Cloudflare R2 if configured
 const s3Client = new S3Client({
@@ -40,7 +40,7 @@ export class ProviderCacheService {
       where: { cacheKey },
       update: {
         contentHash,
-        metadata,
+        metadata: metadata as any,
         expiresAt,
       },
       create: {
@@ -49,7 +49,7 @@ export class ProviderCacheService {
         type: "SEARCH",
         query,
         contentHash,
-        metadata,
+        metadata: metadata as any,
         expiresAt,
       },
     });

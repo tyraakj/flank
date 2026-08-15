@@ -33,9 +33,9 @@ export class BraveSearchProvider implements SearchProvider {
 
       const results: SearchResultItem[] = (data.web?.results || []).map(
         (res: unknown, index: number) => ({
-          title: res.title,
-          url: res.url,
-          snippet: res.description,
+          title: (res as any).title,
+          url: (res as any).url,
+          snippet: (res as any).description,
           rank: index + 1,
           discoveredAt: new Date().toISOString(),
         }),
@@ -51,7 +51,7 @@ export class BraveSearchProvider implements SearchProvider {
         cached: false,
         fetchedAt: new Date().toISOString(),
       };
-    } catch (err: unknown) {
+    } catch (err: any) {
       providerMetrics.recordError(this.name, "search", err);
       throw err;
     }

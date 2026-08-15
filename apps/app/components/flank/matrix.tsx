@@ -6,7 +6,7 @@ export interface MatrixProps extends TableHTMLAttributes<HTMLTableElement> {
 }
 
 const Matrix = forwardRef<HTMLTableElement, MatrixProps>(
-  ({ className, _pinnedFirstColumn = true, ...props }, ref) => {
+  ({ className, pinnedFirstColumn = true, ...props }, ref) => {
     return (
       <div className="relative w-full overflow-auto">
         <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />

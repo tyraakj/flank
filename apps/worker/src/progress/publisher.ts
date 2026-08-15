@@ -1,4 +1,4 @@
-import { RunProgressEvent, _QUEUE_NAMES } from "@flank/shared";
+import { RunProgressEvent } from "@flank/shared";
 import Redis from "ioredis";
 
 // Parse redis URL from environment

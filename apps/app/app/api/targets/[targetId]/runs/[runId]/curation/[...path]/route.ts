@@ -28,7 +28,7 @@ async function verifyRunAccess(targetId: string, runId: string, _userId: string)
 
 export const PATCH = withApiGuard(
   { paramsSchema: CurationParams },
-  async (req: NextRequest, { params, session, _body }: unknown) => {
+  async (req: NextRequest, { params, session, body }: any) => {
     const { targetId, runId, path } = params;
 
     const run = await verifyRunAccess(targetId, runId, session.user.id);
@@ -69,7 +69,7 @@ export const PATCH = withApiGuard(
 
 export const POST = withApiGuard(
   { paramsSchema: CurationParams },
-  async (req: NextRequest, { params, session, _body }: unknown) => {
+  async (req: NextRequest, { params, session, body }: any) => {
     const { targetId, runId, path } = params;
 
     const run = await verifyRunAccess(targetId, runId, session.user.id);

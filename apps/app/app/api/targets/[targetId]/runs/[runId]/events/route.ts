@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { targetId: string; runId: string } },
+  { params }: any,
 ) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });

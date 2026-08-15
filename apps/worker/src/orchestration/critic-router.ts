@@ -1,4 +1,4 @@
-import { prisma, _StageKey } from "@flank/database";
+import { prisma } from "@flank/database";
 import { Queue } from "bullmq";
 import { queueOptions } from "../queue-options";
 import { connection } from "../queue";
@@ -8,7 +8,7 @@ const stageReplayQueue = new Queue(QUEUE_NAMES.STAGE_REPLAY, { connection, ...qu
 
 export async function routeCriticFeedback(runId: string, criticOutputArtifact: unknown) {
   // Check if Critic rejected and provided a rerun target
-  const { rerunStage, issues } = criticOutputArtifact; // In a real app we parse with Zod
+  const { rerunStage, issues } = criticOutputArtifact as any; // In a real app we parse with Zod
 
   if (!rerunStage) {
     // Critic accepted the output, the run is complete!

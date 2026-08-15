@@ -24,7 +24,7 @@ export const GET = withApiGuard(
   {
     paramsSchema: ReportSectionParams,
   },
-  async (req: NextRequest, { params, _session }: unknown) => {
+  async (req: NextRequest, { params, session }: any) => {
     const { targetId, runId, section } = params;
 
     const run = await prisma.run.findUnique({
