@@ -1,0 +1,58 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index a37d704ae3c257b0e4f086dd72c1aae2ab233f23..136ff5e5281e5cb8e80524e61fb6f5571928eaa7 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -4028,7 +4028,7 @@ function isSafeHttpUrl(value) {
+ 	}
+ }
+ /** http(s) absolute URL without embedded credentials. */
+-const safeUrlSchema = z$1.string().trim().min(1).pipe(z$1.url().refine(isSafeHttpUrl, { message: "URL must be a valid http(s) URL without credentials" })).transform((value) => new URL(value).href);
++const safeUrlSchema = z$1.string().trim().min(1).pipe(z$1.string().url().refine(isSafeHttpUrl, { message: "URL must be a valid http(s) URL without credentials" })).transform((value) => new URL(value).href);
+ const optionalSafeUrlSchema = z$1.union([safeUrlSchema, z$1.literal("")]).optional();
+ function getAuthBaseUrl(ctx) {
+ 	const baseURL = ctx.context.options.baseURL;
+@@ -4294,7 +4294,7 @@ const checkUserExists = (options) => {
+ 	return createAuthEndpoint("/dash/check-user-exists", {
+ 		method: "POST",
+ 		use: [jwtMiddleware(options)],
+-		body: z$1.object({ email: z$1.email() })
++		body: z$1.object({ email: z$1.string().email() })
+ 	}, async (ctx) => {
+ 		const { email } = ctx.body;
+ 		const normalizedEmail = normalizeEmail(email, ctx.context);
+@@ -7085,7 +7085,7 @@ function pickWritableUserFields(body, options, mode) {
+ }
+ const BaseCreateUserCoreBodySchema = z$1.object({
+ 	name: z$1.string(),
+-	email: z$1.email(),
++	email: z$1.string().email(),
+ 	image: z$1.string().optional(),
+ 	password: z$1.string().optional(),
+ 	generatePassword: z$1.boolean().optional(),
+@@ -7097,7 +7097,7 @@ const BaseCreateUserCoreBodySchema = z$1.object({
+ });
+ const BaseUpdateUserCoreBodySchema = z$1.object({
+ 	name: z$1.string().nullable().optional(),
+-	email: z$1.email().optional(),
++	email: z$1.string().email().optional(),
+ 	image: z$1.string().nullable().optional(),
+ 	emailVerified: z$1.boolean().optional()
+ });
+@@ -7117,7 +7117,7 @@ function createSchemaForDBField(field) {
+ function validateWritableCreateUserFields(data, options) {
+ 	const shape = {
+ 		name: z$1.string().min(1),
+-		email: z$1.email(),
++		email: z$1.string().email(),
+ 		image: z$1.string().optional(),
+ 		emailVerified: z$1.boolean().optional()
+ 	};
+@@ -7139,7 +7139,7 @@ function validateWritableUserUpdateFields(data, options) {
+ 	}]);
+ 	const shape = {
+ 		name: z$1.string().nullable().optional(),
+-		email: z$1.email().optional(),
++		email: z$1.string().email().optional(),
+ 		image: z$1.string().nullable().optional(),
+ 		emailVerified: z$1.boolean().optional()
+ 	};

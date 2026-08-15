@@ -36,6 +36,12 @@ export function SupportStatus({ status, className, ...props }: SupportStatusProp
           iconClass: "text-muted-foreground",
         };
     }
+    // Fallback if status is invalid at runtime
+    return {
+      icon: MinusCircle,
+      label: "Unknown",
+      iconClass: "text-muted-foreground",
+    };
   };
 
   const config = getStatusConfig();

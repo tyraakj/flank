@@ -10,8 +10,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@flank/shared": "workspace:*",
+    "@better-auth/infra": "^0.3.6",
     "@flank/database": "workspace:*",
+    "@flank/shared": "workspace:*",
     "@prisma/client": "^5.22.0",
     "better-auth": "^1.6.27",
     "bullmq": "^6.1.0",
