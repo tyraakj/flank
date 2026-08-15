@@ -1,12 +1,18 @@
 import { cn } from "@/lib/utils";
 import { HTMLAttributes, TableHTMLAttributes, forwardRef } from "react";
 
-export interface DataTableProps extends TableHTMLAttributes<HTMLTableElement>  { [key: string]: unknown; }
+export interface DataTableProps extends TableHTMLAttributes<HTMLTableElement> {
+  [key: string]: unknown;
+}
 
 const DataTable = forwardRef<HTMLTableElement, DataTableProps>(({ className, ...props }, ref) => {
   return (
     <div className="relative w-full overflow-auto">
-      <table ref={ref} className={cn("w-full caption-bottom text-sm", className as string)} {...props} />
+      <table
+        ref={ref}
+        className={cn("w-full caption-bottom text-sm", className as string)}
+        {...props}
+      />
     </div>
   );
 });

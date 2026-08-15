@@ -1,9 +1,7 @@
 import { Worker, Job } from "bullmq";
 import { z } from "zod";
 import { StageKey } from "@flank/database";
-import {
-  QUEUE_NAMES,
-  } from "@flank/shared";
+import { QUEUE_NAMES } from "@flank/shared";
 import { connection } from "./queue";
 import { registerGracefulShutdown } from "./shutdown";
 import { handleDeadLetter } from "./dead-letter";

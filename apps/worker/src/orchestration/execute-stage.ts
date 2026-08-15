@@ -67,7 +67,7 @@ export async function executeStage(runId: string, stageKey: StageKey, userId: st
         where: { id: stage.id },
         data: {
           status: "COMPLETED",
-          outputArtifact: agentOutput as import('@flank/database').Prisma.InputJsonValue,
+          outputArtifact: agentOutput as import("@flank/database").Prisma.InputJsonValue,
           finishedAt: new Date(),
         },
       });

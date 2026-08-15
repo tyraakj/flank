@@ -20,7 +20,7 @@ import {
   TrendingUp,
   Database,
   Cpu,
-  } from "lucide-react";
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
@@ -514,7 +514,11 @@ export default function Home() {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <Button variant={variant as "default" | "destructive" | "outline" | "secondary"}>{variant}</Button>
+                          <Button
+                            variant={variant as "default" | "destructive" | "outline" | "secondary"}
+                          >
+                            {variant}
+                          </Button>
                         </motion.div>
                       ),
                     )}
@@ -534,7 +538,11 @@ export default function Home() {
                         whileHover={{ scale: 1.05 }}
                         transition={{ type: "spring", stiffness: 400 }}
                       >
-                        <Badge variant={variant as "default" | "destructive" | "outline" | "secondary"}>{variant}</Badge>
+                        <Badge
+                          variant={variant as "default" | "destructive" | "outline" | "secondary"}
+                        >
+                          {variant}
+                        </Badge>
                       </motion.div>
                     ))}
                   </div>
