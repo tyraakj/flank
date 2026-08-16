@@ -1,21 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Search,
-  Bot,
-  CheckCircle2,
-  Database,
-  FileText,
-  Star,
-  Target,
-  Activity,
-  Users,
-  Settings,
-  MessageSquare,
-  LayoutDashboard,
-} from "lucide-react";
+import { Search, Database, FileText, Star, Target, Activity, Users, Settings } from "lucide-react";
 import { FlankLogo } from "@/components/flank/logo";
 
 export function HeroDashboard() {
@@ -220,25 +208,19 @@ export function HeroDashboard() {
                   <div
                     className={`flex items-center gap-2 text-sm font-medium transition-colors ${activeTab === 0 ? "text-slate-900" : "text-slate-400"}`}
                   >
-                    <Database
-                      className={`w-4 h-4 ${activeTab === 0 ? "text-blue-500" : ""}`}
-                    />
+                    <Database className={`w-4 h-4 ${activeTab === 0 ? "text-blue-500" : ""}`} />
                     Pricing Page
                   </div>
                   <div
                     className={`flex items-center gap-2 text-sm font-medium transition-colors ${activeTab === 1 ? "text-slate-900" : "text-slate-400"}`}
                   >
-                    <Star
-                      className={`w-4 h-4 ${activeTab === 1 ? "text-yellow-500" : ""}`}
-                    />
+                    <Star className={`w-4 h-4 ${activeTab === 1 ? "text-yellow-500" : ""}`} />
                     G2 Reviews
                   </div>
                   <div
                     className={`flex items-center gap-2 text-sm font-medium transition-colors ${activeTab === 2 ? "text-slate-900" : "text-slate-400"}`}
                   >
-                    <FileText
-                      className={`w-4 h-4 ${activeTab === 2 ? "text-purple-500" : ""}`}
-                    />
+                    <FileText className={`w-4 h-4 ${activeTab === 2 ? "text-purple-500" : ""}`} />
                     Help Center
                   </div>
 
@@ -247,38 +229,34 @@ export function HeroDashboard() {
                     <motion.button
                       className="bg-slate-900 text-white px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-2 shadow-sm whitespace-nowrap"
                       animate={{
-                        backgroundColor:
-                          step === 4 && isClicking ? "#020617" : "#0F172A",
+                        backgroundColor: step === 4 && isClicking ? "#020617" : "#0F172A",
                         scale: step === 4 && isClicking ? 0.95 : 1,
                       }}
                       transition={{ duration: 0.2 }}
                     >
                       <div className="flex -space-x-1">
-                        <img
+                        <Image
                           src="https://img.logo.dev/notion.so?token=pk_BZOhereATUe11DHE7ILvBg&format=webp&retina=true"
-                          onError={(e) => {
-                            e.currentTarget.src =
-                              "https://logo.clearbit.com/notion.so";
-                          }}
                           alt="Notion"
+                          width={20}
+                          height={20}
+                          unoptimized
                           className="w-5 h-5 rounded-full border border-slate-900"
                         />
-                        <img
+                        <Image
                           src="https://img.logo.dev/slack.com?token=pk_BZOhereATUe11DHE7ILvBg&format=webp&retina=true"
-                          onError={(e) => {
-                            e.currentTarget.src =
-                              "https://logo.clearbit.com/slack.com";
-                          }}
                           alt="Slack"
+                          width={20}
+                          height={20}
+                          unoptimized
                           className="w-5 h-5 rounded-full border border-slate-900"
                         />
-                        <img
+                        <Image
                           src="https://img.logo.dev/linear.app?token=pk_BZOhereATUe11DHE7ILvBg&format=webp&retina=true"
-                          onError={(e) => {
-                            e.currentTarget.src =
-                              "https://logo.clearbit.com/linear.app";
-                          }}
                           alt="Linear"
+                          width={20}
+                          height={20}
+                          unoptimized
                           className="w-5 h-5 rounded-full border border-slate-900"
                         />
                       </div>
@@ -318,17 +296,13 @@ export function HeroDashboard() {
                               <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold tracking-wider rounded uppercase">
                                 Pricing Insight
                               </span>
-                              <span className="text-xs text-slate-400">
-                                Extracted in 0.4s
-                              </span>
+                              <span className="text-xs text-slate-400">Extracted in 0.4s</span>
                             </div>
                             <p className="text-sm text-slate-700 font-medium leading-relaxed">
-                              Competitor's Enterprise tier is{" "}
-                              <span className="text-pink-600 font-bold">
-                                40% more expensive
-                              </span>{" "}
-                              than Flank, and they just moved SAML/SSO to their
-                              unlisted Custom tier.
+                              Competitor&apos;s Enterprise tier is{" "}
+                              <span className="text-pink-600 font-bold">40% more expensive</span>{" "}
+                              than Flank, and they just moved SAML/SSO to their unlisted Custom
+                              tier.
                             </p>
                             <div className="grid grid-cols-2 gap-4 mt-4">
                               <motion.div
@@ -342,13 +316,11 @@ export function HeroDashboard() {
                                 </div>
                                 <div className="text-lg font-bold text-slate-800">
                                   $299
-                                  <span className="text-xs text-slate-400 font-normal">
-                                    /mo
-                                  </span>
+                                  <span className="text-xs text-slate-400 font-normal">/mo</span>
                                 </div>
                                 <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span>{" "}
-                                  SSO Paywalled
+                                  <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span> SSO
+                                  Paywalled
                                 </div>
                               </motion.div>
                               <motion.div
@@ -362,9 +334,7 @@ export function HeroDashboard() {
                                 </div>
                                 <div className="text-lg font-bold text-slate-800">
                                   $179
-                                  <span className="text-xs text-slate-400 font-normal">
-                                    /mo
-                                  </span>
+                                  <span className="text-xs text-slate-400 font-normal">/mo</span>
                                 </div>
                                 <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
                                   <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>{" "}
@@ -384,11 +354,9 @@ export function HeroDashboard() {
                             </div>
                             <p className="text-sm text-slate-700 font-medium leading-relaxed mb-4">
                               Spike in negative sentiment detected.{" "}
-                              <span className="font-bold text-slate-900">
-                                32 recent reviews
-                              </span>{" "}
-                              mention frustration over sudden forced upgrades
-                              and a new "SSO tax".
+                              <span className="font-bold text-slate-900">32 recent reviews</span>{" "}
+                              mention frustration over sudden forced upgrades and a new &quot;SSO
+                              tax&quot;.
                             </p>
                             <motion.div
                               initial={{ opacity: 0, x: -10 }}
@@ -396,9 +364,8 @@ export function HeroDashboard() {
                               transition={{ delay: 0.3 }}
                               className="pl-3 border-l-2 border-orange-200 text-xs text-slate-500 italic"
                             >
-                              "We were forced to upgrade to the Custom tier just
-                              to keep SAML/SSO running. The price jumped 40%
-                              overnight."
+                              &quot;We were forced to upgrade to the Custom tier just to keep
+                              SAML/SSO running. The price jumped 40% overnight.&quot;
                             </motion.div>
                           </div>
                         )}
@@ -415,8 +382,8 @@ export function HeroDashboard() {
                               <span className="font-semibold text-purple-600 cursor-pointer">
                                 SSO Setup Guide
                               </span>{" "}
-                              yesterday, adding a banner that states "SAML/SSO
-                              is now exclusively available on Custom plans."
+                              yesterday, adding a banner that states &quot;SAML/SSO is now
+                              exclusively available on Custom plans.&quot;
                             </p>
                             <motion.div
                               initial={{ opacity: 0, y: 10 }}
@@ -430,9 +397,8 @@ export function HeroDashboard() {
                                 </span>
                               </div>
                               <p className="text-[11px] text-slate-500 leading-relaxed">
-                                Highlight our out-of-the-box SAML/SSO
-                                integrations on upcoming enterprise calls to
-                                instantly create technical leverage.
+                                Highlight our out-of-the-box SAML/SSO integrations on upcoming
+                                enterprise calls to instantly create technical leverage.
                               </p>
                             </motion.div>
                           </div>
@@ -462,30 +428,23 @@ export function HeroDashboard() {
                   <div className="w-2 h-2 rounded-full bg-green-500" />
                   Flank HQ
                 </div>
-                <div className="px-4 text-[#cfc3cf] text-sm mb-1 opacity-60">
-                  Channels
-                </div>
-                <div className="px-4 text-[#cfc3cf] text-sm mb-1">
-                  # general
-                </div>
+                <div className="px-4 text-[#cfc3cf] text-sm mb-1 opacity-60">Channels</div>
+                <div className="px-4 text-[#cfc3cf] text-sm mb-1"># general</div>
                 <div className="px-4 text-white text-sm bg-[#350d36] py-1 font-medium">
                   # alerts-competitors
                 </div>
-                <div className="px-4 text-[#cfc3cf] text-sm mt-1">
-                  # sales-wins
-                </div>
+                <div className="px-4 text-[#cfc3cf] text-sm mt-1"># sales-wins</div>
               </div>
 
               {/* Slack Chat Area */}
               <div className="flex-1 flex flex-col bg-white">
                 <div className="h-14 border-b border-slate-200 flex items-center px-4 font-bold text-slate-800 shadow-sm z-10 gap-3">
-                  <img
+                  <Image
                     src="https://img.logo.dev/slack.com?token=pk_BZOhereATUe11DHE7ILvBg&format=webp&retina=true"
-                    onError={(e) => {
-                      e.currentTarget.src =
-                        "https://logo.clearbit.com/slack.com";
-                    }}
                     alt="Slack"
+                    width={24}
+                    height={24}
+                    unoptimized
                     className="w-6 h-6 rounded-sm"
                   />
                   # alerts-competitors
@@ -498,14 +457,11 @@ export function HeroDashboard() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900 text-sm">
-                          Sarah (Sales)
-                        </span>
+                        <span className="font-bold text-slate-900 text-sm">Sarah (Sales)</span>
                         <span className="text-xs text-slate-400">10:42 AM</span>
                       </div>
                       <div className="text-sm text-slate-800 mt-0.5">
-                        Has anyone checked if they updated their pricing
-                        recently?
+                        Has anyone checked if they updated their pricing recently?
                       </div>
                     </div>
                   </div>
@@ -527,19 +483,14 @@ export function HeroDashboard() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900 text-sm">
-                          Flank Bot
-                        </span>
+                        <span className="font-bold text-slate-900 text-sm">Flank Bot</span>
                         <span className="text-[10px] font-bold bg-slate-200 text-slate-600 px-1 rounded uppercase">
                           App
                         </span>
                         <span className="text-xs text-slate-400">Just now</span>
                       </div>
                       <div className="mt-1 text-sm text-slate-800">
-                        🚨{" "}
-                        <span className="font-semibold">
-                          Competitor Insight Detected
-                        </span>
+                        🚨 <span className="font-semibold">Competitor Insight Detected</span>
                       </div>
 
                       {/* Slack Attachment Block */}
@@ -553,12 +504,9 @@ export function HeroDashboard() {
                           Pricing Page Change Detected
                         </p>
                         <p className="text-sm text-slate-600 mt-1 leading-relaxed">
-                          Competitor's Enterprise tier is{" "}
-                          <span className="font-semibold text-slate-800">
-                            40% more expensive
-                          </span>{" "}
-                          than Flank, and they have moved SAML/SSO exclusively
-                          to their Custom tier.
+                          Competitor&apos;s Enterprise tier is{" "}
+                          <span className="font-semibold text-slate-800">40% more expensive</span>{" "}
+                          than Flank, and they have moved SAML/SSO exclusively to their Custom tier.
                         </p>
                       </motion.div>
                     </div>
@@ -585,24 +533,20 @@ export function HeroDashboard() {
                   <FlankLogo size={18} />
                   Flank HQ
                 </div>
-                <div className="px-2 text-slate-500 text-xs mb-1 font-medium mt-4">
-                  Favorites
-                </div>
+                <div className="px-2 text-slate-500 text-xs mb-1 font-medium mt-4">Favorites</div>
                 <div className="px-2 text-slate-700 text-sm mb-1 py-1 rounded bg-[#EBEBEA] font-medium flex items-center gap-2">
-                  <img
+                  <Image
                     src="https://img.logo.dev/notion.so?token=pk_BZOhereATUe11DHE7ILvBg&format=webp&retina=true"
-                    onError={(e) => {
-                      e.currentTarget.src =
-                        "https://logo.clearbit.com/notion.so";
-                    }}
                     alt="Notion"
+                    width={14}
+                    height={14}
+                    unoptimized
                     className="w-3.5 h-3.5 opacity-70 grayscale"
                   />
                   Competitor Intel
                 </div>
                 <div className="px-2 text-slate-600 text-sm py-1 flex items-center gap-2">
-                  <span className="text-[13px] opacity-70">📊</span> Pricing
-                  Matrix
+                  <span className="text-[13px] opacity-70">📊</span> Pricing Matrix
                 </div>
               </div>
 
@@ -615,13 +559,12 @@ export function HeroDashboard() {
                     transition={{ delay: 0.3 }}
                   >
                     <div className="flex items-center gap-4 mb-6">
-                      <img
+                      <Image
                         src="https://img.logo.dev/notion.so?token=pk_BZOhereATUe11DHE7ILvBg&format=webp&retina=true"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            "https://logo.clearbit.com/notion.so";
-                        }}
                         alt="Notion"
+                        width={40}
+                        height={40}
+                        unoptimized
                         className="w-10 h-10 rounded-md shadow-sm"
                       />
                       <div className="text-4xl font-bold text-slate-900 font-serif tracking-tight">
@@ -641,9 +584,9 @@ export function HeroDashboard() {
                             Highlight SAML/SSO Advantage
                           </div>
                           <div className="text-sm text-slate-600 mt-1">
-                            Their enterprise tier limits SSO to the highest
-                            custom plan. Flank includes this by default, which
-                            can be used as leverage in upcoming deals.
+                            Their enterprise tier limits SSO to the highest custom plan. Flank
+                            includes this by default, which can be used as leverage in upcoming
+                            deals.
                           </div>
                           <div className="text-xs text-slate-400 mt-2 flex items-center gap-1">
                             <span className="w-2 h-2 rounded-full bg-green-500"></span>
@@ -675,28 +618,24 @@ export function HeroDashboard() {
                   <FlankLogo size={16} />
                   Flank
                 </div>
-                <div className="px-4 text-slate-400 text-xs mb-1 font-medium mt-2">
-                  Your views
-                </div>
+                <div className="px-4 text-slate-400 text-xs mb-1 font-medium mt-2">Your views</div>
                 <div className="px-4 text-slate-300 py-1 flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-blue-400"></div> Inbox
                 </div>
                 <div className="px-4 text-slate-300 py-1 flex items-center gap-2 bg-[#383A40] rounded mx-2">
-                  <div className="w-2 h-2 rounded-full bg-orange-400"></div> My
-                  Issues
+                  <div className="w-2 h-2 rounded-full bg-orange-400"></div> My Issues
                 </div>
               </div>
 
               {/* Linear Content Area */}
               <div className="flex-1 flex flex-col bg-[#1E1F22]">
                 <div className="h-14 border-b border-[#2B2D31] flex items-center px-6 text-slate-300 text-sm font-medium gap-3">
-                  <img
+                  <Image
                     src="https://img.logo.dev/linear.app?token=pk_BZOhereATUe11DHE7ILvBg&format=webp&retina=true"
-                    onError={(e) => {
-                      e.currentTarget.src =
-                        "https://logo.clearbit.com/linear.app";
-                    }}
                     alt="Linear"
+                    width={24}
+                    height={24}
+                    unoptimized
                     className="w-6 h-6 rounded-sm"
                   />
                   FLK-128
@@ -716,21 +655,19 @@ export function HeroDashboard() {
                       </div>
                     </div>
                     <div className="text-2xl font-bold text-white mb-6">
-                      Create battlecard for new competitor pricing and SSO
-                      paywall
+                      Create battlecard for new competitor pricing and SSO paywall
                     </div>
 
                     <div className="text-sm text-slate-300 leading-relaxed max-w-2xl">
-                      Flank Bot automatically created this issue based on a
-                      recent competitor update.
+                      Flank Bot automatically created this issue based on a recent competitor
+                      update.
                       <br />
                       <br />
                       <strong>Context:</strong>
                       <br />
-                      Competitor recently updated their pricing page to increase
-                      Enterprise tier by 40% and moved SAML/SSO exclusively to
-                      their Custom tier. We need to update our sales battlecards
-                      to highlight our out-of-the-box SSO advantage.
+                      Competitor recently updated their pricing page to increase Enterprise tier by
+                      40% and moved SAML/SSO exclusively to their Custom tier. We need to update our
+                      sales battlecards to highlight our out-of-the-box SSO advantage.
                     </div>
                   </motion.div>
                 </div>

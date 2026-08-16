@@ -1,33 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Target,
-  ChevronRight,
-  Search,
-  Activity,
-  Database,
-  Zap,
-  Lock,
-  Sparkles,
-  BarChart3,
-  Shield,
-  ArrowRight,
-  CheckCircle2,
-  Globe,
-  PlayCircle,
-} from "lucide-react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  AnimatePresence,
-} from "framer-motion";
+import { Target, ChevronRight, ArrowRight, PlayCircle } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { HeroDashboard } from "@/components/hero/hero-dashboard";
 import { FlankLogo } from "@/components/flank/logo";
-
-// SVG Dither pattern as a data URI
-const ditherPattern = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`;
 
 export default function Home() {
   const { scrollY } = useScroll();
@@ -101,9 +78,7 @@ export default function Home() {
                 with data: simply
                 <br />
                 <span className="relative inline-block my-1">
-                  <span className="relative z-10 px-3 text-slate-950 font-bold">
-                    add Flank.
-                  </span>
+                  <span className="relative z-10 px-3 text-slate-950 font-bold">add Flank.</span>
                   <span
                     className="absolute inset-0 bg-[#FDE047]/90 -rotate-1 scale-105 rounded-xs -z-0 transform -translate-y-0.5 shadow-[0_3px_10px_rgba(250,204,21,0.35)] mix-blend-multiply pointer-events-none"
                     style={{
@@ -121,9 +96,8 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                Transform a single URL into a comprehensive competitive analysis
-                report. Understand your market, justify your pricing, and find
-                your edge.
+                Transform a single URL into a comprehensive competitive analysis report. Understand
+                your market, justify your pricing, and find your edge.
               </motion.p>
 
               <motion.div
@@ -149,10 +123,7 @@ export default function Home() {
                 </motion.div>
 
                 {/* Secondary 'How it works' Button */}
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Button
                     variant="ghost"
                     className="rounded-full px-6 h-14 font-semibold text-base text-slate-700 hover:text-slate-950 hover:bg-slate-100 border border-slate-200/80 hover:border-slate-300 flex items-center gap-2.5 transition-all shadow-xs"
@@ -263,12 +234,9 @@ export default function Home() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900 mb-1">
-                      Unified Discovery
-                    </h3>
+                    <h3 className="font-semibold text-slate-900 mb-1">Unified Discovery</h3>
                     <p className="text-sm text-slate-500 leading-relaxed">
-                      Connect competitors, market signals, and pricing data in
-                      one clean dashboard.
+                      Connect competitors, market signals, and pricing data in one clean dashboard.
                     </p>
                   </div>
                 </div>
@@ -290,14 +258,7 @@ export default function Home() {
                         stroke="currentColor"
                         strokeWidth="2"
                       >
-                        <rect
-                          x="3"
-                          y="4"
-                          width="18"
-                          height="18"
-                          rx="2"
-                          ry="2"
-                        />
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                         <line x1="16" y1="2" x2="16" y2="6" />
                         <line x1="8" y1="2" x2="8" y2="6" />
                         <line x1="3" y1="10" x2="21" y2="10" />
@@ -339,9 +300,7 @@ export default function Home() {
                       <div className="absolute w-32 h-32 rounded-full border-[16px] border-orange-100 top-0 left-0" />
                       <div className="absolute w-32 h-32 rounded-full border-[16px] border-orange-500 border-l-transparent border-b-transparent top-0 left-0 -rotate-45" />
                     </div>
-                    <div className="text-[10px] text-slate-400 font-medium">
-                      May 2026
-                    </div>
+                    <div className="text-[10px] text-slate-400 font-medium">May 2026</div>
                   </div>
                 </div>
               </div>
@@ -364,12 +323,9 @@ export default function Home() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900 mb-1">
-                      Automated Reports
-                    </h3>
+                    <h3 className="font-semibold text-slate-900 mb-1">Automated Reports</h3>
                     <p className="text-sm text-slate-500 leading-relaxed">
-                      Generate clear extraction reports for your team or
-                      leadership in seconds.
+                      Generate clear extraction reports for your team or leadership in seconds.
                     </p>
                   </div>
                 </div>
@@ -406,9 +362,7 @@ export default function Home() {
                         <div className="text-[10px] text-slate-500 font-medium mb-1">
                           Win Rate Edge
                         </div>
-                        <div className="text-2xl font-bold text-slate-900">
-                          32.4%
-                        </div>
+                        <div className="text-2xl font-bold text-slate-900">32.4%</div>
                       </div>
                       <div className="p-1.5 bg-green-100 text-green-700 rounded text-xs font-bold border border-green-200">
                         $
@@ -435,12 +389,8 @@ export default function Home() {
 
                   {/* Right partial card */}
                   <div className="h-32 w-16 bg-white border border-slate-200 rounded-l-xl shadow-md absolute right-0 flex flex-col p-3">
-                    <div className="text-[10px] text-slate-500 font-medium mb-1">
-                      Conversion
-                    </div>
-                    <div className="text-lg font-bold text-slate-900 mb-auto">
-                      3.2%
-                    </div>
+                    <div className="text-[10px] text-slate-500 font-medium mb-1">Conversion</div>
+                    <div className="text-lg font-bold text-slate-900 mb-auto">3.2%</div>
                   </div>
                 </div>
               </div>
@@ -459,12 +409,9 @@ export default function Home() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900 mb-1">
-                      Real-time Performance
-                    </h3>
+                    <h3 className="font-semibold text-slate-900 mb-1">Real-time Performance</h3>
                     <p className="text-sm text-slate-500 leading-relaxed">
-                      Track conversion, revenue, and campaign results as they
-                      happen.
+                      Track conversion, revenue, and campaign results as they happen.
                     </p>
                   </div>
                 </div>
@@ -481,9 +428,7 @@ export default function Home() {
             <FlankLogo size={22} className="text-slate-900" />
             <span className="font-bold text-slate-900">Flank</span>
           </div>
-          <p className="text-sm text-slate-500 mb-4">
-            Competitive Intelligence Platform
-          </p>
+          <p className="text-sm text-slate-500 mb-4">Competitive Intelligence Platform</p>
           <div className="flex items-center justify-center gap-4 text-sm text-slate-500">
             <a href="#" className="hover:text-slate-900 transition-colors">
               Privacy Policy

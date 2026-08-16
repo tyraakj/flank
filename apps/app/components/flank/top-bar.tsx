@@ -13,6 +13,7 @@ interface Workspace {
 
 interface TopBarProps {
   workspaceSlug: string;
+  workspaceName?: string;
   workspaces: Workspace[];
 }
 
