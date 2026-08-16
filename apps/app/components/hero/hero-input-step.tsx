@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Search, Target } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { motion } from "framer-motion";
+import { Search, Target } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function HeroInputStep() {
   return (
@@ -16,8 +16,12 @@ export function HeroInputStep() {
       <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-slate-200">
         <Target className="h-8 w-8 text-slate-800" />
       </div>
-      <h2 className="text-2xl font-semibold mb-2 text-slate-900">Analyze a Target</h2>
-      <p className="text-slate-500 mb-8 text-sm">Enter a URL to generate a competitive intelligence report.</p>
+      <h2 className="text-2xl font-semibold mb-2 text-slate-900">
+        Analyze a Target
+      </h2>
+      <p className="text-slate-500 mb-8 text-sm">
+        Enter a URL to generate a competitive intelligence report.
+      </p>
 
       <div className="w-full max-w-lg flex gap-3">
         <div className="relative flex-1 h-14 bg-white border border-slate-200 rounded-full shadow-sm flex items-center px-6 overflow-hidden">
@@ -37,10 +41,10 @@ export function HeroInputStep() {
             className="w-[2px] h-6 bg-slate-900 ml-1"
           />
         </div>
-        <Button className="h-14 px-8 rounded-full bg-slate-900 text-white hover:bg-slate-800 text-base shadow-md font-medium">
+        <Button className="h-14 px-8 rounded-full bg-pink-500 hover:bg-pink-600 text-white text-base shadow-md font-medium">
           Analyze
         </Button>
       </div>
     </motion.div>
-  )
+  );
 }
