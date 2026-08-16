@@ -1,0 +1,21 @@
+# CODEOWNERS for Flank
+# Defines individuals or teams that are responsible for code in the repository.
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default global owner for everything in the repo
+* @tyraakj
+
+# CI/CD workflows and GitHub automation
+/.github/ @tyraakj
+
+# Monorepo packages & applications
+/apps/app/ @tyraakj
+/apps/worker/ @tyraakj
+/packages/database/ @tyraakj
+/packages/shared/ @tyraakj
+
+# Infrastructure and Docker configs
+/infra/ @tyraakj
+
+# Architecture, product context, and specs
+/context/ @tyraakj
