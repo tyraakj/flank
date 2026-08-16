@@ -1,0 +1,180 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+jobs:
+  branch-name:
+    name: Branch name check
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch naming convention
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          if [ "$BRANCH" = "dev" ] && [ "${{ github.base_ref }}" = "main" ]; then
+            echo "✅ PR from 'dev' to 'main' is permitted."
+            exit 0
+          fi
+          PATTERN="^(feat|fix|chore|docs|refactor|ci|test|hotfix|release)/.+"
+          if [[ "$BRANCH" =~ $PATTERN ]]; then
+            echo "✅ Branch name '$BRANCH' follows naming conventions."
+          else
+            echo "❌ Branch name '$BRANCH' does not follow naming conventions."
+            echo ""
+            echo "Branch names must follow the pattern: <type>/<description>"
+            echo ""
+            echo "Allowed types:"
+            echo "  feat/     → new feature"
+            echo "  fix/      → bug fix"
+            echo "  chore/    → maintenance, tooling, config"
+            echo "  docs/     → documentation only"
+            echo "  refactor/ → code change with no feature/fix"
+            echo "  ci/       → CI/CD changes"
+            echo "  test/     → adding or updating tests"
+            echo "  hotfix/   → urgent production fix"
+            echo "  release/  → release preparation"
+            echo ""
+            echo "Examples: feat/add-remove-owner, fix/cli-key-exposure, docs/update-readme"
+            exit 1
+          fi
+
+  guard-main:
+    name: Only dev can target main
+    if: github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reject non-dev source branches
+        run: |
+          if [ "${{ github.head_ref }}" != "dev" ]; then
+            echo "❌ PRs to main must come from the dev branch."
+            echo "   Source branch detected: ${{ github.head_ref }}"
+            echo "   Please retarget your PR to the dev branch."
+            exit 1
+          fi
+          echo "✅ Source branch is dev — OK to proceed."
+
+  typecheck:
+    name: Typecheck
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [24.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache Prisma Client
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.prisma
+          key: ${{ runner.os }}-prisma-${{ hashFiles('packages/database/prisma/schema.prisma') }}
+          restore-keys: |
+            ${{ runner.os }}-prisma-
+
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+  lint:
+    name: Lint & Format check
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [24.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prettier check
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint --max-warnings 0
+
+  build:
+    name: Build
+    needs: typecheck
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [24.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
+      - name: Build App
+        run: pnpm --filter app build
+
+      - name: Build Worker
+        run: pnpm --filter worker build
+
+      - name: Upload App Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-build
+          path: apps/app/.next
+          retention-days: 1
+
+      - name: Upload Worker Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-build
+          path: apps/worker/dist
+          retention-days: 1

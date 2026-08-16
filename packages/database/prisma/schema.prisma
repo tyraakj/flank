@@ -1,0 +1,645 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// Better Auth Adapter Models
+// ============================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  workspaceMembers WorkspaceMember[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, value])
+  @@map("verifications")
+}
+
+// ============================================================================
+// Workspace Ownership Models
+// ============================================================================
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model Workspace {
+  id          String            @id @default(cuid())
+  slug        String            @unique
+  name        String
+  archivedAt  DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  members     WorkspaceMember[]
+  targets     Target[]
+  integrations Integration[]
+  apiKeys     ApiKey[]
+
+  @@map("workspaces")
+}
+
+model WorkspaceMember {
+  id         String        @id @default(cuid())
+  workspaceId String
+  userId     String
+  role       WorkspaceRole @default(MEMBER)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  workspace  Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+  @@index([workspaceId, role])
+  @@map("workspace_members")
+}
+
+// ============================================================================
+// Target and Run Lifecycle Models
+// ============================================================================
+
+enum RunStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model Target {
+  id              String    @id @default(cuid())
+  workspaceId     String
+  url             String
+  canonicalDomain String
+  name            String
+  faviconUrl      String?
+  context         String?   @db.Text
+  archivedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  runs            Run[]
+  targetProfiles  TargetProfile[]
+  featureClaims   FeatureClaim[]
+  positionings    Positioning[]
+  diffs           Diff[]
+  events          RunEvent[]
+
+  @@unique([workspaceId, canonicalDomain])
+  @@index([workspaceId, createdAt])
+  @@index([canonicalDomain])
+  @@map("targets")
+}
+
+model TargetProfile {
+  id                String    @id @default(cuid())
+  targetId          String
+  runId             String
+  category          String?
+  icp               String?   @db.Text
+  pricingModel      String?
+  valueProps        Json?
+  confidence        Int       @default(0)
+  confidenceReasons Json?
+  corrected         Json?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  target            Target    @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  run               Run       @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@unique([runId])
+  @@index([targetId])
+  @@index([runId])
+  @@map("target_profiles")
+}
+
+model Run {
+  id               String    @id @default(cuid())
+  targetId         String
+  status           RunStatus @default(QUEUED)
+  startedAt        DateTime?
+  finishedAt       DateTime?
+  cancelRequestedAt DateTime?
+  retryBudget      Int       @default(3)
+  costUsd          Decimal?  @db.Decimal(10, 2)
+  previousRunId    String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  target           Target    @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  previousRun      Run?      @relation("RunLineage", fields: [previousRunId], references: [id], onDelete: Restrict)
+  nextRuns         Run[]     @relation("RunLineage")
+  stages           Stage[]
+  targetProfile    TargetProfile?
+  candidates       Candidate[]
+  competitors      Competitor[]
+  featureClaims    FeatureClaim[]
+  positionings     Positioning[]
+  opportunities    Opportunity[]
+  evidences        Evidence[]
+  events           RunEvent[]
+  qualityReport    QualityReport?
+  diffsFrom        Diff[]        @relation("DiffFrom")
+  diffsTo          Diff[]        @relation("DiffTo")
+
+  @@index([targetId, createdAt])
+  @@index([status])
+  @@index([previousRunId])
+  @@map("runs")
+}
+
+enum StageKey {
+  PROFILER
+  DISCOVERY
+  SEMANTIC_DEDUP
+  VERIFIER
+  PRICING
+  FEATURE
+  POSITIONING
+  STRATEGIST
+  CRITIC
+}
+
+enum StageStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+  SKIPPED
+  RETRYING
+}
+
+model Stage {
+  id             String       @id @default(cuid())
+  runId          String
+  key            StageKey
+  status         StageStatus  @default(QUEUED)
+  attempt        Int          @default(0)
+  inputArtifact  Json?
+  outputArtifact Json?
+  summary        String?      @db.Text
+  error          String?      @db.Text
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  run            Run          @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@unique([runId, key, attempt])
+  @@index([runId, key])
+  @@index([status])
+  @@map("stages")
+}
+
+model RunEvent {
+  id          String   @id @default(cuid())
+  eventId     Int      // Monotonic ID per run
+  runId       String
+  targetId    String
+  type        String
+  stageKey    String?
+  stageStatus String?
+  summary     String
+  elapsedMs   Int?
+  payload     Json?
+  timestamp   DateTime @default(now())
+
+  run         Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
+  target      Target   @relation(fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([runId, eventId])
+  @@index([runId, eventId])
+  @@index([targetId])
+  @@map("run_events")
+}
+
+// ============================================================================
+// Discovery and Comparison Models
+// ============================================================================
+
+enum CandidateStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  DUPLICATE
+}
+
+model Candidate {
+  id              String          @id @default(cuid())
+  runId           String
+  name            String
+  url             String
+  canonicalDomain String
+  rationale       String?         @db.Text
+  confidence      Int             @default(0)
+  status          CandidateStatus @default(PENDING)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  run             Run             @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@unique([runId, canonicalDomain])
+  @@index([runId, status])
+  @@map("candidates")
+}
+
+enum CompetitorType {
+  DIRECT
+  INDIRECT
+  SUBSTITUTE
+}
+
+enum CompetitorStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+model Competitor {
+  id                String          @id @default(cuid())
+  runId             String
+  name              String
+  canonicalDomain   String
+  url               String
+  logoUrl           String?
+  type              CompetitorType
+  status            CompetitorStatus @default(ACTIVE)
+  pinned            Boolean         @default(false)
+  confidence        Int             @default(0)
+  confidenceReasons Json?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  run               Run             @relation(fields: [runId], references: [id], onDelete: Cascade)
+  pricingPlans      PricingPlan[]
+  featureClaims     FeatureClaim[]
+  positionings      Positioning[]
+  evidences         Evidence[]
+
+  @@unique([runId, canonicalDomain])
+  @@index([runId, type])
+  @@index([runId, status])
+  @@index([canonicalDomain])
+  @@map("competitors")
+}
+
+enum PlanBand {
+  FREE
+  GROWTH
+  ENTERPRISE
+  CUSTOM
+}
+
+enum BillingInterval {
+  MONTHLY
+  YEARLY
+  ONE_TIME
+}
+
+model PricingPlan {
+  id              String          @id @default(cuid())
+  competitorId    String
+  name            String
+  band            PlanBand
+  amount          Decimal?        @db.Decimal(10, 2)
+  currency        String          @default("USD")
+  interval        BillingInterval
+  limits          Json?
+  includedFeatures Json?
+  confidence      Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  competitor      Competitor      @relation(fields: [competitorId], references: [id], onDelete: Cascade)
+  evidences       Evidence[]
+
+  @@unique([competitorId, name, interval])
+  @@index([competitorId, band])
+  @@map("pricing_plans")
+}
+
+model Feature {
+  id          String    @id @default(cuid())
+  workspaceId String?
+  slug        String    @unique
+  name        String
+  category    String?
+  description String?   @db.Text
+  parentId    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  parent      Feature?  @relation("FeatureHierarchy", fields: [parentId], references: [id], onDelete: Restrict)
+  children    Feature[] @relation("FeatureHierarchy")
+  featureClaims FeatureClaim[]
+
+  @@index([category])
+  @@index([parentId])
+  @@map("features")
+}
+
+enum SupportStatus {
+  YES
+  PARTIAL
+  NO
+  UNKNOWN
+}
+
+model FeatureClaim {
+  id                String        @id @default(cuid())
+  runId             String
+  competitorId      String?
+  targetId          String?
+  featureId         String
+  support           SupportStatus
+  detail            String?       @db.Text
+  confidence        Int           @default(0)
+  confidenceReasons Json?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  run               Run           @relation(fields: [runId], references: [id], onDelete: Cascade)
+  competitor        Competitor?   @relation(fields: [competitorId], references: [id], onDelete: Cascade)
+  target            Target?       @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  feature           Feature       @relation(fields: [featureId], references: [id], onDelete: Cascade)
+  evidences         Evidence[]
+
+  @@unique([runId, competitorId, featureId])
+  @@unique([runId, targetId, featureId])
+  @@index([runId, featureId])
+  @@index([competitorId])
+  @@map("feature_claims")
+}
+
+// ============================================================================
+// Strategy, Evidence, Quality, History, and Platform Models
+// ============================================================================
+
+model Positioning {
+  id                String    @id @default(cuid())
+  runId             String
+  competitorId      String?
+  targetId          String?
+  icp               String?   @db.Text
+  categoryClaim     String?   @db.Text
+  differentiators   Json?
+  tone              String?
+  axes              Json?
+  confidence        Int       @default(0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  run               Run       @relation(fields: [runId], references: [id], onDelete: Cascade)
+  competitor        Competitor? @relation(fields: [competitorId], references: [id], onDelete: Cascade)
+  target            Target?   @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  evidences         Evidence[]
+
+  @@unique([runId, competitorId])
+  @@unique([runId, targetId])
+  @@index([runId])
+  @@index([competitorId])
+  @@map("positionings")
+}
+
+enum OpportunityKind {
+  PRODUCT
+  MARKETING
+  PRICING
+  POSITIONING
+}
+
+model Opportunity {
+  id              String          @id @default(cuid())
+  runId           String
+  kind            OpportunityKind
+  gap             String          @db.Text
+  rationale       String          @db.Text
+  suggestedMove   String          @db.Text
+  whatToSay       String?         @db.Text
+  impact          Int?
+  effort          Int?
+  defensibility   Int?
+  rank            Int
+  confidence      Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  run             Run             @relation(fields: [runId], references: [id], onDelete: Cascade)
+  evidences       Evidence[]
+
+  @@unique([runId, rank])
+  @@index([runId, kind])
+  @@index([runId, rank])
+  @@map("opportunities")
+}
+
+enum EvidenceClaimType {
+  TARGET_PROFILE
+  CANDIDATE
+  COMPETITOR
+  PRICING_PLAN
+  FEATURE_CLAIM
+  POSITIONING
+  OPPORTUNITY
+}
+
+enum TrustTier {
+  HIGH
+  MEDIUM
+  LOW
+  UNKNOWN
+}
+
+model Evidence {
+  id          String          @id @default(cuid())
+  runId       String
+  claimType   EvidenceClaimType
+  claimId     String
+  url         String
+  canonicalUrl String
+  excerpt     String?         @db.Text
+  fetchedAt   DateTime        @default(now())
+  contentHash String
+  snapshotKey String?
+  trustTier   TrustTier       @default(MEDIUM)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  run         Run             @relation(fields: [runId], references: [id], onDelete: Cascade)
+  competitor   Competitor?     @relation(fields: [claimId], references: [id], onDelete: Cascade, map: "evidences_competitor_claimId_fkey")
+  pricingPlan PricingPlan?    @relation(fields: [claimId], references: [id], onDelete: Cascade, map: "evidences_pricingPlan_claimId_fkey")
+  featureClaim FeatureClaim?  @relation(fields: [claimId], references: [id], onDelete: Cascade, map: "evidences_featureClaim_claimId_fkey")
+  positioning  Positioning?    @relation(fields: [claimId], references: [id], onDelete: Cascade, map: "evidences_positioning_claimId_fkey")
+  opportunity  Opportunity?    @relation(fields: [claimId], references: [id], onDelete: Cascade, map: "evidences_opportunity_claimId_fkey")
+
+  @@index([claimType, claimId])
+  @@index([url])
+  @@index([contentHash])
+  @@index([runId])
+  @@map("evidences")
+}
+
+model QualityReport {
+  id              String    @id @default(cuid())
+  runId           String    @unique
+  stageKey        StageKey?
+  score           Int       @default(0)
+  completeness    Int       @default(0)
+  sourcing        Int       @default(0)
+  plausibility    Int       @default(0)
+  issues          Json?
+  rerunStage      StageKey?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  run             Run       @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId, stageKey])
+  @@map("quality_reports")
+}
+
+model Diff {
+  id          String    @id @default(cuid())
+  targetId    String
+  fromRunId   String
+  toRunId     String
+  summary     Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  target      Target    @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  fromRun     Run       @relation("DiffFrom", fields: [fromRunId], references: [id], onDelete: Restrict)
+  toRun       Run       @relation("DiffTo", fields: [toRunId], references: [id], onDelete: Restrict)
+
+  @@unique([fromRunId, toRunId])
+  @@index([targetId, createdAt])
+  @@map("diffs")
+}
+
+enum IntegrationStatus {
+  ACTIVE
+  INACTIVE
+  ERROR
+}
+
+model Integration {
+  id          String            @id @default(cuid())
+  workspaceId String
+  provider    String
+  status      IntegrationStatus @default(INACTIVE)
+  config      Json?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  workspace   Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, provider])
+  @@index([workspaceId, status])
+  @@map("integrations")
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  workspaceId String
+  name        String
+  prefix      String    @unique
+  secretHash  String    @unique
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, revokedAt])
+  @@index([prefix])
+  @@map("api_keys")
+}
+
+// ============================================================================
+// Provider & Caching Models
+// ============================================================================
+
+enum CacheType {
+  SEARCH
+  PAGE_READ
+}
+
+model ProviderCache {
+  id          String    @id @default(cuid())
+  cacheKey    String    @unique
+  provider    String
+  type        CacheType
+  url         String?   @db.Text
+  query       String?   @db.Text
+  contentHash String
+  snapshotKey String?
+  metadata    Json?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([type, cacheKey])
+  @@index([provider])
+  @@index([expiresAt])
+  @@map("provider_caches")
+}

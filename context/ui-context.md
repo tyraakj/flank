@@ -2,35 +2,35 @@
 
 ## Theme
 
-Dark default. The visual language is a dense technical workspace optimized for desktop data reading — near-black backgrounds, layered surfaces, and high-contrast elements for data-dense report tables.
+Light default. The visual language is clean and modern, optimized for reading dense reports while leveraging vibrant gradients for branding. The background is a very light off-white, with dark charcoal text and interactive elements to ground the design.
 
-All colors are defined as CSS custom properties in `apps/app/app/globals.css` using HSL or OKLCH variables and mapped to Tailwind tokens. Components must use these semantic tokens — no hardcoded hex values or raw Tailwind color classes like `zinc-*`.
+All colors are defined as CSS custom properties in `apps/app/app/globals.css` using HSL variables and mapped to Tailwind tokens. Components must use these semantic tokens — no hardcoded hex values or raw Tailwind color classes like `zinc-*`.
 
 ## Color Tokens
 
-| Role | CSS Variable | Notes |
-|---|---|---|
-| Page background | `--background` | Near-black base |
-| Card / surface | `--card` | Slightly elevated surface |
-| Muted surface | `--muted` | For secondary backgrounds |
-| Foreground | `--foreground` | Primary text |
-| Muted foreground | `--muted-foreground` | Secondary / label text |
-| Border | `--border` | Default separator |
-| Input | `--input` | Form element backgrounds |
-| Primary | `--primary` | Brand action color |
-| Primary foreground | `--primary-foreground` | Text on primary |
-| Destructive | `--destructive` | Error / danger states |
-| Ring | `--ring` | Focus ring |
-| Chart 1–5 | `--chart-1` … `--chart-5` | Data visualization series |
+| Role               | CSS Variable              | Notes                         |
+| ------------------ | ------------------------- | ----------------------------- |
+| Page background    | `--background`            | Very light off-white          |
+| Card / surface     | `--card`                  | Pure white                    |
+| Muted surface      | `--muted`                 | For secondary backgrounds     |
+| Foreground         | `--foreground`            | Dark charcoal primary text    |
+| Muted foreground   | `--muted-foreground`      | Secondary / label text        |
+| Border             | `--border`                | Default separator             |
+| Input              | `--input`                 | Form element backgrounds      |
+| Primary            | `--primary`               | Dark charcoal action color    |
+| Primary foreground | `--primary-foreground`    | Text on primary               |
+| Destructive        | `--destructive`           | Error / danger states         |
+| Ring               | `--ring`                  | Focus ring (charcoal)         |
+| Chart 1–5          | `--chart-1` … `--chart-5` | Vibrant Magenta, Cyan, Yellow |
 
-Define tokens at `:root` for the dark default. Avoid a light-theme flash by not including a light `:root` variant.
+Define tokens at `:root` for the light default. Avoid a dark-theme flash by not including a dark `:root` variant unless explicitly requested.
 
 ## Typography
 
-| Role | Font | How loaded |
-|---|---|---|
-| UI text | Inter (or Geist Sans) | `next/font/google`, applied as CSS variable on `<html>` |
-| Code / mono | Geist Mono | `next/font/google`, applied as CSS variable on `<html>` |
+| Role        | Font                  | How loaded                                              |
+| ----------- | --------------------- | ------------------------------------------------------- |
+| UI text     | Inter (or Geist Sans) | `next/font/google`, applied as CSS variable on `<html>` |
+| Code / mono | Geist Mono            | `next/font/google`, applied as CSS variable on `<html>` |
 
 Body uses the UI font with `antialiased`. Tabular numerals (`font-variant-numeric: tabular-nums`) on all pricing and numeric table cells.
 
@@ -38,11 +38,11 @@ Body uses the UI font with `antialiased`. Tabular numerals (`font-variant-numeri
 
 Radius scales with surface depth.
 
-| Context | Class |
-|---|---|
-| Inline / badge / chip | `rounded-md` |
-| Cards / panels / table containers | `rounded-xl` |
-| Modal / sheet / overlay | `rounded-2xl` |
+| Context                           | Class         |
+| --------------------------------- | ------------- |
+| Inline / badge / chip             | `rounded-md`  |
+| Cards / panels / table containers | `rounded-xl`  |
+| Modal / sheet / overlay           | `rounded-2xl` |
 
 ## Component Conventions
 
@@ -60,12 +60,12 @@ Lucide React. Stroke-based icons only. Standard sizes: `h-4 w-4` inline, `h-5 w-
 
 Rendered as a labelled dot plus accessible text and tooltip. Three bands:
 
-| Band | Score range | Visual |
-|---|---|---|
-| High | 80–100 | Solid dot, no tooltip needed |
-| Normal | 60–79 | Dot, tooltip on hover |
-| Low | 40–59 | Muted dot, inline reason label always visible |
-| Insufficient | 0–39 | Warning dot, inline reason always visible, never presented as fact |
+| Band         | Score range | Visual                                                             |
+| ------------ | ----------- | ------------------------------------------------------------------ |
+| High         | 80–100      | Solid dot, no tooltip needed                                       |
+| Normal       | 60–79       | Dot, tooltip on hover                                              |
+| Low          | 40–59       | Muted dot, inline reason label always visible                      |
+| Insufficient | 0–39        | Warning dot, inline reason always visible, never presented as fact |
 
 Low and insufficient confidence must always show the reason inline. Never silently display insufficient confidence as if it were normal.
 
@@ -73,12 +73,12 @@ Low and insufficient confidence must always show the reason inline. Never silent
 
 Rendered as distinct icon shapes plus label. Color may reinforce but cannot be the only signal (accessibility requirement).
 
-| Status | Shape | Label |
-|---|---|---|
-| `yes` | Filled check circle | "Yes" |
-| `partial` | Half-filled circle | "Partial" |
-| `no` | X circle | "No" |
-| `unknown` | Dash circle | "Unknown" |
+| Status    | Shape               | Label     |
+| --------- | ------------------- | --------- |
+| `yes`     | Filled check circle | "Yes"     |
+| `partial` | Half-filled circle  | "Partial" |
+| `no`      | X circle            | "No"      |
+| `unknown` | Dash circle         | "Unknown" |
 
 ### Data Table (`components/flank/data-table.tsx`)
 
@@ -102,15 +102,15 @@ Reused for Pricing (S5) and Features (S6).
 
 Every screen must handle these states explicitly. Do not use a centered spinner on data-dense screens.
 
-| State | Treatment |
-|---|---|
-| Loading | Layout-matched skeletons matching final content dimensions |
-| Empty | Distinct copy per section + specific recovery action |
-| Partial | Available sections render normally; missing sections show "still working" or "couldn't gather" markers |
-| Low confidence | Flagged inline with reason — never silently presented as fact |
-| Failed | Stage-level reason in plain language + targeted retry action |
-| Quota reached | Blocked with count and upgrade path |
-| Stale | Age warning banner with Re-run action |
+| State          | Treatment                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------------------------ |
+| Loading        | Layout-matched skeletons matching final content dimensions                                             |
+| Empty          | Distinct copy per section + specific recovery action                                                   |
+| Partial        | Available sections render normally; missing sections show "still working" or "couldn't gather" markers |
+| Low confidence | Flagged inline with reason — never silently presented as fact                                          |
+| Failed         | Stage-level reason in plain language + targeted retry action                                           |
+| Quota reached  | Blocked with count and upgrade path                                                                    |
+| Stale          | Age warning banner with Re-run action                                                                  |
 
 ## Layout Patterns
 
@@ -125,14 +125,14 @@ Every screen must handle these states explicitly. Do not use a centered spinner 
 
 Stage states rendered as badges on S2:
 
-| State | Badge style |
-|---|---|
-| `queued` | Muted, gray |
-| `running` | Animated pulse, primary color |
-| `retrying` | Warning color, retry count |
-| `done` | Success color, check icon |
-| `failed` | Destructive color, error icon |
-| `skipped` | Muted, dash icon |
+| State      | Badge style                   |
+| ---------- | ----------------------------- |
+| `queued`   | Muted, gray                   |
+| `running`  | Animated pulse, primary color |
+| `retrying` | Warning color, retry count    |
+| `done`     | Success color, check icon     |
+| `failed`   | Destructive color, error icon |
+| `skipped`  | Muted, dash icon              |
 
 ## Accessibility
 
