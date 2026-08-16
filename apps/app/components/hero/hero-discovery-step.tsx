@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Search } from "lucide-react"
+import { motion } from "framer-motion";
+import { Search } from "lucide-react";
 
 export function HeroDiscoveryStep() {
   return (
@@ -24,7 +24,7 @@ export function HeroDiscoveryStep() {
               <div className="text-sm text-slate-500">Scanning web (20x)</div>
             </div>
           </div>
-          
+
           <div className="flex items-end gap-1 h-8">
             {Array.from({ length: 24 }).map((_, i) => (
               <motion.div
@@ -35,7 +35,7 @@ export function HeroDiscoveryStep() {
                   repeat: Infinity,
                   duration: 1.5,
                   delay: i * 0.05,
-                  ease: "easeInOut"
+                  ease: "easeInOut",
                 }}
                 className="w-1.5 bg-orange-500 rounded-full opacity-80"
               />
@@ -74,5 +74,5 @@ export function HeroDiscoveryStep() {
         </div>
       </div>
     </motion.div>
-  )
+  );
 }

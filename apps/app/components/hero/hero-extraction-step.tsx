@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Database, CheckCircle2 } from "lucide-react"
+import { motion } from "framer-motion";
+import { Database, CheckCircle2 } from "lucide-react";
 
 export function HeroExtractionStep() {
   const competitors = [
     { name: "Acme Corp", dataPoints: 452, time: "05:16", color: "bg-blue-500" },
     { name: "Globex Inc", dataPoints: 328, time: "05:18", color: "bg-purple-500" },
     { name: "Soylent", dataPoints: 89, time: "05:21", color: "bg-emerald-500" },
-  ]
+  ];
 
   return (
     <motion.div
@@ -23,7 +23,7 @@ export function HeroExtractionStep() {
           <div className="font-medium text-slate-900">Extraction Queue</div>
           <Database className="w-4 h-4 text-slate-400" />
         </div>
-        
+
         <div className="flex-1 overflow-hidden">
           {competitors.map((comp, i) => (
             <motion.div
@@ -33,7 +33,9 @@ export function HeroExtractionStep() {
               transition={{ delay: i * 0.2 }}
               className="p-4 border-b border-slate-50 flex items-start gap-4 hover:bg-slate-50 transition-colors"
             >
-              <div className={`w-10 h-10 rounded-full ${comp.color} flex items-center justify-center shrink-0 shadow-sm`}>
+              <div
+                className={`w-10 h-10 rounded-full ${comp.color} flex items-center justify-center shrink-0 shadow-sm`}
+              >
                 <span className="text-white font-medium text-sm">{comp.name.charAt(0)}</span>
               </div>
               <div className="flex-1 min-w-0">
@@ -49,7 +51,7 @@ export function HeroExtractionStep() {
           ))}
         </div>
       </div>
-      
+
       <div className="w-1/3 flex flex-col gap-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -67,7 +69,7 @@ export function HeroExtractionStep() {
             <div className="h-2 w-5/6 bg-slate-100 rounded-full" />
           </div>
         </motion.div>
-        
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -77,9 +79,11 @@ export function HeroExtractionStep() {
           <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 blur-2xl rounded-full" />
           <Database className="w-8 h-8 mb-2 text-blue-400" />
           <div className="text-3xl font-bold">1,240</div>
-          <div className="text-xs text-slate-400 text-center mt-1 uppercase tracking-wider font-medium">Total Points</div>
+          <div className="text-xs text-slate-400 text-center mt-1 uppercase tracking-wider font-medium">
+            Total Points
+          </div>
         </motion.div>
       </div>
     </motion.div>
-  )
+  );
 }

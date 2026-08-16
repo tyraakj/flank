@@ -53,14 +53,9 @@ export function FlankLogo({ className = "", size = 28 }: LogoProps) {
         const opacity = Math.min(1, Math.max(0.4, 1.1 - intensity * 0.4));
 
         // Diagonal gradient progression across the globe (0: top-left yellow, 1: bottom-right pink)
-        const t = Math.min(
-          1,
-          Math.max(0, (x + y + 1.2 * radius) / (2.4 * radius)),
-        );
+        const t = Math.min(1, Math.max(0, (x + y + 1.2 * radius) / (2.4 * radius)));
         const red = Math.round(colorStart.r + t * (colorEnd.r - colorStart.r));
-        const green = Math.round(
-          colorStart.g + t * (colorEnd.g - colorStart.g),
-        );
+        const green = Math.round(colorStart.g + t * (colorEnd.g - colorStart.g));
         const blue = Math.round(colorStart.b + t * (colorEnd.b - colorStart.b));
         const fill = `rgb(${red}, ${green}, ${blue})`;
 
@@ -85,14 +80,7 @@ export function FlankLogo({ className = "", size = 28 }: LogoProps) {
       className={`shrink-0 ${className}`}
     >
       {dots.map((d, i) => (
-        <circle
-          key={i}
-          cx={d.cx}
-          cy={d.cy}
-          r={d.r}
-          fill={d.fill}
-          fillOpacity={d.opacity}
-        />
+        <circle key={i} cx={d.cx} cy={d.cy} r={d.r} fill={d.fill} fillOpacity={d.opacity} />
       ))}
     </svg>
   );

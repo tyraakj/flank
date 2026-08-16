@@ -16,9 +16,7 @@ export function HeroInputStep() {
       <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-slate-200">
         <Target className="h-8 w-8 text-slate-800" />
       </div>
-      <h2 className="text-2xl font-semibold mb-2 text-slate-900">
-        Analyze a Target
-      </h2>
+      <h2 className="text-2xl font-semibold mb-2 text-slate-900">Analyze a Target</h2>
       <p className="text-slate-500 mb-8 text-sm">
         Enter a URL to generate a competitive intelligence report.
       </p>

@@ -11,25 +11,33 @@ Flank operates on a strict **Dark Default** theme. The application surface area 
 To contrast the dense, dark technical UI, Flank uses vibrant, high-energy gradient accents for landing pages, hero moments, and premium feature showcases. These gradients convey speed, intelligence, and modern AI capabilities.
 
 ### 1. Speed & Discovery (Pink/Red)
+
 Used to highlight automated discovery, speed, and market coverage.
+
 - **Start:** Pink-500 / Pink-600
 - **End:** Red-500
 - **Tailwind class:** `from-pink-500 to-red-500`
 
 ### 2. Deep Extraction (Purple/Fuchsia)
+
 Used to highlight complex data processing, matrix extraction, and AI reasoning capabilities.
+
 - **Start:** Purple-500 / Purple-600
 - **End:** Fuchsia-500
 - **Tailwind class:** `from-purple-500 to-fuchsia-500`
 
 ### 3. Actionable Strategy (Orange/Red)
+
 Used to highlight edge opportunities, strategic recommendations, and high-impact actions.
+
 - **Start:** Orange-400 / Orange-500
 - **End:** Red-500
 - **Tailwind class:** `from-orange-500 to-red-500`
 
 ### 4. The Master Gradient
+
 When a unified brand glow or text gradient is needed (e.g., highlighting key words in a headline), combine the three primary colors:
+
 - **Sequence:** Pink → Purple → Orange
 - **Tailwind class:** `bg-gradient-to-r from-pink-500 via-purple-400 to-orange-400`
 

@@ -23,11 +23,7 @@ export const metadata: Metadata = {
     "Live, fully cited competitive intelligence and strategic gap analysis from a single URL.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
