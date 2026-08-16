@@ -18,7 +18,15 @@ export const auth = betterAuth({
       maxAge: 5 * 60, // 5 minutes
     },
   },
-  trustedOrigins: process.env.NODE_ENV === "development" ? ["https://*.ngrok-free.app", "https://*.ngrok-free.dev", "https://*.ngrok.app", "https://*.ngrok.io"] : [],
+  trustedOrigins:
+    process.env.NODE_ENV === "development"
+      ? [
+          "https://*.ngrok-free.app",
+          "https://*.ngrok-free.dev",
+          "https://*.ngrok.app",
+          "https://*.ngrok.io",
+        ]
+      : [],
   plugins: [dash()],
 });
 

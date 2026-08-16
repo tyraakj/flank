@@ -97,6 +97,7 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 ---
 
 - ✅ **Unit 10** — Provider Abstraction Layer: Created core interfaces, DuckDuckGo search, HTTP/Playwright readers, Gemini LLM with Vercel AI SDK, and R2/Postgres caching.
+- ✅ **Frontend Branding & Logo** — Locked brand colors (light canvas, pastel pink & yellow accents, charcoal foundation), implemented 3D halftone dithered dot globe SVG logo (`FlankLogo`), updated landing page hero subtext, and replaced logo references across TopBar, Footer, and interactive dashboard mockups.
 
 ---
 

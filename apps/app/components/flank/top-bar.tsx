@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Settings, Plug2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WorkspaceSwitcher } from "./workspace-switcher";
+import { FlankLogo } from "./logo";
 
 interface Workspace {
   id: string;
@@ -12,14 +13,22 @@ interface Workspace {
 
 interface TopBarProps {
   workspaceSlug: string;
-  workspaceName: string;
+  workspaceName?: string;
   workspaces: Workspace[];
 }
 
 export function TopBar({ workspaceSlug, workspaces }: TopBarProps) {
   return (
     <header className="flex h-14 items-center justify-between border-b bg-card px-4">
-      <div className="flex items-center gap-4 w-64">
+      <div className="flex items-center gap-4">
+        <Link
+          href={`/w/${workspaceSlug}`}
+          className="flex items-center gap-2.5 font-bold tracking-tight text-foreground hover:opacity-80 transition-opacity"
+        >
+          <FlankLogo size={22} />
+          <span className="text-base font-bold">Flank</span>
+        </Link>
+        <div className="h-4 w-[1px] bg-border" />
         <WorkspaceSwitcher workspaces={workspaces} activeSlug={workspaceSlug} />
       </div>
 

@@ -2,28 +2,28 @@
 
 ## Theme
 
-Dark default. The visual language is a dense technical workspace optimized for desktop data reading — near-black backgrounds, layered surfaces, and high-contrast elements for data-dense report tables.
+Light default. The visual language is clean and modern, optimized for reading dense reports while leveraging vibrant gradients for branding. The background is a very light off-white, with dark charcoal text and interactive elements to ground the design.
 
-All colors are defined as CSS custom properties in `apps/app/app/globals.css` using HSL or OKLCH variables and mapped to Tailwind tokens. Components must use these semantic tokens — no hardcoded hex values or raw Tailwind color classes like `zinc-*`.
+All colors are defined as CSS custom properties in `apps/app/app/globals.css` using HSL variables and mapped to Tailwind tokens. Components must use these semantic tokens — no hardcoded hex values or raw Tailwind color classes like `zinc-*`.
 
 ## Color Tokens
 
-| Role               | CSS Variable              | Notes                     |
-| ------------------ | ------------------------- | ------------------------- |
-| Page background    | `--background`            | Near-black base           |
-| Card / surface     | `--card`                  | Slightly elevated surface |
-| Muted surface      | `--muted`                 | For secondary backgrounds |
-| Foreground         | `--foreground`            | Primary text              |
-| Muted foreground   | `--muted-foreground`      | Secondary / label text    |
-| Border             | `--border`                | Default separator         |
-| Input              | `--input`                 | Form element backgrounds  |
-| Primary            | `--primary`               | Brand action color        |
-| Primary foreground | `--primary-foreground`    | Text on primary           |
-| Destructive        | `--destructive`           | Error / danger states     |
-| Ring               | `--ring`                  | Focus ring                |
-| Chart 1–5          | `--chart-1` … `--chart-5` | Data visualization series |
+| Role               | CSS Variable              | Notes                         |
+| ------------------ | ------------------------- | ----------------------------- |
+| Page background    | `--background`            | Very light off-white          |
+| Card / surface     | `--card`                  | Pure white                    |
+| Muted surface      | `--muted`                 | For secondary backgrounds     |
+| Foreground         | `--foreground`            | Dark charcoal primary text    |
+| Muted foreground   | `--muted-foreground`      | Secondary / label text        |
+| Border             | `--border`                | Default separator             |
+| Input              | `--input`                 | Form element backgrounds      |
+| Primary            | `--primary`               | Dark charcoal action color    |
+| Primary foreground | `--primary-foreground`    | Text on primary               |
+| Destructive        | `--destructive`           | Error / danger states         |
+| Ring               | `--ring`                  | Focus ring (charcoal)         |
+| Chart 1–5          | `--chart-1` … `--chart-5` | Vibrant Magenta, Cyan, Yellow |
 
-Define tokens at `:root` for the dark default. Avoid a light-theme flash by not including a light `:root` variant.
+Define tokens at `:root` for the light default. Avoid a dark-theme flash by not including a dark `:root` variant unless explicitly requested.
 
 ## Typography
 
