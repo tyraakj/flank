@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function TargetLoading() {
   return (
@@ -11,7 +11,7 @@ export default function TargetLoading() {
           ))}
         </div>
       </div>
-      
+
       {/* Content skeleton */}
       <div className="flex-1 overflow-auto p-6">
         <Skeleton className="h-8 w-64 mb-4" />

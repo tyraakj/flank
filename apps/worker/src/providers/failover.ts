@@ -1,19 +1,22 @@
-import { SearchProvider, PageReader } from './interfaces';
-import { SearchRequest, SearchResult, PageReadRequest, PageReadResult } from '@flank/shared';
+import { SearchProvider, PageReader } from "./interfaces";
+import { SearchRequest, SearchResult, PageReadRequest, PageReadResult } from "@flank/shared";
 
 export class FailoverSearchProvider implements SearchProvider {
-  readonly name = 'failover-search';
+  readonly name = "failover-search";
 
   constructor(
     private primary: SearchProvider,
-    private fallback: SearchProvider
+    private fallback: SearchProvider,
   ) {}
 
   async search(request: SearchRequest): Promise<SearchResult> {
     try {
       return await this.primary.search(request);
-    } catch (err: any) {
-      console.warn(`[Failover] Primary search (${this.primary.name}) failed. Failing over to ${this.fallback.name}. Error: ${err.message}`);
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      console.warn(
+        `[Failover] Primary search (${this.primary.name}) failed. Failing over to ${this.fallback.name}. Error: ${error.message}`,
+      );
       const result = await this.fallback.search(request);
       result.warnings = result.warnings || [];
       result.warnings.push(`Primary provider failed, used fallback: ${this.fallback.name}`);
@@ -23,18 +26,21 @@ export class FailoverSearchProvider implements SearchProvider {
 }
 
 export class FailoverPageReader implements PageReader {
-  readonly name = 'failover-reader';
+  readonly name = "failover-reader";
 
   constructor(
     private primary: PageReader,
-    private fallback: PageReader
+    private fallback: PageReader,
   ) {}
 
   async read(request: PageReadRequest): Promise<PageReadResult> {
     try {
       return await this.primary.read(request);
-    } catch (err: any) {
-      console.warn(`[Failover] Primary reader (${this.primary.name}) failed. Failing over to ${this.fallback.name}. Error: ${err.message}`);
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      console.warn(
+        `[Failover] Primary reader (${this.primary.name}) failed. Failing over to ${this.fallback.name}. Error: ${error.message}`,
+      );
       const result = await this.fallback.read(request);
       // We don't have a warnings field on PageReadResult yet, but we could add it
       return result;

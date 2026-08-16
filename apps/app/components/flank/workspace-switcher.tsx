@@ -28,13 +28,15 @@ export function WorkspaceSwitcher({ workspaces, activeSlug }: WorkspaceSwitcherP
   return (
     <Select
       value={activeSlug || ""}
-      onChange={(e) => {
+      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
         if (e.target.value) {
           router.push(`/w/${e.target.value}`);
         }
       }}
     >
-      <option value="" disabled>Select a workspace</option>
+      <option value="" disabled>
+        Select a workspace
+      </option>
       {workspaces.map((ws) => (
         <option key={ws.id} value={ws.slug}>
           {ws.name}

@@ -1,14 +1,14 @@
-import { cn } from "@/lib/utils"
-import { HTMLAttributes, forwardRef } from "react"
+import { cn } from "@/lib/utils";
+import { HTMLAttributes, forwardRef } from "react";
 
 export interface DialogProps extends HTMLAttributes<HTMLDivElement> {
-  open?: boolean
-  onClose?: () => void
+  open?: boolean;
+  onClose?: () => void;
 }
 
 const Dialog = forwardRef<HTMLDivElement, DialogProps>(
   ({ className, open = false, onClose, children, ...props }, ref) => {
-    if (!open) return null
+    if (!open) return null;
 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -17,17 +17,17 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
           ref={ref}
           className={cn(
             "relative z-50 max-w-lg w-full rounded-2xl border bg-background p-6 shadow-lg",
-            className
+            className,
           )}
           {...props}
         >
           {children}
         </div>
       </div>
-    )
-  }
-)
-Dialog.displayName = "Dialog"
+    );
+  },
+);
+Dialog.displayName = "Dialog";
 
 const DialogHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
@@ -36,9 +36,9 @@ const DialogHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
       className={cn("flex flex-col space-y-1.5 text-center sm:text-left", className)}
       {...props}
     />
-  )
-)
-DialogHeader.displayName = "DialogHeader"
+  ),
+);
+DialogHeader.displayName = "DialogHeader";
 
 const DialogTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
@@ -47,16 +47,14 @@ const DialogTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingEle
       className={cn("text-lg font-semibold leading-none tracking-tight", className)}
       {...props}
     />
-  )
-)
-DialogTitle.displayName = "DialogTitle"
+  ),
+);
+DialogTitle.displayName = "DialogTitle";
 
 const DialogContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("pt-4", className)} {...props} />
-  )
-)
-DialogContent.displayName = "DialogContent"
+  ({ className, ...props }, ref) => <div ref={ref} className={cn("pt-4", className)} {...props} />,
+);
+DialogContent.displayName = "DialogContent";
 
 const DialogFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
@@ -65,8 +63,8 @@ const DialogFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
       className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className)}
       {...props}
     />
-  )
-)
-DialogFooter.displayName = "DialogFooter"
+  ),
+);
+DialogFooter.displayName = "DialogFooter";
 
-export { Dialog, DialogHeader, DialogTitle, DialogContent, DialogFooter }
+export { Dialog, DialogHeader, DialogTitle, DialogContent, DialogFooter };

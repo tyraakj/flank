@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { requireSession } from './access';
-import { errorResponse } from './api-response';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { requireSession } from "./access";
+import { errorResponse } from "./api-response";
 
 type HandlerContext = {
-  params?: any;
+  params?: Promise<Record<string, string | string[]>>;
 };
 
 type ApiGuardOptions<BodySchema extends z.ZodTypeAny, ParamsSchema extends z.ZodTypeAny> = {
@@ -15,7 +15,7 @@ type ApiGuardOptions<BodySchema extends z.ZodTypeAny, ParamsSchema extends z.Zod
 
 export function withApiGuard<
   BodySchema extends z.ZodTypeAny = z.ZodTypeAny,
-  ParamsSchema extends z.ZodTypeAny = z.ZodTypeAny
+  ParamsSchema extends z.ZodTypeAny = z.ZodTypeAny,
 >(
   options: ApiGuardOptions<BodySchema, ParamsSchema>,
   handler: (
@@ -23,9 +23,9 @@ export function withApiGuard<
     ctx: {
       body: z.infer<BodySchema>;
       params: z.infer<ParamsSchema>;
-      session: any; // The session object
-    }
-  ) => Promise<NextResponse>
+      session: NonNullable<Awaited<ReturnType<typeof requireSession>>>;
+    },
+  ) => Promise<NextResponse>,
 ) {
   return async (req: NextRequest, rawCtx: HandlerContext): Promise<NextResponse> => {
     try {
@@ -34,7 +34,7 @@ export function withApiGuard<
       if (options.requireAuth !== false) {
         session = await requireSession();
         if (!session) {
-          return errorResponse('UNAUTHORIZED', 'Authentication required', 401);
+          return errorResponse("UNAUTHORIZED", "Authentication required", 401);
         }
       }
 
@@ -44,7 +44,12 @@ export function withApiGuard<
         const resolvedParams = await rawCtx.params;
         const paramsResult = options.paramsSchema.safeParse(resolvedParams);
         if (!paramsResult.success) {
-          return errorResponse('INVALID_PARAMS', 'Invalid URL parameters', 400, paramsResult.error.flatten().fieldErrors);
+          return errorResponse(
+            "INVALID_PARAMS",
+            "Invalid URL parameters",
+            400,
+            paramsResult.error.flatten().fieldErrors,
+          );
         }
         parsedParams = paramsResult.data;
       }
@@ -53,32 +58,37 @@ export function withApiGuard<
       let parsedBody = {} as z.infer<BodySchema>;
       if (options.bodySchema) {
         // Enforce basic request size limit by checking content-length
-        const contentLength = req.headers.get('content-length');
-        if (contentLength && parseInt(contentLength, 10) > 5 * 1024 * 1024) { // 5MB limit
-          return errorResponse('PAYLOAD_TOO_LARGE', 'Request body is too large', 413);
+        const contentLength = req.headers.get("content-length");
+        if (contentLength && parseInt(contentLength, 10) > 5 * 1024 * 1024) {
+          // 5MB limit
+          return errorResponse("PAYLOAD_TOO_LARGE", "Request body is too large", 413);
         }
 
         let bodyData;
         try {
           bodyData = await req.json();
-        } catch (e) {
-          return errorResponse('BAD_REQUEST', 'Invalid JSON body', 400);
+        } catch (_e) {
+          return errorResponse("BAD_REQUEST", "Invalid JSON body", 400);
         }
 
         const bodyResult = options.bodySchema.safeParse(bodyData);
         if (!bodyResult.success) {
-          return errorResponse('VALIDATION_ERROR', 'Invalid request body', 422, bodyResult.error.flatten().fieldErrors);
+          return errorResponse(
+            "VALIDATION_ERROR",
+            "Invalid request body",
+            422,
+            bodyResult.error.flatten().fieldErrors,
+          );
         }
         parsedBody = bodyResult.data;
       }
 
       // Execute handler
-      return await handler(req, { body: parsedBody, params: parsedParams, session });
-
-    } catch (error: any) {
-      console.error('[API Error]', error);
+      return await handler(req, { body: parsedBody, params: parsedParams, session: session! });
+    } catch (error: unknown) {
+      console.error("[API Error]", error);
       // Don't leak internal stacks in response
-      return errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+      return errorResponse("INTERNAL_ERROR", "An unexpected error occurred", 500);
     }
   };
 }

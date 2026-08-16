@@ -4,7 +4,10 @@ import type { WorkspaceRole } from "@prisma/client";
 import { headers } from "next/headers";
 
 export class ApiError extends Error {
-  constructor(public statusCode: number, message: string) {
+  constructor(
+    public statusCode: number,
+    message: string,
+  ) {
     super(message);
     this.name = "ApiError";
   }
@@ -22,7 +25,7 @@ export async function requireSession() {
 
 export async function requireWorkspaceMember(workspaceSlug: string) {
   const session = await requireSession();
-  
+
   const member = await prisma.workspaceMember.findFirst({
     where: {
       userId: session.user.id,
@@ -42,7 +45,7 @@ export async function requireWorkspaceMember(workspaceSlug: string) {
 
 export async function requireWorkspaceRole(workspaceSlug: string, roles: WorkspaceRole[]) {
   const context = await requireWorkspaceMember(workspaceSlug);
-  
+
   if (!roles.includes(context.member.role)) {
     throw new ApiError(403, "Insufficient workspace role");
   }

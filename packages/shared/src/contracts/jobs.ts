@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const BaseJobPayload = z.object({
   runId: z.string(),

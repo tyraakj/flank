@@ -1,4 +1,4 @@
-import { RunProgressEvent } from '../events/run-progress';
+import { RunProgressEvent } from "../events/run-progress";
 
 /**
  * Expected interface for the UI to consume Run Progress events.

@@ -1,15 +1,15 @@
-import { StageKey } from '@flank/database';
+import { StageKey } from "@flank/database";
 
 export const STAGE_SEQUENCE: StageKey[] = [
-  'PROFILER',
-  'DISCOVERY',
-  'SEMANTIC_DEDUP',
-  'VERIFIER',
-  'PRICING',
-  'FEATURE',
-  'POSITIONING',
-  'STRATEGIST',
-  'CRITIC'
+  "PROFILER",
+  "DISCOVERY",
+  "SEMANTIC_DEDUP",
+  "VERIFIER",
+  "PRICING",
+  "FEATURE",
+  "POSITIONING",
+  "STRATEGIST",
+  "CRITIC",
 ];
 
 export function getNextStage(currentStage: StageKey): StageKey | null {

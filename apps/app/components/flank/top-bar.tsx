@@ -13,15 +13,10 @@ interface Workspace {
 
 interface TopBarProps {
   workspaceSlug: string;
-  workspaceName: string;
   workspaces: Workspace[];
 }
 
-export function TopBar({
-  workspaceSlug,
-  workspaceName,
-  workspaces,
-}: TopBarProps) {
+export function TopBar({ workspaceSlug, workspaces }: TopBarProps) {
   return (
     <header className="flex h-14 items-center justify-between border-b bg-card px-4">
       <div className="flex items-center gap-4">

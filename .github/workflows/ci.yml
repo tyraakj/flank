@@ -68,25 +68,23 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x]
-    
+        node-version: [24.x]
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.1
-          
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-          
+          cache: "pnpm"
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
       - name: Cache Prisma Client
         uses: actions/cache@v4
         with:
@@ -94,38 +92,39 @@ jobs:
           key: ${{ runner.os }}-prisma-${{ hashFiles('packages/database/prisma/schema.prisma') }}
           restore-keys: |
             ${{ runner.os }}-prisma-
-            
+
       - name: Generate Prisma Client
         run: pnpm db:generate
-        
+
       - name: Typecheck
         run: pnpm typecheck
 
   lint:
-    name: Lint
+    name: Lint & Format check
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x]
-        
+        node-version: [24.x]
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.1
-          
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-          
+          cache: "pnpm"
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
+      - name: Prettier check
+        run: pnpm format:check
+
       - name: Lint
         run: pnpm lint --max-warnings 0
 
@@ -136,41 +135,39 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x]
-        
+        node-version: [24.x]
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.1
-          
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-          
+          cache: "pnpm"
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
       - name: Generate Prisma Client
         run: pnpm db:generate
-        
+
       - name: Build App
         run: pnpm --filter app build
-        
+
       - name: Build Worker
         run: pnpm --filter worker build
-        
+
       - name: Upload App Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-build
           path: apps/app/.next
           retention-days: 1
-          
+
       - name: Upload Worker Build Artifact
         uses: actions/upload-artifact@v4
         with:

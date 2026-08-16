@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // Shared environment variables
 const sharedEnvSchema = z.object({
@@ -12,6 +12,7 @@ const sharedEnvSchema = z.object({
 // App-specific environment variables
 export const appEnvSchema = z.object({
   BETTER_AUTH_SECRET: z.string().min(1),
+  BETTER_AUTH_API_KEY: z.string().min(1),
   BETTER_AUTH_URL: z.string().url(),
   NEXT_PUBLIC_APP_URL: z.string().url(),
 });
@@ -19,7 +20,7 @@ export const appEnvSchema = z.object({
 // Worker-specific environment variables
 export const workerEnvSchema = sharedEnvSchema.extend({
   DATABASE_URL: z.string().url(),
-  WORKER_CONCURRENCY: z.string().default('1'),
+  WORKER_CONCURRENCY: z.string().default("1"),
   // Provider keys will be added in Unit 10
 });
 

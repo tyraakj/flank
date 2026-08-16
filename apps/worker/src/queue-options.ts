@@ -1,10 +1,10 @@
-import { DefaultJobOptions } from 'bullmq';
+import { DefaultJobOptions } from "bullmq";
 
 export const queueOptions: { defaultJobOptions: DefaultJobOptions } = {
   defaultJobOptions: {
     attempts: 3,
     backoff: {
-      type: 'exponential',
+      type: "exponential",
       delay: 1000,
     },
     removeOnComplete: {

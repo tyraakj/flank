@@ -1,13 +1,13 @@
-import { cn } from "@/lib/utils"
-import { HTMLAttributes, useState, forwardRef } from "react"
+import { cn } from "@/lib/utils";
+import { HTMLAttributes, useState, forwardRef } from "react";
 
 export interface DropdownMenuProps extends HTMLAttributes<HTMLDivElement> {
-  trigger: React.ReactNode
+  trigger: React.ReactNode;
 }
 
 const DropdownMenu = forwardRef<HTMLDivElement, DropdownMenuProps>(
   ({ className, trigger, children, ...props }, ref) => {
-    const [isOpen, setIsOpen] = useState(false)
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
       <div ref={ref} className={cn("relative", className)} {...props}>
@@ -18,10 +18,10 @@ const DropdownMenu = forwardRef<HTMLDivElement, DropdownMenuProps>(
           </div>
         )}
       </div>
-    )
-  }
-)
-DropdownMenu.displayName = "DropdownMenu"
+    );
+  },
+);
+DropdownMenu.displayName = "DropdownMenu";
 
 const DropdownMenuItem = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, children, onClick, ...props }, ref) => {
@@ -30,16 +30,16 @@ const DropdownMenuItem = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElemen
         ref={ref}
         className={cn(
           "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground",
-          className
+          className,
         )}
         onClick={onClick}
         {...props}
       >
         {children}
       </div>
-    )
-  }
-)
-DropdownMenuItem.displayName = "DropdownMenuItem"
+    );
+  },
+);
+DropdownMenuItem.displayName = "DropdownMenuItem";
 
-export { DropdownMenu, DropdownMenuItem }
+export { DropdownMenu, DropdownMenuItem };

@@ -1,42 +1,35 @@
-import { cn } from "@/lib/utils"
-import { HTMLAttributes, TableHTMLAttributes, forwardRef } from "react"
+import { cn } from "@/lib/utils";
+import { HTMLAttributes, TableHTMLAttributes, forwardRef } from "react";
 
 export interface MatrixProps extends TableHTMLAttributes<HTMLTableElement> {
-  pinnedFirstColumn?: boolean
+  _pinnedFirstColumn?: boolean;
 }
 
 const Matrix = forwardRef<HTMLTableElement, MatrixProps>(
-  ({ className, pinnedFirstColumn = true, ...props }, ref) => {
+  ({ className, _pinnedFirstColumn = false, ...props }, ref) => {
+    void _pinnedFirstColumn;
     return (
       <div className="relative w-full overflow-auto">
-        <table
-          ref={ref}
-          className={cn("w-full caption-bottom text-sm", className)}
-          {...props}
-        />
+        <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
       </div>
-    )
-  }
-)
-Matrix.displayName = "Matrix"
+    );
+  },
+);
+Matrix.displayName = "Matrix";
 
 const MatrixHeader = forwardRef<HTMLTableSectionElement, HTMLAttributes<HTMLTableSectionElement>>(
   ({ className, ...props }, ref) => (
     <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
-  )
-)
-MatrixHeader.displayName = "MatrixHeader"
+  ),
+);
+MatrixHeader.displayName = "MatrixHeader";
 
 const MatrixBody = forwardRef<HTMLTableSectionElement, HTMLAttributes<HTMLTableSectionElement>>(
   ({ className, ...props }, ref) => (
-    <tbody
-      ref={ref}
-      className={cn("[&_tr:last-child]:border-0", className)}
-      {...props}
-    />
-  )
-)
-MatrixBody.displayName = "MatrixBody"
+    <tbody ref={ref} className={cn("[&_tr:last-child]:border-0", className)} {...props} />
+  ),
+);
+MatrixBody.displayName = "MatrixBody";
 
 const MatrixRow = forwardRef<HTMLTableRowElement, HTMLAttributes<HTMLTableRowElement>>(
   ({ className, ...props }, ref) => (
@@ -44,16 +37,16 @@ const MatrixRow = forwardRef<HTMLTableRowElement, HTMLAttributes<HTMLTableRowEle
       ref={ref}
       className={cn(
         "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
-        className
+        className,
       )}
       {...props}
     />
-  )
-)
-MatrixRow.displayName = "MatrixRow"
+  ),
+);
+MatrixRow.displayName = "MatrixRow";
 
 interface MatrixHeadProps extends HTMLAttributes<HTMLTableCellElement> {
-  isPinned?: boolean
+  isPinned?: boolean;
 }
 
 const MatrixHead = forwardRef<HTMLTableCellElement, MatrixHeadProps>(
@@ -65,16 +58,16 @@ const MatrixHead = forwardRef<HTMLTableCellElement, MatrixHeadProps>(
         {
           "sticky left-0 z-10 bg-background border-r shadow-sm": isPinned,
         },
-        className
+        className,
       )}
       {...props}
     />
-  )
-)
-MatrixHead.displayName = "MatrixHead"
+  ),
+);
+MatrixHead.displayName = "MatrixHead";
 
 interface MatrixCellProps extends HTMLAttributes<HTMLTableCellElement> {
-  isPinned?: boolean
+  isPinned?: boolean;
 }
 
 const MatrixCell = forwardRef<HTMLTableCellElement, MatrixCellProps>(
@@ -86,19 +79,12 @@ const MatrixCell = forwardRef<HTMLTableCellElement, MatrixCellProps>(
         {
           "sticky left-0 z-10 bg-background border-r shadow-sm font-medium": isPinned,
         },
-        className
+        className,
       )}
       {...props}
     />
-  )
-)
-MatrixCell.displayName = "MatrixCell"
+  ),
+);
+MatrixCell.displayName = "MatrixCell";
 
-export {
-  Matrix,
-  MatrixHeader,
-  MatrixBody,
-  MatrixRow,
-  MatrixHead,
-  MatrixCell,
-}
+export { Matrix, MatrixHeader, MatrixBody, MatrixRow, MatrixHead, MatrixCell };
