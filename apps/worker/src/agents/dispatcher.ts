@@ -1,7 +1,22 @@
 import { StageKey } from "@flank/database";
+import { runProfilerAgent } from "./profiler";
+import { runDiscoveryAgent } from "./discovery";
+import { runVerifierAgent } from "./verifier";
 
-export async function dispatchAgent(stageKey: StageKey, _inputArtifact: unknown): Promise<unknown> {
-  // In Units 11-18, this will route to the specific agent implementation
-  // e.g. switch(stageKey) { case 'PROFILER': return runProfiler(inputArtifact); ... }
-  throw new Error(`Agent for ${stageKey} not yet implemented`);
+export async function dispatchAgent(
+  runId: string,
+  targetId: string,
+  stageKey: StageKey,
+  _inputArtifact: unknown,
+): Promise<unknown> {
+  switch (stageKey) {
+    case "PROFILER":
+      return runProfilerAgent(runId, targetId, _inputArtifact);
+    case "DISCOVERY":
+      return runDiscoveryAgent(runId, targetId, _inputArtifact);
+    case "VERIFIER":
+      return runVerifierAgent(runId, targetId, _inputArtifact);
+    default:
+      throw new Error(`Agent for ${stageKey} not yet implemented`);
+  }
 }

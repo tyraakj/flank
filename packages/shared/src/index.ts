@@ -9,3 +9,6 @@ export * from "./contracts/progress-client";
 export * from "./events/run-progress";
 export * from "./queue-names";
 export * from "./contracts/providers";
+export * from "./contracts/profiler";
+export * from "./contracts/discovery";
+export * from "./contracts/verifier";

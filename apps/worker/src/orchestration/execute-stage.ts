@@ -55,7 +55,7 @@ export async function executeStage(runId: string, stageKey: StageKey, userId: st
     // In a real run, this fetches the artifacts from the upstream stages.
 
     // 4. Execute the agent module
-    const agentOutput = await dispatchAgent(stageKey, stage.inputArtifact);
+    const agentOutput = await dispatchAgent(runId, targetId, stageKey, stage.inputArtifact);
 
     // 5. Cancellation check before commit
     await checkCancellation(runId);
