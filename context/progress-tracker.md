@@ -36,9 +36,9 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 
 | Unit | Spec                             | Status         |
 | ---- | -------------------------------- | -------------- |
-| 11   | Profiler Agent                   | ⬜ Not started |
-| 12   | Discovery Agent                  | ⬜ Not started |
-| 13   | Verifier Agent                   | ⬜ Not started |
+| 11   | Profiler Agent                   | ✅ Complete    |
+| 12   | Discovery Agent                  | ✅ Complete    |
+| 13   | Verifier Agent                   | ✅ Complete    |
 | 14   | Pricing Agent                    | ⬜ Not started |
 | 15   | Feature Agent and Taxonomy       | ⬜ Not started |
 | 16   | Positioning Agent                | ⬜ Not started |
@@ -98,19 +98,22 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 
 - ✅ **Unit 10** — Provider Abstraction Layer: Created core interfaces, DuckDuckGo search, HTTP/Playwright readers, Gemini LLM with Vercel AI SDK, and R2/Postgres caching.
 - ✅ **Frontend Branding & Logo** — Locked brand colors (light canvas, pastel pink & yellow accents, charcoal foundation), implemented 3D halftone dithered dot globe SVG logo (`FlankLogo`), updated landing page hero subtext, and replaced logo references across TopBar, Footer, and interactive dashboard mockups.
+- ✅ **Unit 11** — Profiler Agent: Implemented `TargetProfileSchema`, orchestrated agent workflow linking database load, auto-page reading with playwright fallback, HTML link extraction for pricing and about pages, prompt construction, LLM extraction with 1 Zod error repair attempt, and saving back to `TargetProfile` and `Evidence` tables.
+- ✅ **Unit 12** — Discovery Agent: Implemented `DiscoveryStrategySchema` & `DiscoveryPlanSchema` spanning 6 angles, LLM strategy generation with repair retry & fallback, bounded search fan-out across SearchProvider, URL normalization, first-pass relevance scoring, and transactional `Candidate` + `Evidence` persistence.
+- ✅ **Unit 13** — Verifier Agent: Implemented `VerificationResultSchema` with `DIRECT`, `INDIRECT`, `SUBSTITUTE` types, candidate homepage scraping via PageReader, LLM verification & classification with repair retries, entity deduplication by canonical domain, and transactional `Competitor` + `Evidence` persistence.
 
 ---
 
 ## In Progress
 
-- 🏗️ **Unit 11** — Profiler Agent (Next up)
+- 🏗️ **Unit 14** — Pricing Agent (Next up)
 
 ---
 
 ## Next Up
 
-1. **Unit 11** — Profiler Agent: Implement the first intelligent agent.
-2. **Unit 12** — Discovery Agent: Implement search discovery.
+1. **Unit 14** — Pricing Agent: Scrape & extract competitor pricing plans, tiers, and billing models.
+2. **Unit 15** — Feature Agent and Taxonomy: Extract feature matrix claims against standard taxonomy.
 
 ---
 
