@@ -39,9 +39,9 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 | 11   | Profiler Agent                   | ✅ Complete    |
 | 12   | Discovery Agent                  | ✅ Complete    |
 | 13   | Verifier Agent                   | ✅ Complete    |
-| 14   | Pricing Agent                    | ⬜ Not started |
-| 15   | Feature Agent and Taxonomy       | ⬜ Not started |
-| 16   | Positioning Agent                | ⬜ Not started |
+| 14   | Pricing Agent                    | ✅ Complete    |
+| 15   | Feature Agent and Taxonomy       | ✅ Complete    |
+| 16   | Positioning Agent                | ✅ Complete    |
 | 17   | Strategist Agent                 | ⬜ Not started |
 | 18   | Critic Agent and Quality Gates   | ⬜ Not started |
 | 19   | Evidence and Snapshot Store      | ⬜ Not started |
@@ -70,7 +70,7 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 ### Platform
 
 | Unit | Spec                              | Status         |
-| ---- | --------------------------------- | -------------- |
+| ---- | ------------------------------- | -------------- |
 | 35   | Integrations Framework            | ⬜ Not started |
 | 36   | Slack, Notion, and Issue Trackers | ⬜ Not started |
 | 37   | Webhooks, Public API, and MCP     | ⬜ Not started |
@@ -101,19 +101,22 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 - ✅ **Unit 11** — Profiler Agent: Implemented `TargetProfileSchema`, orchestrated agent workflow linking database load, auto-page reading with playwright fallback, HTML link extraction for pricing and about pages, prompt construction, LLM extraction with 1 Zod error repair attempt, and saving back to `TargetProfile` and `Evidence` tables.
 - ✅ **Unit 12** — Discovery Agent: Implemented `DiscoveryStrategySchema` & `DiscoveryPlanSchema` spanning 6 angles, LLM strategy generation with repair retry & fallback, bounded search fan-out across SearchProvider, URL normalization, first-pass relevance scoring, and transactional `Candidate` + `Evidence` persistence.
 - ✅ **Unit 13** — Verifier Agent: Implemented `VerificationResultSchema` with `DIRECT`, `INDIRECT`, `SUBSTITUTE` types, candidate homepage scraping via PageReader, LLM verification & classification with repair retries, entity deduplication by canonical domain, and transactional `Competitor` + `Evidence` persistence.
+- ✅ **Unit 14** — Pricing Agent: Implemented `PricingPlanSchema`, `CompetitorPricingExtractionSchema`, `discoverPricingUrls` candidate discovery, `computeDeterministicPricingFallback`, resilient LLM extraction with 1 Zod error repair attempt, and transactional `PricingPlan` + `Evidence` persistence with auditable excerpts, USD & INR multi-currency support, and no-pricing tracking.
+- ✅ **Unit 15** — Feature Agent and Taxonomy: Implemented `FeatureTaxonomyNodeSchema`, `ExtractedFeatureItemSchema`, `CompetitorFeatureExtractionSchema`, `FeatureTaxonomyService` synonym resolution and alias mapping, `discoverFeatureUrls` candidate discovery, `computeDeterministicFeatureFallback` distinguishing shipped vs announced/roadmap and negative claims, and transactional `Feature` node upserts + `FeatureClaim` & `Evidence` persistence.
+- ✅ **Unit 16** — Positioning Agent: Implemented `CompetitorPositioningDataSchema`, `PositioningMapSchema`, `PositioningMapService` for 2×2 coordinate calculation, Euclidean clustering, and whitespace opportunity analysis, `computeDeterministicPositioningFallback`, and transactional `Positioning` records & `Evidence` persistence.
 
 ---
 
 ## In Progress
 
-- 🏗️ **Unit 14** — Pricing Agent (Next up)
+- 🏗️ **Unit 17** — Strategist Agent (Next up)
 
 ---
 
 ## Next Up
 
-1. **Unit 14** — Pricing Agent: Scrape & extract competitor pricing plans, tiers, and billing models.
-2. **Unit 15** — Feature Agent and Taxonomy: Extract feature matrix claims against standard taxonomy.
+1. **Unit 17** — Strategist Agent: Identify gaps and produce ranked edge opportunities with evidence.
+2. **Unit 18** — Critic Agent and Quality Gates: Deterministic quality gates and bounded retry replay.
 
 ---
 

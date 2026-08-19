@@ -12,3 +12,6 @@ export * from "./contracts/providers";
 export * from "./contracts/profiler";
 export * from "./contracts/discovery";
 export * from "./contracts/verifier";
+export * from "./contracts/pricing";
+export * from "./contracts/features";
+export * from "./contracts/positioning";
