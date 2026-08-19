@@ -229,7 +229,7 @@ export class QualityEvaluator {
   ): StageQualityScore {
     const issues: string[] = [];
     let completeness = 100;
-    let plausibility = 100;
+    const plausibility = 100;
 
     if (!inputs.profile) {
       issues.push("Missing TargetProfile record");
@@ -310,7 +310,7 @@ export class QualityEvaluator {
     evidenceMap: Map<string, Array<{ id: string; url: string; excerpt: string }>>,
   ): StageQualityScore {
     const issues: string[] = [];
-    let completeness = 100;
+    const completeness = 100;
     let contradictionCount = 0;
 
     if (inputs.competitors.length === 0) {
@@ -373,7 +373,6 @@ export class QualityEvaluator {
     evidenceMap: Map<string, Array<{ id: string; url: string; excerpt: string }>>,
   ): StageQualityScore {
     const issues: string[] = [];
-    let plausibility = 100;
     let contradictionCount = 0;
 
     const validCurrencies = new Set(["USD", "INR", "EUR", "GBP"]);
@@ -477,7 +476,6 @@ export class QualityEvaluator {
     evidenceMap: Map<string, Array<{ id: string; url: string; excerpt: string }>>,
   ): StageQualityScore {
     const issues: string[] = [];
-    let plausibility = 100;
     let contradictionCount = 0;
 
     const compPositions = inputs.positionings.filter((p) => p.competitorId);

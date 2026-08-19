@@ -171,7 +171,7 @@ export async function runProfilerAgent(
             aboutUrl = url.href;
           }
         }
-      } catch (e) {
+      } catch (_e) {
         // ignore invalid urls
       }
     });
@@ -302,7 +302,7 @@ Your mission is to perform an exhaustive, evidence-based market and product prof
           fallback,
         });
         profileData = repairResult.data as TargetProfileData;
-      } catch (repairError) {
+      } catch (_repairError) {
         profileData = fallback;
         usedFallback = true;
       }

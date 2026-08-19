@@ -1,7 +1,6 @@
 import { prisma, PlanBand, BillingInterval } from "@flank/database";
 import { registry } from "../providers/registry";
 import {
-  PricingPlanSchema,
   PricingPlanData,
   CompetitorPricingExtractionSchema,
   CompetitorPricingExtraction,

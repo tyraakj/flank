@@ -37,7 +37,6 @@ export function computeDeterministicFeatureFallback(params: {
   competitorName: string;
 }): CompetitorFeatureExtraction {
   const text = params.pageText || "";
-  const textLower = text.toLowerCase();
   const features: ExtractedFeatureItem[] = [];
 
   // Keywords and patterns to scan

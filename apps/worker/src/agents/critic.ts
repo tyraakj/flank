@@ -1,5 +1,5 @@
 import { prisma, StageKey } from "@flank/database";
-import { CriticStageOutput, QualityReportData, QualityStageKey } from "@flank/shared";
+import { CriticStageOutput, QualityReportData } from "@flank/shared";
 import { QualityEvaluator, QualityEvaluationInputs } from "../services/quality-evaluator";
 import { publishRunEvent } from "../progress/publisher";
 
