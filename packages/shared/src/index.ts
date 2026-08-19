@@ -15,3 +15,5 @@ export * from "./contracts/verifier";
 export * from "./contracts/pricing";
 export * from "./contracts/features";
 export * from "./contracts/positioning";
+export * from "./contracts/strategy";
+export * from "./contracts/quality";

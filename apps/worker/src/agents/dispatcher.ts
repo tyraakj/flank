@@ -5,6 +5,8 @@ import { runVerifierAgent } from "./verifier";
 import { runPricingAgent } from "./pricing";
 import { runFeatureAgent } from "./feature";
 import { runPositioningAgent } from "./positioning";
+import { runStrategistAgent } from "./strategist";
+import { runCriticAgent } from "./critic";
 
 export async function dispatchAgent(
   runId: string,
@@ -25,6 +27,10 @@ export async function dispatchAgent(
       return runFeatureAgent(runId, targetId, _inputArtifact);
     case "POSITIONING":
       return runPositioningAgent(runId, targetId, _inputArtifact);
+    case "STRATEGIST":
+      return runStrategistAgent(runId, targetId, _inputArtifact);
+    case "CRITIC":
+      return runCriticAgent(runId, targetId, _inputArtifact);
     default:
       throw new Error(`Agent for ${stageKey} not yet implemented`);
   }

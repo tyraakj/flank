@@ -42,8 +42,8 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 | 14   | Pricing Agent                    | ✅ Complete    |
 | 15   | Feature Agent and Taxonomy       | ✅ Complete    |
 | 16   | Positioning Agent                | ✅ Complete    |
-| 17   | Strategist Agent                 | ⬜ Not started |
-| 18   | Critic Agent and Quality Gates   | ⬜ Not started |
+| 17   | Strategist Agent                 | ✅ Complete    |
+| 18   | Critic Agent and Quality Gates   | ✅ Complete    |
 | 19   | Evidence and Snapshot Store      | ⬜ Not started |
 | 20   | Confidence Scoring               | ⬜ Not started |
 | 41   | Semantic Candidate Deduplication | ⬜ Not started |
@@ -104,19 +104,21 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 - ✅ **Unit 14** — Pricing Agent: Implemented `PricingPlanSchema`, `CompetitorPricingExtractionSchema`, `discoverPricingUrls` candidate discovery, `computeDeterministicPricingFallback`, resilient LLM extraction with 1 Zod error repair attempt, and transactional `PricingPlan` + `Evidence` persistence with auditable excerpts, USD & INR multi-currency support, and no-pricing tracking.
 - ✅ **Unit 15** — Feature Agent and Taxonomy: Implemented `FeatureTaxonomyNodeSchema`, `ExtractedFeatureItemSchema`, `CompetitorFeatureExtractionSchema`, `FeatureTaxonomyService` synonym resolution and alias mapping, `discoverFeatureUrls` candidate discovery, `computeDeterministicFeatureFallback` distinguishing shipped vs announced/roadmap and negative claims, and transactional `Feature` node upserts + `FeatureClaim` & `Evidence` persistence.
 - ✅ **Unit 16** — Positioning Agent: Implemented `CompetitorPositioningDataSchema`, `PositioningMapSchema`, `PositioningMapService` for 2×2 coordinate calculation, Euclidean clustering, and whitespace opportunity analysis, `computeDeterministicPositioningFallback`, and transactional `Positioning` records & `Evidence` persistence.
+- ✅ **Unit 17** — Strategist Agent: Implemented `OpportunityItemSchema`, `StrategistExtractionSchema`, `OpportunityRankingService` for composite scoring, Jaccard & Szymkiewicz-Simpson overlap deduplication, and sequential ranking, `computeDeterministicStrategyFallback`, and transactional `Opportunity` & `Evidence` persistence.
+- ✅ **Unit 18** — Critic Agent and Quality Gates: Implemented `StageQualityScoreSchema`, `RetryDirectiveSchema`, `QualityReportDataSchema`, `QualityEvaluator` for deterministic multi-stage completeness, sourcing coverage, plausibility, contradiction checks, hard publication gates, and transactional `QualityReport` persistence.
 
 ---
 
 ## In Progress
 
-- 🏗️ **Unit 17** — Strategist Agent (Next up)
+- 🏗️ **Unit 19** — Evidence and Snapshot Store (Next up)
 
 ---
 
 ## Next Up
 
-1. **Unit 17** — Strategist Agent: Identify gaps and produce ranked edge opportunities with evidence.
-2. **Unit 18** — Critic Agent and Quality Gates: Deterministic quality gates and bounded retry replay.
+1. **Unit 19** — Evidence and Snapshot Store: Cloudflare R2 storage integration and immutable content hashing.
+2. **Unit 20** — Confidence Scoring: Multi-factor confidence calibration across all claims.
 
 ---
 
