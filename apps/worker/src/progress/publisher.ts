@@ -4,14 +4,27 @@ import Redis from "ioredis";
 // Parse redis URL from environment
 const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 
-// Setup isolated redis connection for the publisher
-const publisher = new Redis(redisUrl, {
-  maxRetriesPerRequest: null,
-});
+// Lazy Redis connection for the publisher
+let publisher: Redis | null = null;
 
-publisher.on("error", (err) => {
-  console.error("[Progress Publisher] Redis connection error:", err);
-});
+async function getConnectedPublisher(): Promise<Redis> {
+  if (!publisher) {
+    publisher = new Redis(redisUrl, {
+      maxRetriesPerRequest: null,
+      lazyConnect: true,
+      enableOfflineQueue: false,
+    });
+    publisher.on("error", (err) => {
+      console.error("[Progress Publisher] Redis connection error:", err);
+    });
+  }
+  if (publisher.status === "wait" || publisher.status === "close") {
+    await publisher.connect().catch((err) => {
+      console.error("[Progress Publisher] Failed to connect to Redis:", err);
+    });
+  }
+  return publisher;
+}
 
 /**
  * Persists a RunEvent to Postgres and immediately publishes it to Redis.
@@ -54,7 +67,10 @@ export async function publishRunEvent(
 
     // 3. Publish to Redis channel
     const channelName = `run-events:${runId}`;
-    await publisher.publish(channelName, JSON.stringify(fullEvent));
+    const pub = await getConnectedPublisher();
+    if (pub.status === "ready" || pub.status === "connect") {
+      await pub.publish(channelName, JSON.stringify(fullEvent));
+    }
   } catch (err) {
     console.error("[Progress Publisher] Failed to publish event:", err);
   }
