@@ -36,7 +36,27 @@ export class OpportunityRankingService {
    */
   static tokenize(text: string): Set<string> {
     const stopWords = new Set([
-      "a", "an", "the", "and", "or", "in", "on", "at", "to", "for", "with", "by", "of", "is", "are", "vs", "versus", "our", "their", "we", "they"
+      "a",
+      "an",
+      "the",
+      "and",
+      "or",
+      "in",
+      "on",
+      "at",
+      "to",
+      "for",
+      "with",
+      "by",
+      "of",
+      "is",
+      "are",
+      "vs",
+      "versus",
+      "our",
+      "their",
+      "we",
+      "they",
     ]);
 
     const words = text
@@ -113,9 +133,7 @@ export class OpportunityRankingService {
         const mergedExcerpts = Array.from(
           new Set([...existing.evidenceExcerpts, ...candidate.evidenceExcerpts]),
         );
-        const mergedUrls = Array.from(
-          new Set([...existing.sourceUrls, ...candidate.sourceUrls]),
-        );
+        const mergedUrls = Array.from(new Set([...existing.sourceUrls, ...candidate.sourceUrls]));
 
         deduplicated[matchedIndex] = {
           ...existing,

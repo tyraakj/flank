@@ -14,7 +14,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Single Sign-On (SSO)",
     slug: "single-sign-on-sso",
     category: "Security & Access",
-    description: "Enterprise identity provider authentication via SAML 2.0, OIDC, Okta, Azure AD, or Google Workspace.",
+    description:
+      "Enterprise identity provider authentication via SAML 2.0, OIDC, Okta, Azure AD, or Google Workspace.",
     aliases: [
       "sso",
       "saml",
@@ -34,7 +35,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Multi-Factor Authentication (MFA)",
     slug: "multi-factor-authentication-mfa",
     category: "Security & Access",
-    description: "Secondary authentication mechanism using TOTP authenticator apps, SMS codes, or hardware security keys.",
+    description:
+      "Secondary authentication mechanism using TOTP authenticator apps, SMS codes, or hardware security keys.",
     aliases: [
       "mfa",
       "2fa",
@@ -50,7 +52,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Role-Based Access Control (RBAC)",
     slug: "role-based-access-control-rbac",
     category: "Security & Access",
-    description: "Granular user permission management assigning specific permissions and access boundaries based on roles.",
+    description:
+      "Granular user permission management assigning specific permissions and access boundaries based on roles.",
     aliases: [
       "rbac",
       "user permissions",
@@ -66,7 +69,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Audit Logs",
     slug: "audit-logs",
     category: "Security & Access",
-    description: "Comprehensive immutable event history of user actions, administrative changes, and security events for compliance.",
+    description:
+      "Comprehensive immutable event history of user actions, administrative changes, and security events for compliance.",
     aliases: [
       "audit trail",
       "activity log",
@@ -81,7 +85,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "SOC 2 & Compliance Certifications",
     slug: "soc-2-compliance-certifications",
     category: "Security & Access",
-    description: "Verified organizational security compliance standards including SOC 2 Type II, ISO 27001, HIPAA, or GDPR.",
+    description:
+      "Verified organizational security compliance standards including SOC 2 Type II, ISO 27001, HIPAA, or GDPR.",
     aliases: [
       "soc 2",
       "soc2",
@@ -99,7 +104,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Data Encryption & Custom KMS",
     slug: "data-encryption-custom-kms",
     category: "Security & Access",
-    description: "AES-256 data encryption at rest and TLS in transit, with optional Bring Your Own Key (BYOK) custom key management.",
+    description:
+      "AES-256 data encryption at rest and TLS in transit, with optional Bring Your Own Key (BYOK) custom key management.",
     aliases: [
       "encryption at rest",
       "tls encryption",
@@ -117,7 +123,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "REST API Access",
     slug: "rest-api-access",
     category: "Integrations & API",
-    description: "Programmatic REST API for managing resources, automating workflows, and syncing data with external systems.",
+    description:
+      "Programmatic REST API for managing resources, automating workflows, and syncing data with external systems.",
     aliases: [
       "api access",
       "rest api",
@@ -133,7 +140,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Webhooks",
     slug: "webhooks",
     category: "Integrations & API",
-    description: "Real-time HTTP event notification callbacks triggered on state changes and system mutations.",
+    description:
+      "Real-time HTTP event notification callbacks triggered on state changes and system mutations.",
     aliases: [
       "webhook notifications",
       "real-time webhooks",
@@ -147,7 +155,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Third-Party App Integrations",
     slug: "third-party-app-integrations",
     category: "Integrations & API",
-    description: "Pre-built connectors to external SaaS tools (Slack, Jira, GitHub, Notion, Salesforce, Zapier).",
+    description:
+      "Pre-built connectors to external SaaS tools (Slack, Jira, GitHub, Notion, Salesforce, Zapier).",
     aliases: [
       "zapier integration",
       "app marketplace",
@@ -163,7 +172,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Developer SDKs & CLI",
     slug: "developer-sdks-cli",
     category: "Integrations & API",
-    description: "Official software development kits across major programming languages and command-line interfaces.",
+    description:
+      "Official software development kits across major programming languages and command-line interfaces.",
     aliases: [
       "cli tool",
       "developer cli",
@@ -181,7 +191,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Custom Dashboards & Visualizations",
     slug: "custom-dashboards-visualizations",
     category: "Analytics & Reporting",
-    description: "Configurable analytics dashboards, chart widgets, and real-time visualization canvas.",
+    description:
+      "Configurable analytics dashboards, chart widgets, and real-time visualization canvas.",
     aliases: [
       "custom dashboards",
       "analytics dashboard",
@@ -196,7 +207,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Export & Data Portability",
     slug: "export-data-portability",
     category: "Analytics & Reporting",
-    description: "Structured file download formats including CSV, JSON, PDF, and Excel for reports and raw data records.",
+    description:
+      "Structured file download formats including CSV, JSON, PDF, and Excel for reports and raw data records.",
     aliases: [
       "csv export",
       "pdf export",
@@ -211,7 +223,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Automated Scheduled Reports",
     slug: "automated-scheduled-reports",
     category: "Analytics & Reporting",
-    description: "Recurring summary digests and scheduled email/Slack notifications on daily, weekly, or monthly cadences.",
+    description:
+      "Recurring summary digests and scheduled email/Slack notifications on daily, weekly, or monthly cadences.",
     aliases: [
       "scheduled reports",
       "email reports",
@@ -226,7 +239,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Team Workspaces & Multi-Tenancy",
     slug: "team-workspaces-multi-tenancy",
     category: "Collaboration & Workflow",
-    description: "Isolated organizational environments with member seat management and shared project resources.",
+    description:
+      "Isolated organizational environments with member seat management and shared project resources.",
     aliases: [
       "workspaces",
       "team workspaces",
@@ -240,7 +254,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Comments & Real-time Collaboration",
     slug: "comments-real-time-collaboration",
     category: "Collaboration & Workflow",
-    description: "In-line contextual commenting, @mentions, presence indicators, and live multiplayer editing.",
+    description:
+      "In-line contextual commenting, @mentions, presence indicators, and live multiplayer editing.",
     aliases: [
       "collaborative comments",
       "@mentions",
@@ -254,7 +269,8 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Version History & Rollbacks",
     slug: "version-history-rollbacks",
     category: "Collaboration & Workflow",
-    description: "Point-in-time snapshot history, diff comparisons, and one-click rollback capabilities.",
+    description:
+      "Point-in-time snapshot history, diff comparisons, and one-click rollback capabilities.",
     aliases: [
       "version history",
       "revision history",
@@ -270,20 +286,16 @@ export const STANDARD_FEATURE_TAXONOMY: CanonicalTaxonomyDefinition[] = [
     canonicalName: "Custom Domain & SSL",
     slug: "custom-domain-ssl",
     category: "Customization & Branding",
-    description: "Host applications or public portals under a custom CNAME domain with automated TLS/SSL provisioning.",
-    aliases: [
-      "custom domain",
-      "cname support",
-      "custom ssl",
-      "custom subdomain",
-      "custom urls",
-    ],
+    description:
+      "Host applications or public portals under a custom CNAME domain with automated TLS/SSL provisioning.",
+    aliases: ["custom domain", "cname support", "custom ssl", "custom subdomain", "custom urls"],
   },
   {
     canonicalName: "White-Labeling & Custom Branding",
     slug: "white-labeling-custom-branding",
     category: "Customization & Branding",
-    description: "Remove vendor watermarks and customize logos, brand colors, email templates, and themes.",
+    description:
+      "Remove vendor watermarks and customize logos, brand colors, email templates, and themes.",
     aliases: [
       "white label",
       "white-labeling",
@@ -373,7 +385,10 @@ export class FeatureTaxonomyService {
 
     // 2. Partial substring matching against standard taxonomy aliases
     for (const [alias, def] of this.aliasMap.entries()) {
-      if (alias.length >= 4 && (normalized === alias || normalized.includes(alias) || alias.includes(normalized))) {
+      if (
+        alias.length >= 4 &&
+        (normalized === alias || normalized.includes(alias) || alias.includes(normalized))
+      ) {
         return {
           canonicalName: def.canonicalName,
           slug: def.slug,

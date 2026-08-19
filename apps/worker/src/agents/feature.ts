@@ -529,8 +529,10 @@ Extract structured feature claims adhering strictly to the CompetitorFeatureExtr
             });
 
             // Write auditable Evidence row
-            const matchingReadPage = readPages.find((p) => p.canonicalUrl === item.sourceUrl) || readPages[0];
-            const excerpt = item.excerpt || `Claim for ${item.verbatimLabel} (${support}) from ${item.sourceUrl}`;
+            const matchingReadPage =
+              readPages.find((p) => p.canonicalUrl === item.sourceUrl) || readPages[0];
+            const excerpt =
+              item.excerpt || `Claim for ${item.verbatimLabel} (${support}) from ${item.sourceUrl}`;
 
             await tx.evidence.create({
               data: {

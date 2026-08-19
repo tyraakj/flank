@@ -18,7 +18,8 @@ describe("Unit 17: Strategist Agent & Opportunity Ranking", () => {
         supportingCompetitorIds: ["comp-1", "comp-2"],
         absentCompetitorIds: ["comp-3"],
         suggestedMove: "Publish 100% transparent tiered pricing with instant onboarding.",
-        whatToSay: "Enterprise power without the sales friction. Transparent pricing, no mandatory demo.",
+        whatToSay:
+          "Enterprise power without the sales friction. Transparent pricing, no mandatory demo.",
         rationale: "Competitors gate core features behind Contact Sales forms.",
         impact: 5,
         effort: 2,

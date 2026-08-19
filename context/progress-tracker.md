@@ -70,7 +70,7 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 ### Platform
 
 | Unit | Spec                              | Status         |
-| ---- | ------------------------------- | -------------- |
+| ---- | --------------------------------- | -------------- |
 | 35   | Integrations Framework            | ⬜ Not started |
 | 36   | Slack, Notion, and Issue Trackers | ⬜ Not started |
 | 37   | Webhooks, Public API, and MCP     | ⬜ Not started |

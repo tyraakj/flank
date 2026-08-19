@@ -207,12 +207,8 @@ export function computeDeterministicPricingFallback(params: {
   }
 
   let availabilitySummary:
-    | "published"
-    | "contact-sales"
-    | "free-only"
-    | "trial-only"
-    | "not-published"
-    | "inaccessible" = "published";
+    "published" | "contact-sales" | "free-only" | "trial-only" | "not-published" | "inaccessible" =
+    "published";
   if (plans.every((p) => p.availability === "contact-sales")) {
     availabilitySummary = "contact-sales";
   } else if (plans.every((p) => p.availability === "free")) {
@@ -541,7 +537,8 @@ Extract all plans into structured JSON adhering to the CompetitorPricingExtracti
                 currency: plan.currency || "USD",
                 interval,
                 limits: plan.usageLimits.length > 0 ? plan.usageLimits : undefined,
-                includedFeatures: plan.includedFeatures.length > 0 ? plan.includedFeatures : undefined,
+                includedFeatures:
+                  plan.includedFeatures.length > 0 ? plan.includedFeatures : undefined,
                 confidence: plan.confidence || 80,
               },
             });

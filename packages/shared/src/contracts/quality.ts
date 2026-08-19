@@ -18,21 +18,52 @@ export type QualityStageKey = z.infer<typeof QualityStageKeySchema>;
 
 export const StageQualityScoreSchema = z.object({
   stageKey: QualityStageKeySchema,
-  completeness: z.number().min(0).max(100).describe("Percentage of required artifact fields and coverage present (0-100)."),
-  sourcing: z.number().min(0).max(100).describe("Percentage of assertions backed by auditable evidence rows, quotes, and URLs (0-100)."),
-  plausibility: z.number().min(0).max(100).describe("Coherence and boundary validity of values, intervals, coordinates, and scopes (0-100)."),
-  contradictionCount: z.number().int().min(0).default(0).describe("Count of direct contradictions found in this stage."),
+  completeness: z
+    .number()
+    .min(0)
+    .max(100)
+    .describe("Percentage of required artifact fields and coverage present (0-100)."),
+  sourcing: z
+    .number()
+    .min(0)
+    .max(100)
+    .describe(
+      "Percentage of assertions backed by auditable evidence rows, quotes, and URLs (0-100).",
+    ),
+  plausibility: z
+    .number()
+    .min(0)
+    .max(100)
+    .describe(
+      "Coherence and boundary validity of values, intervals, coordinates, and scopes (0-100).",
+    ),
+  contradictionCount: z
+    .number()
+    .int()
+    .min(0)
+    .default(0)
+    .describe("Count of direct contradictions found in this stage."),
   status: GateStatusSchema,
   issues: z.array(z.string()).default([]),
 });
 export type StageQualityScore = z.infer<typeof StageQualityScoreSchema>;
 
 export const RetryDirectiveSchema = z.object({
-  targetStage: QualityStageKeySchema.describe("The earliest responsible stage that must be re-run to fix the root quality issue."),
+  targetStage: QualityStageKeySchema.describe(
+    "The earliest responsible stage that must be re-run to fix the root quality issue.",
+  ),
   reason: z.string().describe("Plain-language explanation of why this stage must be re-evaluated."),
   failedChecks: z.array(z.string()).describe("List of deterministic checks that failed."),
-  retryBudgetRemaining: z.number().int().min(0).default(1).describe("Remaining retry budget for this stage in this run."),
-  isRetryable: z.boolean().default(true).describe("Whether the stage can be safely retried within budget limits."),
+  retryBudgetRemaining: z
+    .number()
+    .int()
+    .min(0)
+    .default(1)
+    .describe("Remaining retry budget for this stage in this run."),
+  isRetryable: z
+    .boolean()
+    .default(true)
+    .describe("Whether the stage can be safely retried within budget limits."),
 });
 export type RetryDirective = z.infer<typeof RetryDirectiveSchema>;
 
@@ -43,8 +74,14 @@ export const QualityReportDataSchema = z.object({
   sourcing: z.number().min(0).max(100),
   plausibility: z.number().min(0).max(100),
   overallStatus: GateStatusSchema,
-  canPublish: z.boolean().describe("Hard publication gate: true if all essential gates pass and no blocking contradictions remain."),
-  isPartialReportAllowed: z.boolean().describe("Whether a partial report is allowed when non-blocking stages fail."),
+  canPublish: z
+    .boolean()
+    .describe(
+      "Hard publication gate: true if all essential gates pass and no blocking contradictions remain.",
+    ),
+  isPartialReportAllowed: z
+    .boolean()
+    .describe("Whether a partial report is allowed when non-blocking stages fail."),
   blockingReasons: z.array(z.string()).default([]),
   warnings: z.array(z.string()).default([]),
   stageScores: z.array(StageQualityScoreSchema),

@@ -34,7 +34,11 @@ export function computeDeterministicStrategyFallback(params: {
     name: string;
     pricingPlans: Array<{ name: string; amount: unknown; band?: string | null }>;
     featureClaims: Array<{ featureName: string; support: string }>;
-    positioning?: { icp?: string | null; categoryClaim?: string | null; tone?: string | null } | null;
+    positioning?: {
+      icp?: string | null;
+      categoryClaim?: string | null;
+      tone?: string | null;
+    } | null;
   }>;
 }): StrategistExtraction {
   const opportunities: OpportunityItem[] = [];
@@ -51,9 +55,13 @@ export function computeDeterministicStrategyFallback(params: {
       kind: "PRICING",
       gap: "Opaque Enterprise Custom Quoting among Market Incumbents",
       supportingCompetitorIds: enterpriseQuoteComps.map((c) => c.id),
-      absentCompetitorIds: params.competitors.filter((c) => !enterpriseQuoteComps.includes(c)).map((c) => c.id),
-      suggestedMove: "Publish 100% transparent, self-serve tiered pricing with an instant onboarding trial to capture buyers frustrated by multi-week sales cycles.",
-      whatToSay: "Enterprise power without the enterprise sales friction. Transparent pricing, instant signup, no mandatory demo calls.",
+      absentCompetitorIds: params.competitors
+        .filter((c) => !enterpriseQuoteComps.includes(c))
+        .map((c) => c.id),
+      suggestedMove:
+        "Publish 100% transparent, self-serve tiered pricing with an instant onboarding trial to capture buyers frustrated by multi-week sales cycles.",
+      whatToSay:
+        "Enterprise power without the enterprise sales friction. Transparent pricing, instant signup, no mandatory demo calls.",
       rationale: `${enterpriseQuoteComps.map((c) => c.name).join(", ")} gate core features behind opaque 'Contact Sales' forms. Offering instant pricing transparency creates a fast self-serve acquisition wedge.`,
       impact: 4,
       effort: 2,
@@ -66,7 +74,11 @@ export function computeDeterministicStrategyFallback(params: {
 
   // 2. Security & Compliance Feature Gap
   const ssoComps = params.competitors.filter((c) =>
-    c.featureClaims.some((f) => f.featureName.toLowerCase().includes("sso") && (f.support === "YES" || f.support === "PARTIAL")),
+    c.featureClaims.some(
+      (f) =>
+        f.featureName.toLowerCase().includes("sso") &&
+        (f.support === "YES" || f.support === "PARTIAL"),
+    ),
   );
 
   if (ssoComps.length >= 2) {
@@ -75,8 +87,10 @@ export function computeDeterministicStrategyFallback(params: {
       gap: "Enterprise Identity & SAML Single Sign-On Standards",
       supportingCompetitorIds: ssoComps.map((c) => c.id),
       absentCompetitorIds: params.competitors.filter((c) => !ssoComps.includes(c)).map((c) => c.id),
-      suggestedMove: "Bundle SAML 2.0 / OIDC SSO into mid-tier growth plans rather than charging a punitive 5x enterprise tax.",
-      whatToSay: "Security is not a luxury. Single Sign-On and team access control included on all team plans.",
+      suggestedMove:
+        "Bundle SAML 2.0 / OIDC SSO into mid-tier growth plans rather than charging a punitive 5x enterprise tax.",
+      whatToSay:
+        "Security is not a luxury. Single Sign-On and team access control included on all team plans.",
       rationale: `Enterprise competitors (${ssoComps.map((c) => c.name).join(", ")}) treat SSO as an expensive enterprise-only add-on. Democratizing SSO unlocks security-conscious mid-market teams.`,
       impact: 4,
       effort: 3,
@@ -97,9 +111,11 @@ export function computeDeterministicStrategyFallback(params: {
     gap: "Developer-First Automated Workflows vs Legacy Manual Interfaces",
     supportingCompetitorIds: apiComps.map((c) => c.id),
     absentCompetitorIds: params.competitors.filter((c) => !apiComps.includes(c)).map((c) => c.id),
-    suggestedMove: "Position as the modern, programmable API-first alternative with comprehensive CLI, SDKs, and webhook automation.",
+    suggestedMove:
+      "Position as the modern, programmable API-first alternative with comprehensive CLI, SDKs, and webhook automation.",
     whatToSay: "Built for engineers who automate. Full REST API, webhooks, and CLI out of the box.",
-    rationale: "Incumbents are burdened by legacy UI-heavy interfaces that require manual clicking. A developer-centric workflow creates viral bottom-up adoption.",
+    rationale:
+      "Incumbents are burdened by legacy UI-heavy interfaces that require manual clicking. A developer-centric workflow creates viral bottom-up adoption.",
     impact: 4,
     effort: 3,
     defensibility: 3,
@@ -114,9 +130,11 @@ export function computeDeterministicStrategyFallback(params: {
     gap: "Incumbent Feature Bloat and Slow Time-to-Value",
     supportingCompetitorIds: verifiedCompetitorIds.slice(0, 2),
     absentCompetitorIds: [],
-    suggestedMove: "Launch migration guides and 1-click import utilities from top competitors, highlighting zero-config instant setup.",
+    suggestedMove:
+      "Launch migration guides and 1-click import utilities from top competitors, highlighting zero-config instant setup.",
     whatToSay: "Switch from complex legacy platforms in under 5 minutes with zero data loss.",
-    rationale: "Market leaders have accrued significant feature complexity, leading to long onboarding cycles and user dissatisfaction.",
+    rationale:
+      "Market leaders have accrued significant feature complexity, leading to long onboarding cycles and user dissatisfaction.",
     impact: 3,
     effort: 2,
     defensibility: 2,
@@ -180,18 +198,23 @@ export async function runStrategistAgent(
   });
 
   // Prepare structured competitive intelligence digest for LLM
-  const competitorDigest = competitors.map((comp) => {
-    const plans = comp.pricingPlans.map((p) => `${p.name} ($${p.amount ?? "Custom"})`).join(", ") || "Unlisted";
-    const features = comp.featureClaims.map((f) => `${f.feature?.name}: ${f.support}`).join(", ") || "None";
-    const pos = comp.positionings[0];
-    return `### COMPETITOR: ${comp.name} (${comp.canonicalDomain}) [ID: ${comp.id}]
+  const competitorDigest = competitors
+    .map((comp) => {
+      const plans =
+        comp.pricingPlans.map((p) => `${p.name} ($${p.amount ?? "Custom"})`).join(", ") ||
+        "Unlisted";
+      const features =
+        comp.featureClaims.map((f) => `${f.feature?.name}: ${f.support}`).join(", ") || "None";
+      const pos = comp.positionings[0];
+      return `### COMPETITOR: ${comp.name} (${comp.canonicalDomain}) [ID: ${comp.id}]
 - Type: ${comp.type}
 - Pricing Plans: ${plans}
 - Feature Support: ${features}
 - Category Claim: ${pos?.categoryClaim || "Standard"}
 - ICP: ${pos?.icp || "General"}
 - Tone: ${pos?.tone || "Standard"}`;
-  }).join("\n\n");
+    })
+    .join("\n\n");
 
   const evidenceDigest = competitorEvidences
     .map((e) => `- [${e.claimType}] ${e.excerpt} (Source: ${e.url})`)
@@ -266,10 +289,17 @@ Produce a structured StrategistExtraction with concrete, defensible opportunitie
   const sanitizedCandidates: OpportunityItem[] = strategyExtraction.opportunities
     .map((opp) => ({
       ...opp,
-      supportingCompetitorIds: opp.supportingCompetitorIds.filter((id) => verifiedCompetitorIds.has(id)),
+      supportingCompetitorIds: opp.supportingCompetitorIds.filter((id) =>
+        verifiedCompetitorIds.has(id),
+      ),
       absentCompetitorIds: opp.absentCompetitorIds.filter((id) => verifiedCompetitorIds.has(id)),
     }))
-    .filter((opp) => opp.supportingCompetitorIds.length > 0 || opp.absentCompetitorIds.length > 0 || opp.rationale.length > 20);
+    .filter(
+      (opp) =>
+        opp.supportingCompetitorIds.length > 0 ||
+        opp.absentCompetitorIds.length > 0 ||
+        opp.rationale.length > 20,
+    );
 
   // If LLM returned fewer than 2 valid opportunities, combine with deterministic fallback candidates
   const allCandidates =
@@ -329,7 +359,9 @@ Produce a structured StrategistExtraction with concrete, defensible opportunitie
 
       const primaryUrl =
         opp.sourceUrls[0] ||
-        (opp.supportingCompetitorIds[0] ? competitorMap.get(opp.supportingCompetitorIds[0])?.url : target.url) ||
+        (opp.supportingCompetitorIds[0]
+          ? competitorMap.get(opp.supportingCompetitorIds[0])?.url
+          : target.url) ||
         target.url;
 
       await tx.evidence.create({

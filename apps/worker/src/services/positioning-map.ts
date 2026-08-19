@@ -51,7 +51,10 @@ export class PositioningMapService {
       x = 90;
       priceRationaleParts.push("Exclusive custom enterprise quote");
     } else if (entity.hasCustomEnterpriseQuote) {
-      x = Math.min(85, 65 + (entity.highestPriceAmount ? Math.min(20, entity.highestPriceAmount / 50) : 10));
+      x = Math.min(
+        85,
+        65 + (entity.highestPriceAmount ? Math.min(20, entity.highestPriceAmount / 50) : 10),
+      );
       priceRationaleParts.push("Tiered pricing with custom enterprise tier");
     } else if (entity.highestPriceAmount && entity.highestPriceAmount > 200) {
       x = Math.min(80, 50 + entity.highestPriceAmount / 15);
@@ -59,7 +62,10 @@ export class PositioningMapService {
     } else if (entity.highestPriceAmount && entity.highestPriceAmount > 0) {
       x = Math.min(60, 25 + entity.highestPriceAmount / 6);
       priceRationaleParts.push(`Accessible paid tiers ($${entity.highestPriceAmount})`);
-    } else if (entity.pricingModel?.toLowerCase().includes("free") || entity.pricingModel?.toLowerCase().includes("open source")) {
+    } else if (
+      entity.pricingModel?.toLowerCase().includes("free") ||
+      entity.pricingModel?.toLowerCase().includes("open source")
+    ) {
       x = 15;
       priceRationaleParts.push("Free / Open Source / Freemium model");
     } else {
@@ -78,11 +84,15 @@ export class PositioningMapService {
     y = Math.min(95, Math.max(10, 15 + baseBreadthScore + enterpriseBonus));
 
     if (totalFeatures >= 8 || entity.enterpriseFeaturesCount >= 3) {
-      featureRationaleParts.push(`Broad platform scope (${totalFeatures} features, ${entity.enterpriseFeaturesCount} enterprise capabilities)`);
+      featureRationaleParts.push(
+        `Broad platform scope (${totalFeatures} features, ${entity.enterpriseFeaturesCount} enterprise capabilities)`,
+      );
     } else if (totalFeatures >= 4) {
       featureRationaleParts.push(`Moderate capability breadth (${totalFeatures} features)`);
     } else {
-      featureRationaleParts.push(`Specialized point solution scope (${totalFeatures} features detected)`);
+      featureRationaleParts.push(
+        `Specialized point solution scope (${totalFeatures} features detected)`,
+      );
     }
 
     // Clamp coordinates to [5, 95] for clean chart margins
@@ -101,9 +111,7 @@ export class PositioningMapService {
   /**
    * Clusters entities in 2D space based on Euclidean proximity.
    */
-  static clusterCoordinates(
-    coordinates: PositioningMapCoordinate[],
-  ): {
+  static clusterCoordinates(coordinates: PositioningMapCoordinate[]): {
     clusteredCoordinates: PositioningMapCoordinate[];
     clusters: PositioningMapCluster[];
   } {
@@ -150,16 +158,20 @@ export class PositioningMapService {
 
       if (centroidX >= 60 && centroidY >= 60) {
         label = "Enterprise All-in-One Platforms";
-        description = "Comprehensive platform capabilities with enterprise-grade pricing and custom contracts.";
+        description =
+          "Comprehensive platform capabilities with enterprise-grade pricing and custom contracts.";
       } else if (centroidX <= 45 && centroidY >= 60) {
         label = "High-Value Disruptors";
-        description = "Broad feature coverage delivered at accessible, transparent self-serve pricing.";
+        description =
+          "Broad feature coverage delivered at accessible, transparent self-serve pricing.";
       } else if (centroidX <= 45 && centroidY <= 45) {
         label = "Accessible Point Solutions";
-        description = "Focused, specialized tooling optimized for fast onboarding and individual/SMB budgets.";
+        description =
+          "Focused, specialized tooling optimized for fast onboarding and individual/SMB budgets.";
       } else if (centroidX >= 60 && centroidY <= 45) {
         label = "Premium Niche Specialists";
-        description = "High-touch specialized tools commanding premium pricing in focused domain workflows.";
+        description =
+          "High-touch specialized tools commanding premium pricing in focused domain workflows.";
       }
 
       const clusterId = `cluster-${clusterIndex}`;
@@ -189,9 +201,7 @@ export class PositioningMapService {
   /**
    * Identifies uncrowded market quadrants and formulates strategic whitespace opportunities.
    */
-  static detectWhitespaces(
-    coordinates: PositioningMapCoordinate[],
-  ): PositioningMapWhitespace[] {
+  static detectWhitespaces(coordinates: PositioningMapCoordinate[]): PositioningMapWhitespace[] {
     const whitespaces: PositioningMapWhitespace[] = [];
 
     // Define 4 strategic quadrants in (0..100, 0..100)
@@ -208,42 +218,46 @@ export class PositioningMapService {
         quadrant: "High Feature Breadth / Accessible Self-Serve",
         xRange: [0, 50],
         yRange: [50, 100],
-        opportunity: "Price-Disruptive Enterprise Alternative: Offer high-value platform capabilities (SSO, Audit Logs, API) at transparent self-serve rates to capture cost-conscious buyers migrating from legacy suites.",
-        rationale: "Few or no competitors currently offer rich platform breadth without forcing buyers into expensive opaque enterprise sales contracts.",
+        opportunity:
+          "Price-Disruptive Enterprise Alternative: Offer high-value platform capabilities (SSO, Audit Logs, API) at transparent self-serve rates to capture cost-conscious buyers migrating from legacy suites.",
+        rationale:
+          "Few or no competitors currently offer rich platform breadth without forcing buyers into expensive opaque enterprise sales contracts.",
       },
       {
         id: "ws-lightweight-fast-time-to-value",
         quadrant: "Focused Point Solution / Low Price",
         xRange: [0, 50],
         yRange: [0, 50],
-        opportunity: "Frictionless Micro-SaaS Entry: Capture early-stage teams with a single hyper-optimized workflow, instant setup, and zero bloat.",
-        rationale: "Incumbents have moved upmarket with heavy enterprise suites, leaving simpler user workflows underserved.",
+        opportunity:
+          "Frictionless Micro-SaaS Entry: Capture early-stage teams with a single hyper-optimized workflow, instant setup, and zero bloat.",
+        rationale:
+          "Incumbents have moved upmarket with heavy enterprise suites, leaving simpler user workflows underserved.",
       },
       {
         id: "ws-premium-vertical-specialist",
         quadrant: "Specialized Niche / High Willingness-to-Pay",
         xRange: [50, 100],
         yRange: [0, 50],
-        opportunity: "Vertical Industry Specialist: Charge premium rates by solving a deep regulatory or compliance-specific workflow that generalist tools cannot handle.",
-        rationale: "High customer willingness-to-pay exists for mission-critical specialized workflows with zero generalist competition.",
+        opportunity:
+          "Vertical Industry Specialist: Charge premium rates by solving a deep regulatory or compliance-specific workflow that generalist tools cannot handle.",
+        rationale:
+          "High customer willingness-to-pay exists for mission-critical specialized workflows with zero generalist competition.",
       },
       {
         id: "ws-enterprise-suite-consolidation",
         quadrant: "Consolidated Enterprise Powerhouse",
         xRange: [50, 100],
         yRange: [50, 100],
-        opportunity: "Consolidated Enterprise Suite: Displace fragmented multi-vendor tool stacks with an all-in-one platform under unified governance.",
-        rationale: "Enterprise buyers prefer single-vendor procurement for governance, security auditing, and vendor consolidation.",
+        opportunity:
+          "Consolidated Enterprise Suite: Displace fragmented multi-vendor tool stacks with an all-in-one platform under unified governance.",
+        rationale:
+          "Enterprise buyers prefer single-vendor procurement for governance, security auditing, and vendor consolidation.",
       },
     ];
 
     for (const q of quadrants) {
       const occupants = coordinates.filter(
-        (c) =>
-          c.x >= q.xRange[0] &&
-          c.x <= q.xRange[1] &&
-          c.y >= q.yRange[0] &&
-          c.y <= q.yRange[1],
+        (c) => c.x >= q.xRange[0] && c.x <= q.xRange[1] && c.y >= q.yRange[0] && c.y <= q.yRange[1],
       );
 
       // Whitespace condition: quadrant has 0 or 1 occupant

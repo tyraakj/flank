@@ -53,11 +53,24 @@ export function computeDeterministicPositioningFallback(params: {
 
   // 1. Determine Tone
   let tone = "Modern Product-Led";
-  if (textLower.includes("enterprise") || textLower.includes("soc 2") || textLower.includes("compliance")) {
+  if (
+    textLower.includes("enterprise") ||
+    textLower.includes("soc 2") ||
+    textLower.includes("compliance")
+  ) {
     tone = "Enterprise / Governance-Focused";
-  } else if (textLower.includes("developer") || textLower.includes("api") || textLower.includes("sdk") || textLower.includes("github")) {
+  } else if (
+    textLower.includes("developer") ||
+    textLower.includes("api") ||
+    textLower.includes("sdk") ||
+    textLower.includes("github")
+  ) {
     tone = "Developer-First / Technical";
-  } else if (textLower.includes("simple") || textLower.includes("fast") || textLower.includes("start for free")) {
+  } else if (
+    textLower.includes("simple") ||
+    textLower.includes("fast") ||
+    textLower.includes("start for free")
+  ) {
     tone = "Self-Serve / Accessible";
   }
 
@@ -67,7 +80,11 @@ export function computeDeterministicPositioningFallback(params: {
     icp = "Software engineers, technical leads, and engineering teams";
   } else if (textLower.includes("product managers") || textLower.includes("growth")) {
     icp = "Product managers, growth marketers, and analytics teams";
-  } else if (textLower.includes("enterprise") || textLower.includes("security officers") || textLower.includes("ciso")) {
+  } else if (
+    textLower.includes("enterprise") ||
+    textLower.includes("security officers") ||
+    textLower.includes("ciso")
+  ) {
     icp = "Enterprise security leaders, IT directors, and compliance managers";
   }
 
@@ -89,7 +106,9 @@ export function computeDeterministicPositioningFallback(params: {
   const differentiators: string[] = [];
   if (params.pricingModel) differentiators.push(`Monetization model: ${params.pricingModel}`);
   if (params.featuresCount && params.featuresCount > 5) {
-    differentiators.push(`Comprehensive feature breadth (${params.featuresCount} verified capabilities)`);
+    differentiators.push(
+      `Comprehensive feature breadth (${params.featuresCount} verified capabilities)`,
+    );
   }
   if (metaDesc) differentiators.push(metaDesc.substring(0, 100));
   if (differentiators.length === 0) differentiators.push("Standard market functionality");
@@ -320,7 +339,12 @@ COMPETITOR BACKGROUND:
 - Canonical Domain: ${comp.canonicalDomain}
 - Type: ${comp.type}
 - Discovered Plans: ${pricingPlans.map((p) => `${p.name} ($${p.amount ?? "Quote"})`).join(", ") || "None"}
-- Supported Capabilities: ${supportedFeatures.map((f) => f.feature?.name).filter(Boolean).join(", ") || "General"}
+- Supported Capabilities: ${
+          supportedFeatures
+            .map((f) => f.feature?.name)
+            .filter(Boolean)
+            .join(", ") || "General"
+        }
 
 SCRAPED MESSAGING & ABOUT PAGES:
 ${combinedText}
@@ -481,7 +505,9 @@ Extract structured CompetitorPositioningData adhering to the schema. Preserve ve
               targetId: target.id,
               icp: profile?.icp || "B2B organizations",
               categoryClaim: profile?.category || target.name,
-              differentiators: Array.isArray(profile?.valueProps) ? (profile.valueProps as string[]) : [],
+              differentiators: Array.isArray(profile?.valueProps)
+                ? (profile.valueProps as string[])
+                : [],
               tone: "Strategic Competitive Intelligence",
               axes: {
                 x: coord.x,

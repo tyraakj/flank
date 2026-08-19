@@ -5,10 +5,7 @@ import {
   QualityReportDataSchema,
   CriticStageOutputSchema,
 } from "@flank/shared";
-import {
-  QualityEvaluator,
-  QualityEvaluationInputs,
-} from "../services/quality-evaluator";
+import { QualityEvaluator, QualityEvaluationInputs } from "../services/quality-evaluator";
 
 describe("Unit 18: Critic Agent & Quality Gates", () => {
   describe("Zod Contracts Validation", () => {
@@ -91,32 +88,108 @@ describe("Unit 18: Critic Agent & Quality Gates", () => {
         { id: "cand-3", domain: "comp3.com", name: "Comp 3" },
       ],
       competitors: [
-        { id: "comp-1", name: "Comp 1", canonicalDomain: "comp1.com", type: "DIRECT", status: "ACTIVE" },
-        { id: "comp-2", name: "Comp 2", canonicalDomain: "comp2.com", type: "INDIRECT", status: "ACTIVE" },
+        {
+          id: "comp-1",
+          name: "Comp 1",
+          canonicalDomain: "comp1.com",
+          type: "DIRECT",
+          status: "ACTIVE",
+        },
+        {
+          id: "comp-2",
+          name: "Comp 2",
+          canonicalDomain: "comp2.com",
+          type: "INDIRECT",
+          status: "ACTIVE",
+        },
       ],
       pricingPlans: [
         { id: "plan-1", competitorId: "comp-1", name: "Pro Plan", amount: 49, currency: "USD" },
       ],
       features: [
-        { id: "feat-1", name: "Single Sign-On (SSO)", slug: "single-sign-on-sso", category: "Security" },
+        {
+          id: "feat-1",
+          name: "Single Sign-On (SSO)",
+          slug: "single-sign-on-sso",
+          category: "Security",
+        },
       ],
       featureClaims: [
-        { id: "claim-1", competitorId: "comp-1", featureId: "feat-1", support: "YES", shippingState: "shipped" },
+        {
+          id: "claim-1",
+          competitorId: "comp-1",
+          featureId: "feat-1",
+          support: "YES",
+          shippingState: "shipped",
+        },
       ],
       positionings: [
-        { id: "pos-1", competitorId: "comp-1", categoryClaim: "Security Suite", axes: { x: 50, y: 50 } },
+        {
+          id: "pos-1",
+          competitorId: "comp-1",
+          categoryClaim: "Security Suite",
+          axes: { x: 50, y: 50 },
+        },
       ],
       opportunities: [
-        { id: "opp-1", kind: "PRICING", gap: "Opaque pricing", suggestedMove: "Transparent tiers", rank: 1 },
+        {
+          id: "opp-1",
+          kind: "PRICING",
+          gap: "Opaque pricing",
+          suggestedMove: "Transparent tiers",
+          rank: 1,
+        },
       ],
       evidences: [
-        { id: "ev-1", claimType: "TARGET_PROFILE", claimId: "profile-1", url: "https://flank.dev", excerpt: "Flank" },
-        { id: "ev-2", claimType: "COMPETITOR", claimId: "comp-1", url: "https://comp1.com", excerpt: "Comp 1" },
-        { id: "ev-3", claimType: "COMPETITOR", claimId: "comp-2", url: "https://comp2.com", excerpt: "Comp 2" },
-        { id: "ev-4", claimType: "PRICING_PLAN", claimId: "plan-1", url: "https://comp1.com/pricing", excerpt: "$49" },
-        { id: "ev-5", claimType: "FEATURE_CLAIM", claimId: "claim-1", url: "https://comp1.com/features", excerpt: "SSO" },
-        { id: "ev-6", claimType: "POSITIONING", claimId: "pos-1", url: "https://comp1.com/about", excerpt: "Security" },
-        { id: "ev-7", claimType: "OPPORTUNITY", claimId: "opp-1", url: "https://comp1.com", excerpt: "Pricing quote" },
+        {
+          id: "ev-1",
+          claimType: "TARGET_PROFILE",
+          claimId: "profile-1",
+          url: "https://flank.dev",
+          excerpt: "Flank",
+        },
+        {
+          id: "ev-2",
+          claimType: "COMPETITOR",
+          claimId: "comp-1",
+          url: "https://comp1.com",
+          excerpt: "Comp 1",
+        },
+        {
+          id: "ev-3",
+          claimType: "COMPETITOR",
+          claimId: "comp-2",
+          url: "https://comp2.com",
+          excerpt: "Comp 2",
+        },
+        {
+          id: "ev-4",
+          claimType: "PRICING_PLAN",
+          claimId: "plan-1",
+          url: "https://comp1.com/pricing",
+          excerpt: "$49",
+        },
+        {
+          id: "ev-5",
+          claimType: "FEATURE_CLAIM",
+          claimId: "claim-1",
+          url: "https://comp1.com/features",
+          excerpt: "SSO",
+        },
+        {
+          id: "ev-6",
+          claimType: "POSITIONING",
+          claimId: "pos-1",
+          url: "https://comp1.com/about",
+          excerpt: "Security",
+        },
+        {
+          id: "ev-7",
+          claimType: "OPPORTUNITY",
+          claimId: "opp-1",
+          url: "https://comp1.com",
+          excerpt: "Pricing quote",
+        },
       ],
     };
 
@@ -161,7 +234,13 @@ describe("Unit 18: Critic Agent & Quality Gates", () => {
       const contradictoryInputs: QualityEvaluationInputs = {
         ...mockValidRunInputs,
         featureClaims: [
-          { id: "claim-bad", competitorId: "comp-1", featureId: "feat-1", support: "YES", shippingState: "announced" },
+          {
+            id: "claim-bad",
+            competitorId: "comp-1",
+            featureId: "feat-1",
+            support: "YES",
+            shippingState: "announced",
+          },
         ],
       };
 

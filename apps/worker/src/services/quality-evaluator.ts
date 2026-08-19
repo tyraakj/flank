@@ -167,7 +167,8 @@ export class QualityEvaluator {
     // Determine Hard Publication Gate
     // Hard rules: TargetProfile present, Competitors >= 1, no critical REJECT/BLOCKED stages
     const hasFatalBlocker = blockingReasons.length > 0;
-    const canPublish = !hasFatalBlocker && inputs.profile !== null && inputs.competitors.length >= 1;
+    const canPublish =
+      !hasFatalBlocker && inputs.profile !== null && inputs.competitors.length >= 1;
 
     let overallStatus: "PASS" | "WARNING" | "REJECT" | "BLOCKED" = "PASS";
     if (hasFatalBlocker) {
@@ -261,8 +262,8 @@ export class QualityEvaluator {
     const status = issues.some((i) => i.includes("Missing TargetProfile"))
       ? "REJECT"
       : issues.length > 0
-      ? "WARNING"
-      : "PASS";
+        ? "WARNING"
+        : "PASS";
 
     return {
       stageKey: "PROFILER",
@@ -290,7 +291,8 @@ export class QualityEvaluator {
       completeness = 60;
     }
 
-    const status = inputs.candidates.length === 0 ? "REJECT" : issues.length > 0 ? "WARNING" : "PASS";
+    const status =
+      inputs.candidates.length === 0 ? "REJECT" : issues.length > 0 ? "WARNING" : "PASS";
 
     return {
       stageKey: "DISCOVERY",
@@ -352,8 +354,8 @@ export class QualityEvaluator {
       inputs.competitors.length === 0 || contradictionCount > 0
         ? "REJECT"
         : issues.length > 0
-        ? "WARNING"
-        : "PASS";
+          ? "WARNING"
+          : "PASS";
 
     return {
       stageKey: "VERIFIER",
@@ -448,14 +450,14 @@ export class QualityEvaluator {
     for (const [key, statuses] of compFeatureClaims.entries()) {
       if (statuses.includes("YES") && statuses.includes("NO")) {
         contradictionCount++;
-        issues.push(`Direct support contradiction on feature for competitor (${key}): both YES and NO claims exist`);
+        issues.push(
+          `Direct support contradiction on feature for competitor (${key}): both YES and NO claims exist`,
+        );
       }
     }
 
     const sourcing =
-      nonUnknownClaims.length > 0
-        ? Math.round((backedCount / nonUnknownClaims.length) * 100)
-        : 100;
+      nonUnknownClaims.length > 0 ? Math.round((backedCount / nonUnknownClaims.length) * 100) : 100;
 
     const status = contradictionCount > 0 ? "REJECT" : issues.length > 0 ? "WARNING" : "PASS";
 
@@ -503,9 +505,7 @@ export class QualityEvaluator {
     }
 
     const sourcing =
-      compPositions.length > 0
-        ? Math.round((backedCount / compPositions.length) * 100)
-        : 100;
+      compPositions.length > 0 ? Math.round((backedCount / compPositions.length) * 100) : 100;
 
     const status = contradictionCount > 0 ? "REJECT" : issues.length > 0 ? "WARNING" : "PASS";
 

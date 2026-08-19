@@ -5,10 +5,7 @@ import {
   CompetitorPricingExtractionSchema,
   PricingStageOutputSchema,
 } from "@flank/shared";
-import {
-  computeDeterministicPricingFallback,
-  discoverPricingUrls,
-} from "./pricing";
+import { computeDeterministicPricingFallback, discoverPricingUrls } from "./pricing";
 
 describe("Unit 14: Pricing Agent Contracts & Logic", () => {
   describe("PricingPlanSchema validation", () => {
@@ -26,7 +23,8 @@ describe("Unit 14: Pricing Agent Contracts & Logic", () => {
         availability: "published" as const,
         sourceUrl: "https://example.com/pricing",
         rawPriceString: "$29 / user / month",
-        excerpt: "Pro Plan: $29/user/month billed monthly. Includes Advanced Analytics and 10k API requests.",
+        excerpt:
+          "Pro Plan: $29/user/month billed monthly. Includes Advanced Analytics and 10k API requests.",
         confidence: 90,
       };
 
@@ -274,7 +272,10 @@ describe("Unit 14: Pricing Agent Contracts & Logic", () => {
       });
 
       assert.ok(result.plans.length > 0);
-      assert.strictEqual(result.plans.every((p) => p.amount === null), true);
+      assert.strictEqual(
+        result.plans.every((p) => p.amount === null),
+        true,
+      );
       assert.strictEqual(result.availabilitySummary, "contact-sales");
     });
 

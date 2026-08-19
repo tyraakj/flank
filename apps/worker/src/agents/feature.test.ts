@@ -7,10 +7,7 @@ import {
   FeatureStageOutputSchema,
 } from "@flank/shared";
 import { FeatureTaxonomyService } from "../services/feature-taxonomy";
-import {
-  computeDeterministicFeatureFallback,
-  discoverFeatureUrls,
-} from "./feature";
+import { computeDeterministicFeatureFallback, discoverFeatureUrls } from "./feature";
 
 describe("Unit 15: Feature Agent & Taxonomy Contracts & Logic", () => {
   describe("Contracts & Schemas", () => {
@@ -253,12 +250,16 @@ describe("Unit 15: Feature Agent & Taxonomy Contracts & Logic", () => {
       assert.strictEqual(sso?.shippingState, "shipped");
 
       // Check PARTIAL support
-      const rbac = extraction.features.find((f) => f.canonicalName === "Role-Based Access Control (RBAC)");
+      const rbac = extraction.features.find(
+        (f) => f.canonicalName === "Role-Based Access Control (RBAC)",
+      );
       assert.ok(rbac);
       assert.strictEqual(rbac?.support, "PARTIAL");
 
       // Check NO support
-      const customDomain = extraction.features.find((f) => f.canonicalName === "Custom Domain & SSL");
+      const customDomain = extraction.features.find(
+        (f) => f.canonicalName === "Custom Domain & SSL",
+      );
       assert.ok(customDomain);
       assert.strictEqual(customDomain?.support, "NO");
 

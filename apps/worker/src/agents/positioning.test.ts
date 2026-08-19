@@ -5,14 +5,8 @@ import {
   PositioningMapSchema,
   PositioningStageOutputSchema,
 } from "@flank/shared";
-import {
-  PositioningMapService,
-  EntitySignalPacket,
-} from "../services/positioning-map";
-import {
-  computeDeterministicPositioningFallback,
-  discoverPositioningUrls,
-} from "./positioning";
+import { PositioningMapService, EntitySignalPacket } from "../services/positioning-map";
+import { computeDeterministicPositioningFallback, discoverPositioningUrls } from "./positioning";
 
 describe("Unit 16: Positioning Agent & 2x2 Map Logic", () => {
   describe("Zod Contracts Validation", () => {
