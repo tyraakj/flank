@@ -53,6 +53,31 @@ All agent LLM prompts must strictly follow the 5-layer modular structure to maxi
 
 _Note: Keeping Layers 1–3 strictly static at the start of the prompt enables LLM provider **Prompt Caching** (Gemini/Anthropic/OpenAI), drastically reducing latency and token costs across repeated calls._
 
+### Graph Engineering Standards
+
+1. **Nodes as Single-Responsibility Contracts**:
+   - Every graph node has a strictly bounded input and a validated Zod output schema (`packages/shared/src/contracts/`).
+   - Each node performs exactly one discrete job (e.g. `Pricing` extracts monetization, `Feature` extracts taxonomy). Never create kitchen-sink nodes.
+2. **Zero-Token Deterministic Edges**:
+   - Edges are data contracts, not conversational prompts. Intermediate plumbing (flattening, deduplicating, sorting, filtering) is executed with deterministic JavaScript (`flatMap`, `Set`, `filter`), saving LLM tokens strictly for extraction and strategic judgment.
+3. **The Diamond Topology (Split $\to$ Work $\to$ Merge)**:
+   - Structure multi-agent workflows around the canonical diamond: `VERIFIER` splits verified competitors, `[PRICING, FEATURE, POSITIONING]` execute in parallel across disjoint database tables, and `STRATEGIST` merges at the barrier join.
+4. **Fault-Tolerant Parallel Fan-Out**:
+   - Concurrent sub-tasks execute via `Promise.allSettled`. Individual failed competitor scrapes resolve to `null` and are pruned via `.filter(Boolean)`—a failure on competitor 3 never poisons or halts competitors 1, 2, or 4.
+5. **Minimal Barrier Synchronization**:
+   - Erect barrier joins _only_ when a downstream node genuinely requires the aggregate multi-source dataset (e.g. cross-competitor opportunity synthesis in `Strategist`). Avoid arbitrary synchronization points that inflate latency.
+6. **Runtime Conditional Edge Routing**:
+   - Branching decisions are governed by deterministic TypeScript code (`if / switch` over validated schema fields). The LLM classifies the entity; code determines the downstream graph path.
+7. **Adversarial & Edge Verification**:
+   - Place dedicated verifier nodes on dependency edges to kill low-quality findings before they pollute downstream state (`Verifier` filters out non-products before extraction; `Critic` audits citation validity before publication).
+8. **Convergent Cycles (Loop-Until-Dry & Dedupe vs. SEEN)**:
+   - In recursive or iterative discovery loops, dedupe against **all seen candidates** (`seenDomains = new Set()`), not merely confirmed ones. This guarantees the loop runs dry and terminates without rediscovering known dead ends.
+9. **Model Tiering across Graph Roles**:
+   - High-throughput, bounded extraction nodes (`Profiler`, `Discovery`, `Verifier`, `Pricing`, `Feature`, `Positioning`) execute on fast, cost-efficient models (`gemini-2.0-flash`).
+   - High-reasoning models (`gemini-1.5-pro` / `gemini-2.0-pro`) are reserved strictly for multi-source synthesis (`Strategist`) and quality auditing (`Critic`).
+10. **Progressive UI Pipeline Streaming**:
+    - Do not make the user interface wait for the barrier join. As each parallel branch finishes, emit `STAGE_SUMMARY` SSE events to hydrate report matrices progressively in real-time.
+
 ## Provider Implementations
 
 - All providers live in `apps/worker/src/providers/` and implement the interfaces defined in `packages/shared/src/contracts/providers.ts`.
