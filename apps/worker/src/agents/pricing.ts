@@ -11,6 +11,9 @@ import * as cheerio from "cheerio";
 import { ZodError } from "zod";
 import * as crypto from "crypto";
 
+// ============================================================================
+// LAYER 1: SYSTEM PROMPT (STATIC PREFIX - CACHE CANDIDATE)
+// ============================================================================
 const PRICING_SYSTEM_PROMPT = `You are a Principal Pricing & Monetization Analyst at Flank.
 Your task is to analyze scraped public pricing page content (or homepage/product content) for a software competitor and extract a comprehensive, structured array of PricingPlans and monetization metadata.
 
@@ -38,6 +41,91 @@ Your task is to analyze scraped public pricing page content (or homepage/product
    - For every plan, provide an exact verbatim excerpt from the page containing the plan header, price, billing cadence, and key terms for evidence verification.
 7. Unknown Values:
    - If seatModel or usage limits are not stated, set seatModel: "unknown" and usageLimits: [].`;
+
+// ============================================================================
+// LAYER 2: STATIC FEW-SHOT EXAMPLES (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const PRICING_STATIC_EXAMPLES = `### FEW-SHOT EXAMPLES & EDGE CASE GUARDS:
+
+Example: Multi-Tier SaaS with Monthly/Annual Split and Custom Enterprise
+Output:
+{
+  "hasPricingPage": true,
+  "pricingModelSummary": "Tiered per-seat subscription with free tier and custom enterprise quoting",
+  "primaryCurrency": "USD",
+  "hasFreeTier": true,
+  "hasTrial": true,
+  "trialDays": 14,
+  "seatModel": "Per User / Seat",
+  "plans": [
+    {
+      "name": "Starter Free",
+      "amount": 0,
+      "currency": "USD",
+      "interval": "MONTHLY",
+      "band": "FREE",
+      "seatModel": "Up to 3 users",
+      "usageLimits": ["5 projects max", "1 GB storage"],
+      "includedFeatures": ["Core task tracking", "Community support"],
+      "availability": "free",
+      "rawPriceString": "$0 / month",
+      "excerpt": "Starter: Free forever for small teams up to 3 members."
+    },
+    {
+      "name": "Pro (Monthly)",
+      "amount": 29,
+      "currency": "USD",
+      "interval": "MONTHLY",
+      "band": "GROWTH",
+      "seatModel": "Per user / month",
+      "usageLimits": ["Unlimited projects", "100 GB storage"],
+      "includedFeatures": ["Automated workflows", "Priority support", "Custom integrations"],
+      "availability": "published",
+      "rawPriceString": "$29 per user/mo billed monthly",
+      "excerpt": "Pro Plan: $29/user/month billed monthly. Unlimited projects and automated workflows."
+    },
+    {
+      "name": "Pro (Annual)",
+      "amount": 24,
+      "currency": "USD",
+      "interval": "YEARLY",
+      "band": "GROWTH",
+      "seatModel": "Per user / month (annual billing)",
+      "usageLimits": ["Unlimited projects", "100 GB storage"],
+      "includedFeatures": ["Automated workflows", "Priority support", "Custom integrations"],
+      "availability": "published",
+      "rawPriceString": "$24 per user/mo billed annually ($288/yr)",
+      "excerpt": "Pro Plan Annual: $24/user/month when billed annually ($288/yr)."
+    },
+    {
+      "name": "Enterprise",
+      "amount": null,
+      "currency": "USD",
+      "interval": "YEARLY",
+      "band": "CUSTOM",
+      "seatModel": "Custom enterprise quote",
+      "usageLimits": ["Unlimited seats and storage"],
+      "includedFeatures": ["SAML SSO", "Dedicated Customer Success Manager", "99.99% SLA"],
+      "availability": "contact-sales",
+      "rawPriceString": "Contact Sales",
+      "excerpt": "Enterprise: Custom pricing and deployment. Contact sales for quotes and SLA."
+    }
+  ]
+}`;
+
+// ============================================================================
+// LAYER 3: TOOLS & OUTPUT SCHEMA SPECIFICATION (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const PRICING_TOOLS_SPEC = `### OUTPUT FORMAT SPECIFICATION:
+Format output strictly conforming to the CompetitorPricingExtraction JSON schema:
+- hasPricingPage: Boolean
+- pricingModelSummary: Concise summary of monetization structure
+- primaryCurrency: 3-letter ISO 4217 currency code (e.g. "USD", "INR", "EUR")
+- hasFreeTier: Boolean
+- hasTrial: Boolean
+- trialDays: Integer or null
+- seatModel: String (e.g. "Per User / Seat", "Usage-Based", "unknown")
+- plans: Array of extracted PricingPlan objects adhering to the rules above.`;
 
 export function computeDeterministicPricingFallback(params: {
   pageText: string;
@@ -437,7 +525,10 @@ export async function runPricingAgent(
         const sourceUrl = selectedPricingPage.canonicalUrl || selectedPricingPage.url;
         const boundedText = selectedPricingPage.text.substring(0, 25000);
 
-        const prompt = `Analyze the scraped pricing page content for competitor "${comp.name}" (${sourceUrl}) and extract all published plans, tiers, and pricing structures.
+        // ============================================================================
+        // LAYER 4: DYNAMIC CONTEXT (COMPETITOR & SCRAPED PRICING CONTENT)
+        // ============================================================================
+        const dynamicContext = `### DYNAMIC CONTEXT:
 
 COMPETITOR DETAILS:
 - Name: ${comp.name}
@@ -445,10 +536,16 @@ COMPETITOR DETAILS:
 - URL: ${sourceUrl}
 - Competitor Type: ${comp.type}
 
-PRICING PAGE CONTENT:
-${boundedText}
+SCRAPED PRICING PAGE CONTENT:
+${boundedText}`;
 
-Extract all plans into structured JSON adhering to the CompetitorPricingExtraction schema.`;
+        // ============================================================================
+        // LAYER 5: USER TURN / DIRECTIVE
+        // ============================================================================
+        const userDirective = `### USER DIRECTIVE:
+Analyze the dynamic pricing page content for competitor "${comp.name}" (${sourceUrl}) and extract all published plans, tiers, and monetization metadata strictly adhering to the schema and few-shot guidance.`;
+
+        const fullPrompt = `${PRICING_STATIC_EXAMPLES}\n\n${PRICING_TOOLS_SPEC}\n\n${dynamicContext}\n\n${userDirective}`;
 
         const fallback = computeDeterministicPricingFallback({
           pageText: selectedPricingPage.text,
@@ -460,7 +557,7 @@ Extract all plans into structured JSON adhering to the CompetitorPricingExtracti
         let extraction: CompetitorPricingExtraction;
         try {
           const res = await llm.generateStructured({
-            prompt,
+            prompt: fullPrompt,
             schema: CompetitorPricingExtractionSchema,
             schemaName: "CompetitorPricingExtraction",
             schemaDescription: "Structured pricing extraction for competitor",
@@ -470,7 +567,7 @@ Extract all plans into structured JSON adhering to the CompetitorPricingExtracti
           extraction = res.data as CompetitorPricingExtraction;
         } catch (err) {
           if (err instanceof ZodError) {
-            const repairPrompt = `Your previous CompetitorPricingExtraction failed schema validation:\n${err.message}\n\nPlease fix the errors, ensure all required fields (name, band, interval, availability, excerpt, sourceUrl) are valid, and output valid JSON:\n${prompt}`;
+            const repairPrompt = `Your previous CompetitorPricingExtraction failed schema validation:\n${err.message}\n\nPlease fix the errors, ensure all required fields (name, band, interval, availability, excerpt, sourceUrl) are valid, and output valid JSON:\n${fullPrompt}`;
             try {
               const repairRes = await llm.generateStructured({
                 prompt: repairPrompt,

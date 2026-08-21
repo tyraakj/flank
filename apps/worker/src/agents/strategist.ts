@@ -11,6 +11,9 @@ import { publishRunEvent } from "../progress/publisher";
 import { ZodError } from "zod";
 import * as crypto from "crypto";
 
+// ============================================================================
+// LAYER 1: SYSTEM PROMPT (STATIC PREFIX - CACHE CANDIDATE)
+// ============================================================================
 const STRATEGIST_SYSTEM_PROMPT = `You are a Principal Product Strategist and Market Positioning Analyst at Flank.
 Your mission is to synthesize all verified competitive intelligence (features, pricing, positioning, messaging, and market whitespace) to formulate high-leverage, defensible strategic opportunities for the target product.
 
@@ -25,6 +28,52 @@ Your mission is to synthesize all verified competitive intelligence (features, p
 2. Ground all claims in real verified competitor findings; do not hallucinate market trends or customer sentiment.
 3. Score impact (1-5), effort (1-5), and defensibility (1-5) realistically.
 4. Craft an audience-facing 'whatToSay' positioning copy line for each recommendation.`;
+
+// ============================================================================
+// LAYER 2: STATIC FEW-SHOT EXAMPLES (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const STRATEGIST_STATIC_EXAMPLES = `### FEW-SHOT EXAMPLES & EDGE CASE GUARDS:
+
+Example Output:
+{
+  "opportunities": [
+    {
+      "dimension": "PRICING",
+      "title": "Transparent Self-Serve Pricing Wedge Against Opaque Enterprise Competitors",
+      "description": "Dominant incumbents hide pricing behind mandatory sales calls and annual contracts. Introducing transparent monthly self-serve pricing creates a low-friction adoption wedge.",
+      "supportingCompetitorIds": ["comp_123", "comp_456"],
+      "absentCompetitorIds": ["comp_789"],
+      "suggestedMove": "Launch a published $49/mo self-serve Pro tier with a 14-day free trial requiring no credit card.",
+      "impact": 4,
+      "effort": 2,
+      "defensibility": 3,
+      "whatToSay": "Start building in 60 seconds with transparent pricing and zero enterprise sales hurdles.",
+      "reasoning": "80% of verified competitors require sales demos for core features, leaving a clear whitespace for instant self-serve onboarding."
+    }
+  ],
+  "summary": "High-leverage opportunities identified across self-serve monetization and automated workflow integration.",
+  "topRecommendedMove": "Deploy transparent self-serve pricing to capture mid-market developer teams alienated by legacy enterprise quote walls."
+}`;
+
+// ============================================================================
+// LAYER 3: TOOLS & OUTPUT SCHEMA SPECIFICATION (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const STRATEGIST_TOOLS_SPEC = `### OUTPUT FORMAT SPECIFICATION:
+Format output strictly conforming to the StrategistExtraction JSON schema:
+- opportunities: Array of strategic opportunity objects:
+  - dimension: "PRODUCT" | "PRICING" | "POSITIONING" | "MARKETING"
+  - title: Punchy, actionable strategic title
+  - description: Detailed market rationale
+  - supportingCompetitorIds: Array of competitor IDs from the provided dataset
+  - absentCompetitorIds: Array of competitor IDs lacking this capability
+  - suggestedMove: Concrete product or go-to-market action
+  - impact: Integer (1-5)
+  - effort: Integer (1-5)
+  - defensibility: Integer (1-5)
+  - whatToSay: Audience-facing positioning copy line
+  - reasoning: Analytical evidence justification
+- summary: High-level executive strategy overview
+- topRecommendedMove: Single highest-ROI tactical recommendation`;
 
 export function computeDeterministicStrategyFallback(params: {
   targetName: string;
@@ -236,7 +285,10 @@ export async function runStrategistAgent(
     })),
   });
 
-  const prompt = `Analyze the verified competitive intelligence data for target product "${target.name}" and formulate ranked strategic opportunities.
+  // ============================================================================
+  // LAYER 4: DYNAMIC CONTEXT (TARGET PROFILE, COMPETITOR ARTIFACTS, EVIDENCE)
+  // ============================================================================
+  const dynamicContext = `### DYNAMIC CONTEXT:
 
 TARGET PRODUCT PROFILE:
 - Name: ${target.name}
@@ -248,16 +300,22 @@ VERIFIED COMPETITOR ARTIFACTS:
 ${competitorDigest}
 
 SUPPORTING EVIDENCE SAMPLES:
-${evidenceDigest}
+${evidenceDigest}`;
 
-Produce a structured StrategistExtraction with concrete, defensible opportunities across PRODUCT, PRICING, POSITIONING, and MARKETING. Cite only valid competitor IDs from the dataset.`;
+  // ============================================================================
+  // LAYER 5: USER TURN / DIRECTIVE
+  // ============================================================================
+  const userDirective = `### USER DIRECTIVE:
+Synthesize all competitive intelligence provided above for "${target.name}". Formulate concrete, defensible strategic opportunities across PRODUCT, PRICING, POSITIONING, and MARKETING. Strictly adhere to the schema and few-shot guidance, citing only valid competitor IDs from the dataset.`;
+
+  const fullPrompt = `${STRATEGIST_STATIC_EXAMPLES}\n\n${STRATEGIST_TOOLS_SPEC}\n\n${dynamicContext}\n\n${userDirective}`;
 
   const llm = registry.getLlmProvider();
   let strategyExtraction: StrategistExtraction;
 
   try {
     const res = await llm.generateStructured({
-      prompt,
+      prompt: fullPrompt,
       schema: StrategistExtractionSchema,
       schemaName: "StrategistExtraction",
       schemaDescription: "Ranked strategic opportunities and edge recommendations",
@@ -267,7 +325,7 @@ Produce a structured StrategistExtraction with concrete, defensible opportunitie
     strategyExtraction = res.data as StrategistExtraction;
   } catch (err) {
     if (err instanceof ZodError) {
-      const repairPrompt = `Your previous StrategistExtraction failed validation:\n${err.message}\n\nPlease fix errors and output valid JSON:\n${prompt}`;
+      const repairPrompt = `Your previous StrategistExtraction failed validation:\n${err.message}\n\nPlease fix errors and output valid JSON:\n${fullPrompt}`;
       try {
         const repairRes = await llm.generateStructured({
           prompt: repairPrompt,

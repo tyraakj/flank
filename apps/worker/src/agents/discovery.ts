@@ -10,6 +10,9 @@ import { publishRunEvent } from "../progress/publisher";
 import { ZodError } from "zod";
 import * as crypto from "crypto";
 
+// ============================================================================
+// LAYER 1: SYSTEM PROMPT (STATIC PREFIX - CACHE CANDIDATE)
+// ============================================================================
 const DISCOVERY_SYSTEM_PROMPT = `You are a Principal Competitive Intelligence Analyst at Flank.
 Your objective is to generate targeted, high-yield web search strategies to discover direct competitors, indirect competitors, and substitute products for a target software company.
 
@@ -21,11 +24,76 @@ Your objective is to generate targeted, high-yield web search strategies to disc
 5. competitor-list: Industry roundup and market landscape queries (e.g. "top cloud cost optimization tools", "best open source observability platforms").
 6. adjacent-job: Queries focusing on the core Job-to-be-Done (JTBD) the user hires the software to solve.
 
-### RULES:
+### RULES & CONSTRAINTS:
 - Generate 6 to 8 distinct, non-redundant search strategies.
 - Cover all 6 required angles.
 - Use the Target's exact product name, category, ICP, and seed keywords.
 - Formulate precise, search-engine-friendly queries.`;
+
+// ============================================================================
+// LAYER 2: STATIC FEW-SHOT EXAMPLES (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const DISCOVERY_STATIC_EXAMPLES = `### FEW-SHOT EXAMPLES:
+
+Example Input:
+Target Product: "Linear" (linear.app)
+Category: "Issue Tracking & Agile Project Management"
+ICP: "High-growth software engineering teams and product managers"
+
+Example Output:
+{
+  "strategies": [
+    {
+      "angle": "alternative",
+      "query": "alternatives to Linear issue tracker",
+      "rationale": "Direct displacement queries targeting software teams looking to migrate from or replace Linear.",
+      "maxResults": 10
+    },
+    {
+      "angle": "versus",
+      "query": "Linear vs Jira for startups",
+      "rationale": "Direct comparison queries to capture dominant market incumbent comparisons.",
+      "maxResults": 10
+    },
+    {
+      "angle": "category",
+      "query": "best developer project management tools 2026",
+      "rationale": "Category-level benchmark to uncover new and established modern issue tracking tools.",
+      "maxResults": 10
+    },
+    {
+      "angle": "competitor-list",
+      "query": "top modern agile project management software competitors",
+      "rationale": "Roundup articles and market maps listing modern competitors.",
+      "maxResults": 10
+    },
+    {
+      "angle": "review-listing",
+      "query": "site:g2.com/products issue tracking software",
+      "rationale": "Structured software directory listings and market grids.",
+      "maxResults": 10
+    },
+    {
+      "angle": "adjacent-job",
+      "query": "software sprint planning and bug tracking tools for developers",
+      "rationale": "Job-to-be-done query capturing tools solving the same core workflow.",
+      "maxResults": 10
+    }
+  ],
+  "summary": "Multi-angle search plan covering displacement, direct comparison, market roundups, and JTBD workflows."
+}`;
+
+// ============================================================================
+// LAYER 3: TOOLS & OUTPUT SCHEMA SPECIFICATION (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const DISCOVERY_TOOLS_SPEC = `### OUTPUT FORMAT SPECIFICATION:
+Format output strictly conforming to the DiscoveryPlan JSON schema:
+- strategies: Array of 6 to 8 strategy objects, each containing:
+  - angle: One of "category", "alternative", "versus", "review-listing", "competitor-list", "adjacent-job"
+  - query: Exact search string
+  - rationale: Tactical reason for this query
+  - maxResults: Integer between 5 and 15 (default: 10)
+- summary: High-level overview of the discovery strategy`;
 
 const NON_COMPETITOR_DOMAINS = new Set([
   "google.com",
@@ -152,16 +220,24 @@ export async function runDiscoveryAgent(
   if (profile.category) seedKeywords.push(profile.category);
   if (target.name) seedKeywords.push(target.name);
 
-  // 1. Build LLM prompt to generate discovery plan
-  const prompt = `Create a multi-angle competitor discovery search plan for the following product:
+  // ============================================================================
+  // LAYER 4: DYNAMIC CONTEXT (TARGET PROFILE & PRODUCT INFO)
+  // ============================================================================
+  const dynamicContext = `### DYNAMIC CONTEXT (Target Product Details):
 Target Product Name: ${target.name}
 Target Domain: ${target.canonicalDomain}
 Category: ${profile.category || "unknown"}
 ICP: ${profile.icp || "unknown"}
 Pricing Model: ${profile.pricingModel || "unknown"}
-Key Value Propositions: ${valueProps.join("; ") || "unknown"}
+Key Value Propositions: ${valueProps.join("; ") || "unknown"}`;
 
-Generate targeted search queries across all 6 angles (category, alternative, versus, review-listing, competitor-list, adjacent-job). Format output according to schema.`;
+  // ============================================================================
+  // LAYER 5: USER TURN / DIRECTIVE
+  // ============================================================================
+  const userDirective = `### USER DIRECTIVE:
+Generate a targeted, high-yield multi-angle competitor discovery search plan across all 6 required angles (category, alternative, versus, review-listing, competitor-list, adjacent-job) for "${target.name}". Strictly adhere to the schema and few-shot guidance.`;
+
+  const fullPrompt = `${DISCOVERY_STATIC_EXAMPLES}\n\n${DISCOVERY_TOOLS_SPEC}\n\n${dynamicContext}\n\n${userDirective}`;
 
   const fallbackStrategies: DiscoveryStrategy[] = [
     {
@@ -210,7 +286,7 @@ Generate targeted search queries across all 6 angles (category, alternative, ver
   let discoveryPlan: DiscoveryPlan;
   try {
     const result = await llm.generateStructured({
-      prompt,
+      prompt: fullPrompt,
       schema: DiscoveryPlanSchema,
       schemaName: "DiscoveryPlan",
       schemaDescription: "Multi-angle competitor discovery search strategy plan",
@@ -220,7 +296,7 @@ Generate targeted search queries across all 6 angles (category, alternative, ver
     discoveryPlan = result.data as DiscoveryPlan;
   } catch (err) {
     if (err instanceof ZodError) {
-      const repairPrompt = `Your previous DiscoveryPlan failed validation with errors:\n${err.message}\n\nPlease regenerate the DiscoveryPlan strictly adhering to the schema:\n${prompt}`;
+      const repairPrompt = `Your previous DiscoveryPlan failed validation with errors:\n${err.message}\n\nPlease regenerate the DiscoveryPlan strictly adhering to the schema:\n${fullPrompt}`;
       try {
         const repairResult = await llm.generateStructured({
           prompt: repairPrompt,

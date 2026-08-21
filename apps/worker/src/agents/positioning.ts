@@ -11,16 +11,53 @@ import * as cheerio from "cheerio";
 import { ZodError } from "zod";
 import * as crypto from "crypto";
 
+// ============================================================================
+// LAYER 1: SYSTEM PROMPT (STATIC PREFIX - CACHE CANDIDATE)
+// ============================================================================
 const POSITIONING_SYSTEM_PROMPT = `You are a Principal Market Positioning Strategist and Competitive Intelligence Specialist at Flank.
 Your mission is to rigorously analyze public website copy, hero headers, product overviews, customer testimonials, and about pages for a software competitor to extract their market positioning posture.
 
-### EXTRACTION DIRECTIVES:
+### EXTRACTION DIRECTIVES & CONSTRAINTS:
 1. Grounding & Rigor: Every claim MUST be grounded directly in the provided scraped website copy.
 2. Verbatim Headline Value Props: Extract the exact verbatim hero headlines, h1 copy, and primary value propositions directly from the page without paraphrasing.
 3. ICP (Ideal Customer Profile): Describe specifically who they are selling to (buyer title, team type, company stage/size, technical maturity).
 4. Category Claim: Extract how they frame their market category (e.g. "The AI-native developer data platform", "Enterprise-grade continuous compliance suite").
 5. Key Differentiators: Extract 2 to 4 concrete structural, technical, or business differentiators.
 6. Tone of Voice: Categorize their communication style (e.g., "Developer-First / Technical", "Enterprise / Governance-Focused", "Modern Self-Serve / Accessible", "Executive / ROI-Driven").`;
+
+// ============================================================================
+// LAYER 2: STATIC FEW-SHOT EXAMPLES (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const POSITIONING_STATIC_EXAMPLES = `### FEW-SHOT EXAMPLES & EDGE CASE GUARDS:
+
+Example Output:
+{
+  "icp": "Engineering Managers, DevOps Architects, and Platform Engineers managing multi-cloud Kubernetes clusters",
+  "categoryClaim": "Enterprise Autonomous Kubernetes Optimization and Cost Intelligence Platform",
+  "differentiators": [
+    "Real-time machine learning workload rightsizing with zero pod disruption",
+    "Continuous multi-cloud spot instance orchestration with 99.99% availability guarantee",
+    "Agentless eBPF telemetry deployment requiring zero application code instrumentation"
+  ],
+  "tone": "Developer-First / Highly Technical",
+  "headlineValueProps": [
+    "Cut your cloud bill by 60% with zero downtime",
+    "Autonomous Kubernetes rightsizing built for modern platform teams"
+  ],
+  "sourceNotes": "Extracted from hero headline, customer case studies, and /about platform architecture overview."
+}`;
+
+// ============================================================================
+// LAYER 3: TOOLS & OUTPUT SCHEMA SPECIFICATION (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const POSITIONING_TOOLS_SPEC = `### OUTPUT FORMAT SPECIFICATION:
+Format output strictly conforming to the CompetitorPositioningData JSON schema:
+- icp: Target buyer and team profile
+- categoryClaim: Exact market positioning and category descriptor
+- differentiators: Array of 2 to 4 distinct differentiators
+- tone: Communication voice and narrative style
+- headlineValueProps: Array of verbatim headlines and core value claims
+- sourceNotes: Analytical summary of positioning strategy`;
 
 export function computeDeterministicPositioningFallback(params: {
   pageText: string;
@@ -332,7 +369,10 @@ export async function runPositioningAgent(
           featuresCount: supportedFeatures.length,
         });
 
-        const prompt = `Analyze the website messaging, value propositions, and positioning for competitor "${comp.name}" (${comp.url}).
+        // ============================================================================
+        // LAYER 4: DYNAMIC CONTEXT (COMPETITOR & SCRAPED MESSAGING)
+        // ============================================================================
+        const dynamicContext = `### DYNAMIC CONTEXT:
 
 COMPETITOR BACKGROUND:
 - Name: ${comp.name}
@@ -347,14 +387,20 @@ COMPETITOR BACKGROUND:
         }
 
 SCRAPED MESSAGING & ABOUT PAGES:
-${combinedText}
+${combinedText}`;
 
-Extract structured CompetitorPositioningData adhering to the schema. Preserve verbatim hero headlines.`;
+        // ============================================================================
+        // LAYER 5: USER TURN / DIRECTIVE
+        // ============================================================================
+        const userDirective = `### USER DIRECTIVE:
+Analyze the dynamic website messaging, value propositions, and positioning for competitor "${comp.name}" (${comp.url}). Extract structured CompetitorPositioningData strictly adhering to the schema and few-shot guidance, preserving verbatim hero headlines.`;
+
+        const fullPrompt = `${POSITIONING_STATIC_EXAMPLES}\n\n${POSITIONING_TOOLS_SPEC}\n\n${dynamicContext}\n\n${userDirective}`;
 
         let positioningData: CompetitorPositioningData;
         try {
           const res = await llm.generateStructured({
-            prompt,
+            prompt: fullPrompt,
             schema: CompetitorPositioningDataSchema,
             schemaName: "CompetitorPositioningData",
             schemaDescription: "Structured market positioning analysis for competitor",
@@ -364,7 +410,7 @@ Extract structured CompetitorPositioningData adhering to the schema. Preserve ve
           positioningData = res.data as CompetitorPositioningData;
         } catch (err) {
           if (err instanceof ZodError) {
-            const repairPrompt = `Your previous CompetitorPositioningData failed validation:\n${err.message}\n\nPlease fix errors and output valid JSON:\n${prompt}`;
+            const repairPrompt = `Your previous CompetitorPositioningData failed validation:\n${err.message}\n\nPlease fix errors and output valid JSON:\n${fullPrompt}`;
             try {
               const repairRes = await llm.generateStructured({
                 prompt: repairPrompt,

@@ -223,48 +223,105 @@ export async function runProfilerAgent(
     }
   }
 
-  const PROFILER_SYSTEM_PROMPT = `You are a Principal Product Marketing Strategist and Competitive Intelligence Specialist at Flank.
+// ============================================================================
+// LAYER 1: SYSTEM PROMPT (STATIC PREFIX - CACHE CANDIDATE)
+// ============================================================================
+const PROFILER_SYSTEM_PROMPT = `You are a Principal Product Marketing Strategist and Competitive Intelligence Specialist at Flank.
 Your mission is to perform an exhaustive, evidence-based market and product profile analysis of a target software company from its live website content (including Homepage, Pricing, and About/Product pages).
 
-### CORE ANALYSIS DIRECTIVES:
+### CORE ANALYSIS DIRECTIVES & CONSTRAINTS:
 1. Grounding & Rigor: Every claim MUST be grounded in the provided scraped website text. Do NOT hallucinate features, customer profiles, or pricing models not substantiated by the copy.
 2. Specificity over Buzzwords: Avoid empty generic marketing filler (e.g., do not say "an AI-powered platform that revolutionizes workflows"). Extract the exact functional category, concrete workflows, and domain-specific capabilities.
 3. Strict Fallback to 'unknown': If a dimension (e.g., pricing model, ICP) cannot be determined from the provided text, explicitly output "unknown" rather than speculating.
-4. Language Preservation & Normalization: If the website is non-English, detect the language code accurately, provide standardized English classifications for category, ICP, and pricingModel, while preserving the semantic meaning of the original copy.
+4. Language Preservation & Normalization: If the website is non-English, detect the language code accurately, provide standardized English classifications for category, ICP, and pricingModel, while preserving the semantic meaning of the original copy.`;
 
-### FIELD EXTRACTION GUIDELINES:
-- category: The standard, industry-recognized B2B/B2C market category (e.g., "Customer Relationship Management (CRM)", "Observability & APM", "Product Analytics", "Continuous Integration / Continuous Deployment (CI/CD)", "Headless CMS"). If niche, provide the primary market followed by the specific sub-niche.
-- icp (Ideal Customer Profile): Detailed description of the target buyer/user persona including company maturity (e.g. Early-stage startups, Mid-market, Fortune 500 Enterprise), target role/title (e.g. VP of Engineering, Growth Product Managers, RevOps), and technical/operational context.
-- pricingModel: Precise monetization architecture extracted from pricing tiers, plan comparisons, or FAQ (e.g., "Freemium with Usage-Based Add-ons", "Per-Seat Tiered Subscription (Starter/Pro/Enterprise)", "Pure Consumption / Credit-Based", "Free Open Source with Paid Managed Cloud", "Contact Sales / Enterprise Custom Quote Only").
-- valueProps: 3 to 5 punchy, distinct, high-impact value propositions highlighting concrete business outcomes, efficiency gains, or technical differentiators.
-- jobsToBeDone: 3 to 5 core functional or operational jobs the customer "hires" this product to accomplish. Formulate each as a concise actionable statement (e.g., "Automate end-to-end regression testing across browser environments without writing boilerplate code").
-- seedKeywords: 5 to 10 high-intent search terms, market keywords, category descriptors, and alternative search queries that prospective buyers use when evaluating this product and its direct competitors.
-- detectedLanguage: Two-letter ISO 639-1 language code (e.g., "en", "es", "fr", "de", "ja", "zh").
-- sourceNotes: Analytical summary detailing key observations, confidence level, notable gaps (e.g., hidden pricing, missing documentation), and context for downstream competitive analysis agents.`;
+// ============================================================================
+// LAYER 2: STATIC FEW-SHOT EXAMPLES (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const PROFILER_STATIC_EXAMPLES = `### FEW-SHOT EXAMPLES & EDGE CASE GUARDS:
 
-  let prompt = `Analyze the scraped multi-page website content for the target product at ${mainPage.canonicalUrl} (submitted URL: ${target.url}) and extract a comprehensive, structured TargetProfile.\n\n`;
-  prompt += `==================== SECTION 1: HOMEPAGE (${mainPage.canonicalUrl}) ====================\n`;
-  prompt += `${mainPage.text.trim() || "[No text extracted from homepage]"}\n\n`;
+Example 1: B2B Developer Tool (SaaS with Freemium & Per-Seat Tiers)
+Target URL: https://example-apm.io
+Output:
+{
+  "category": "Observability & Application Performance Monitoring (APM)",
+  "icp": "DevOps Engineers, Site Reliability Engineers (SREs), and Engineering Leads at mid-market to enterprise tech companies",
+  "pricingModel": "Freemium with Per-Host & Ingestion-Based Paid Tiers",
+  "valueProps": [
+    "Sub-millisecond distributed tracing across Kubernetes clusters",
+    "Automated root-cause anomaly detection with zero configuration overhead",
+    "Unified metrics and log correlation in a single pane of glass"
+  ],
+  "jobsToBeDone": [
+    "Identify and remediate production latency regressions before customer impact",
+    "Consolidate fragmented telemetry data into a standardized OpenTelemetry pipeline"
+  ],
+  "seedKeywords": ["APM", "observability", "distributed tracing", "kubernetes monitoring", "log analytics"],
+  "detectedLanguage": "en",
+  "sourceNotes": "Extracted from homepage hero copy and dedicated /pricing table."
+}
+
+Example 2: Open Source / Missing Pricing Edge Case
+Target URL: https://example-db.org
+Output:
+{
+  "category": "Vector Database & Semantic Search Engine",
+  "icp": "AI Engineers and Backend Developers building RAG applications",
+  "pricingModel": "Open Source / Self-Hosted",
+  "valueProps": [
+    "HNSW-indexed vector search with millisecond query latency",
+    "Native multi-modal embedding storage and hybrid BM25 full-text search"
+  ],
+  "jobsToBeDone": [
+    "Index and query millions of document embeddings for generative AI retrieval"
+  ],
+  "seedKeywords": ["vector database", "semantic search", "embeddings storage", "RAG infrastructure"],
+  "detectedLanguage": "en",
+  "sourceNotes": "Self-hosted GitHub repository; no commercial pricing tiers detected on public site."
+}`;
+
+// ============================================================================
+// LAYER 3: TOOLS & OUTPUT SCHEMA SPECIFICATION (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const PROFILER_TOOLS_SPEC = `### OUTPUT FORMAT SPECIFICATION:
+Extract and format your output strictly conforming to the TargetProfile schema:
+- category: Standard industry B2B/B2C category (e.g. "Continuous Integration / Continuous Deployment (CI/CD)").
+- icp: Concrete buyer/user persona (maturity, title, company size).
+- pricingModel: Monetization architecture (e.g. "Per-Seat Subscription", "Usage-Based", "Freemium", "Enterprise Quote Only").
+- valueProps: 3 to 5 punchy, distinct value propositions.
+- jobsToBeDone: 2 to 5 actionable Jobs-to-be-Done statements.
+- seedKeywords: 5 to 10 high-intent search terms and category keywords for competitor discovery.
+- detectedLanguage: 2-letter ISO 639-1 language code.
+- sourceNotes: Analytical summary detailing key observations and source reliability.`;
+
+  // ============================================================================
+  // LAYER 4: DYNAMIC CONTEXT (PER-REQUEST SCRAPED DATA)
+  // ============================================================================
+  let dynamicContext = `### DYNAMIC CONTEXT (Scraped Content for ${target.name} at ${mainPage.canonicalUrl}):\n\n`;
+  dynamicContext += `==================== SECTION 1: HOMEPAGE (${mainPage.canonicalUrl}) ====================\n`;
+  dynamicContext += `${mainPage.text.trim() || "[No text extracted from homepage]"}\n\n`;
 
   if (pricingUrl) {
-    prompt += `==================== SECTION 2: PRICING PAGE (${pricingUrl}) ====================\n`;
-    prompt += `${combinedText.includes("PRICING PAGE") ? combinedText.split("PRICING PAGE")[1]?.split("ABOUT PAGE")[0]?.trim() : "[Pricing page content unavailable]"}\n\n`;
+    dynamicContext += `==================== SECTION 2: PRICING PAGE (${pricingUrl}) ====================\n`;
+    dynamicContext += `${combinedText.includes("PRICING PAGE") ? combinedText.split("PRICING PAGE")[1]?.split("ABOUT PAGE")[0]?.trim() : "[Pricing page content unavailable]"}\n\n`;
   } else {
-    prompt += `==================== SECTION 2: PRICING PAGE ====================\n[No dedicated pricing page discovered or content was inaccessible]\n\n`;
+    dynamicContext += `==================== SECTION 2: PRICING PAGE ====================\n[No dedicated pricing page discovered or content was inaccessible]\n\n`;
   }
 
   if (aboutUrl) {
-    prompt += `==================== SECTION 3: ABOUT / COMPANY PAGE (${aboutUrl}) ====================\n`;
-    prompt += `${combinedText.includes("ABOUT PAGE") ? combinedText.split("ABOUT PAGE")[1]?.trim() : "[About page content unavailable]"}\n\n`;
+    dynamicContext += `==================== SECTION 3: ABOUT / COMPANY PAGE (${aboutUrl}) ====================\n`;
+    dynamicContext += `${combinedText.includes("ABOUT PAGE") ? combinedText.split("ABOUT PAGE")[1]?.trim() : "[About page content unavailable]"}\n\n`;
   } else {
-    prompt += `==================== SECTION 3: ABOUT / COMPANY PAGE ====================\n[No dedicated about/company page discovered or content was inaccessible]\n\n`;
+    dynamicContext += `==================== SECTION 3: ABOUT / COMPANY PAGE ====================\n[No dedicated about/company page discovered or content was inaccessible]\n\n`;
   }
 
-  prompt += `==================== INSTRUCTIONS ====================\n`;
-  prompt += `1. Synthesize insights across all provided sections.\n`;
-  prompt += `2. Pay special attention to the pricing section when deriving 'pricingModel' and tier structures.\n`;
-  prompt += `3. Derive high-quality 'seedKeywords' that will enable discovering direct market competitors.\n`;
-  prompt += `4. Format your output strictly adhering to the TargetProfile JSON schema.`;
+  // ============================================================================
+  // LAYER 5: USER TURN / DIRECTIVE
+  // ============================================================================
+  const userDirective = `### USER DIRECTIVE:
+Analyze the dynamic scraped website context provided above for "${target.name}" (${mainPage.canonicalUrl}) and extract the structured TargetProfile JSON object strictly adhering to the schema and few-shot guidance.`;
+
+  const fullPrompt = `${PROFILER_STATIC_EXAMPLES}\n\n${PROFILER_TOOLS_SPEC}\n\n${dynamicContext}\n\n${userDirective}`;
 
   let profileData: TargetProfileData;
   let usedFallback = false;
@@ -278,7 +335,7 @@ Your mission is to perform an exhaustive, evidence-based market and product prof
 
   try {
     const result = await llm.generateStructured({
-      prompt: prompt.substring(0, 50000),
+      prompt: fullPrompt.substring(0, 50000),
       schema: TargetProfileSchema,
       schemaName: "TargetProfile",
       schemaDescription:
@@ -290,7 +347,7 @@ Your mission is to perform an exhaustive, evidence-based market and product prof
   } catch (error) {
     if (error instanceof ZodError) {
       // 1 repair attempt with enriched context
-      const repairPrompt = `Your previous extraction of the TargetProfile failed schema validation with the following error(s):\n${error.message}\n\nPlease re-analyze the provided context below, correct all schema violations, ensure all array bounds and string constraints are strictly met, and return a valid structured TargetProfile object.\n\n${prompt.substring(0, 45000)}`;
+      const repairPrompt = `Your previous extraction of the TargetProfile failed schema validation with the following error(s):\n${error.message}\n\nPlease re-analyze the provided context below, correct all schema violations, ensure all array bounds and string constraints are strictly met, and return a valid structured TargetProfile object.\n\n${fullPrompt.substring(0, 45000)}`;
       try {
         const repairResult = await llm.generateStructured({
           prompt: repairPrompt,

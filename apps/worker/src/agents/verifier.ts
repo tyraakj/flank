@@ -5,6 +5,9 @@ import { publishRunEvent } from "../progress/publisher";
 import { ZodError } from "zod";
 import * as crypto from "crypto";
 
+// ============================================================================
+// LAYER 1: SYSTEM PROMPT (STATIC PREFIX - CACHE CANDIDATE)
+// ============================================================================
 const VERIFIER_SYSTEM_PROMPT = `You are a Senior Product Marketing Analyst & Competitor Verification Specialist at Flank.
 Your job is to rigorously evaluate discovered software candidate websites against a Target product, determine if they are genuine software products/services (rather than blogs, directories, aggregators, or non-products), and accurately classify their competitor relationship.
 
@@ -20,11 +23,53 @@ Your job is to rigorously evaluate discovered software candidate websites agains
 - Parked, expired, placeholder, or 404 domains.
 - General consumer marketplaces or unrelated platforms.
 
-### RULES:
+### RULES & CONSTRAINTS:
 - Ground all classifications strictly in the candidate's homepage text.
 - If isRealProduct is true, you MUST provide a type (DIRECT, INDIRECT, or SUBSTITUTE).
 - If isRealProduct is false, set type to null.
 - Provide a clear, evidence-based rationale citing specific capabilities.`;
+
+// ============================================================================
+// LAYER 2: STATIC FEW-SHOT EXAMPLES (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const VERIFIER_STATIC_EXAMPLES = `### FEW-SHOT EXAMPLES & EDGE CASE GUARDS:
+
+Example 1: Direct SaaS Competitor
+Candidate: "shortcut.com"
+Target Category: "Agile Project Management"
+Output:
+{
+  "canonicalDomain": "shortcut.com",
+  "productName": "Shortcut",
+  "isRealProduct": true,
+  "type": "DIRECT",
+  "rationale": "Direct SaaS competitor providing sprint planning, issue tracking, and roadmap tools for software engineering teams.",
+  "sourceNotes": "Verified from live homepage copy, navigation features, and sign-up CTAs."
+}
+
+Example 2: Directory / Blog Edge Case (Reject)
+Candidate: "theproductmanager.com/tools/best-jira-alternatives"
+Output:
+{
+  "canonicalDomain": "theproductmanager.com",
+  "productName": "The Product Manager",
+  "isRealProduct": false,
+  "type": null,
+  "rationale": "Rejected as non-product: Editorial article and review directory ranking software alternatives rather than an independent software tool.",
+  "sourceNotes": "Detected listicle format and affiliate review links."
+}`;
+
+// ============================================================================
+// LAYER 3: TOOLS & OUTPUT SCHEMA SPECIFICATION (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const VERIFIER_TOOLS_SPEC = `### OUTPUT FORMAT SPECIFICATION:
+Format output strictly conforming to the VerificationResult JSON schema:
+- canonicalDomain: Clean apex domain (e.g. "shortcut.com")
+- productName: Clean commercial product name
+- isRealProduct: Boolean (false for directories/articles/agencies)
+- type: "DIRECT" | "INDIRECT" | "SUBSTITUTE" | null (must be null if isRealProduct is false)
+- rationale: Clear justification for the classification
+- sourceNotes: Summary of page signals examined`;
 
 function computeDeterministicVerification(params: {
   canonicalHost: string;
@@ -204,25 +249,34 @@ export async function runVerifierAgent(
           .replace(/^www\./, "");
         const boundedExcerpt = pageText.substring(0, 25000);
 
-        const prompt = `Evaluate the candidate product against the Target company:
+        // ============================================================================
+        // LAYER 4: DYNAMIC CONTEXT (TARGET INFO & CANDIDATE HOMEPAGE)
+        // ============================================================================
+        const dynamicContext = `### DYNAMIC CONTEXT:
 
-TARGET COMPANY:
+TARGET COMPANY CONTEXT:
 - Name: ${target.name}
 - Domain: ${target.canonicalDomain}
 - Category: ${profile.category || "unknown"}
 - ICP: ${profile.icp || "unknown"}
 - Pricing Model: ${profile.pricingModel || "unknown"}
 
-CANDIDATE TO EVALUATE:
+CANDIDATE UNDER EVALUATION:
 - Discovered Domain: ${cand.canonicalDomain}
-- Resolved Domain: ${canonicalHost}
+- Resolved Canonical Host: ${canonicalHost}
 - Name Hint: ${cand.name}
 - Discovery Rationale: ${cand.rationale || "None"}
 
-CANDIDATE HOMEPAGE CONTENT (${pageCanonicalUrl}):
-${boundedExcerpt}
+CANDIDATE SCRAPED HOMEPAGE CONTENT (${pageCanonicalUrl}):
+${boundedExcerpt}`;
 
-Determine if this is a genuine software product and classify its competitive relationship.`;
+        // ============================================================================
+        // LAYER 5: USER TURN / DIRECTIVE
+        // ============================================================================
+        const userDirective = `### USER DIRECTIVE:
+Evaluate the candidate product "${cand.name}" (${canonicalHost}) against "${target.name}". Determine if this is a genuine software product (isRealProduct: true/false) and classify its competitor relationship (DIRECT, INDIRECT, SUBSTITUTE, or null) with supporting rationale. Strictly adhere to schema and few-shot guidance.`;
+
+        const fullPrompt = `${VERIFIER_STATIC_EXAMPLES}\n\n${VERIFIER_TOOLS_SPEC}\n\n${dynamicContext}\n\n${userDirective}`;
 
         const fallbackResult = computeDeterministicVerification({
           canonicalHost,
@@ -235,7 +289,7 @@ Determine if this is a genuine software product and classify its competitive rel
         let verification: VerificationResult;
         try {
           const res = await llm.generateStructured({
-            prompt,
+            prompt: fullPrompt,
             schema: VerificationResultSchema,
             schemaName: "VerificationResult",
             schemaDescription: "Evaluation and competitor classification of candidate product",
@@ -245,7 +299,7 @@ Determine if this is a genuine software product and classify its competitive rel
           verification = res.data as VerificationResult;
         } catch (err) {
           if (err instanceof ZodError) {
-            const repairPrompt = `Your previous VerificationResult failed validation:\n${err.message}\n\nPlease fix errors and output a valid JSON:\n${prompt}`;
+            const repairPrompt = `Your previous VerificationResult failed validation:\n${err.message}\n\nPlease fix errors and output a valid JSON:\n${fullPrompt}`;
             try {
               const repairRes = await llm.generateStructured({
                 prompt: repairPrompt,

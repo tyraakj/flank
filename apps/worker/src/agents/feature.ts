@@ -12,6 +12,9 @@ import * as cheerio from "cheerio";
 import { ZodError } from "zod";
 import * as crypto from "crypto";
 
+// ============================================================================
+// LAYER 1: SYSTEM PROMPT (STATIC PREFIX - CACHE CANDIDATE)
+// ============================================================================
 const FEATURE_SYSTEM_PROMPT = `You are a Principal Technical Product Analyst & SaaS Feature Taxonomy Specialist at Flank.
 Your mission is to perform an exhaustive, evidence-backed feature extraction from scraped competitor product pages, documentation, feature checklists, and changelogs.
 
@@ -30,6 +33,62 @@ Your mission is to perform an exhaustive, evidence-backed feature extraction fro
    - Provide an exact verbatim quote from the page proving the claim, including constraints or tier requirements.
 5. Canonical Taxonomy Mapping:
    - Provide a clean canonical name (e.g. "Single Sign-On (SSO)", "Role-Based Access Control (RBAC)", "REST API Access", "Audit Logs") that maps to standardized SaaS categories.`;
+
+// ============================================================================
+// LAYER 2: STATIC FEW-SHOT EXAMPLES (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const FEATURE_STATIC_EXAMPLES = `### FEW-SHOT EXAMPLES & EDGE CASE GUARDS:
+
+Example Output:
+{
+  "features": [
+    {
+      "canonicalName": "Role-Based Access Control (RBAC)",
+      "category": "Security & Governance",
+      "support": "YES",
+      "shippingState": "shipped",
+      "rawClaim": "Granular roles and permissions for admin, editor, and viewer levels.",
+      "excerpt": "Security: Built-in RBAC allowing custom roles across workspace teams."
+    },
+    {
+      "canonicalName": "SAML Single Sign-On (SSO)",
+      "category": "Security & Governance",
+      "support": "PARTIAL",
+      "shippingState": "shipped",
+      "rawClaim": "SAML SSO available exclusively on the Enterprise tier as a paid add-on.",
+      "excerpt": "Enterprise Security: Okta and Azure AD SAML SSO available for Enterprise plan members."
+    },
+    {
+      "canonicalName": "Self-Hosted Deployment",
+      "category": "Deployment & Infrastructure",
+      "support": "NO",
+      "shippingState": "shipped",
+      "rawClaim": "Cloud-only architecture; self-hosted installations are not supported.",
+      "excerpt": "FAQ: Can I run this on-premise? No, our platform is strictly 100% cloud-hosted."
+    },
+    {
+      "canonicalName": "AI Workflow Copilot",
+      "category": "Automation & AI",
+      "support": "UNKNOWN",
+      "shippingState": "announced",
+      "rawClaim": "Upcoming AI Copilot feature currently open for waitlist signup.",
+      "excerpt": "Coming in Q4: AI Copilot for automated issue triage. Join the private beta waitlist."
+    }
+  ]
+}`;
+
+// ============================================================================
+// LAYER 3: TOOLS & OUTPUT SCHEMA SPECIFICATION (STATIC - CACHE CANDIDATE)
+// ============================================================================
+const FEATURE_TOOLS_SPEC = `### OUTPUT FORMAT SPECIFICATION:
+Format output strictly conforming to the CompetitorFeatureExtraction JSON schema:
+- features: Array of feature objects, each containing:
+  - canonicalName: Standardized canonical feature name (e.g. "Single Sign-On (SSO)")
+  - category: Functional taxonomy category (e.g. "Security & Governance", "Integrations", "Analytics", "Core Workflow")
+  - support: "YES" | "PARTIAL" | "NO" | "UNKNOWN"
+  - shippingState: "shipped" | "announced" | "unknown"
+  - rawClaim: Concise descriptive summary of the capability
+  - excerpt: Verbatim quote from source text proving the claim`;
 
 export function computeDeterministicFeatureFallback(params: {
   pageText: string;
@@ -407,7 +466,10 @@ export async function runFeatureAgent(
 
         const primarySourceUrl = readPages[0].canonicalUrl || readPages[0].url;
 
-        const prompt = `Analyze the product, documentation, and feature pages for competitor "${comp.name}" (${comp.url}) and extract all detailed capability and feature claims.
+        // ============================================================================
+        // LAYER 4: DYNAMIC CONTEXT (COMPETITOR & SCRAPED PRODUCT PAGES)
+        // ============================================================================
+        const dynamicContext = `### DYNAMIC CONTEXT:
 
 COMPETITOR DETAILS:
 - Name: ${comp.name}
@@ -415,9 +477,15 @@ COMPETITOR DETAILS:
 - Type: ${comp.type}
 
 SCRAPED FEATURE & PRODUCT PAGES:
-${combinedText}
+${combinedText}`;
 
-Extract structured feature claims adhering strictly to the CompetitorFeatureExtraction schema.`;
+        // ============================================================================
+        // LAYER 5: USER TURN / DIRECTIVE
+        // ============================================================================
+        const userDirective = `### USER DIRECTIVE:
+Analyze the dynamic product and feature pages for competitor "${comp.name}" (${comp.url}) and extract structured feature claims strictly adhering to the schema and few-shot guidance.`;
+
+        const fullPrompt = `${FEATURE_STATIC_EXAMPLES}\n\n${FEATURE_TOOLS_SPEC}\n\n${dynamicContext}\n\n${userDirective}`;
 
         const fallback = computeDeterministicFeatureFallback({
           pageText: readPages.map((p) => p.text).join(" "),
@@ -428,7 +496,7 @@ Extract structured feature claims adhering strictly to the CompetitorFeatureExtr
         let extraction: CompetitorFeatureExtraction;
         try {
           const res = await llm.generateStructured({
-            prompt,
+            prompt: fullPrompt,
             schema: CompetitorFeatureExtractionSchema,
             schemaName: "CompetitorFeatureExtraction",
             schemaDescription: "Structured feature and capability claims for a software competitor",
@@ -438,7 +506,7 @@ Extract structured feature claims adhering strictly to the CompetitorFeatureExtr
           extraction = res.data as CompetitorFeatureExtraction;
         } catch (err) {
           if (err instanceof ZodError) {
-            const repairPrompt = `Your previous CompetitorFeatureExtraction failed schema validation:\n${err.message}\n\nPlease fix the errors, ensure all required fields are valid, and output valid JSON:\n${prompt}`;
+            const repairPrompt = `Your previous CompetitorFeatureExtraction failed schema validation:\n${err.message}\n\nPlease fix the errors, ensure all required fields are valid, and output valid JSON:\n${fullPrompt}`;
             try {
               const repairRes = await llm.generateStructured({
                 prompt: repairPrompt,
