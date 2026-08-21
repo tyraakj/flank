@@ -29,6 +29,7 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 | 06   | BFF API Surface                   | ✅ Complete      |
 | 07   | Queue and Worker Runtime          | ✅ Complete      |
 | 08   | Run Orchestration                 | ✅ Complete      |
+| 44   | DAG Stage Orchestration           | ⬜ Not started |
 | 09   | SSE Progress Channel              | ✅ Complete      |
 | 10   | Provider Abstraction Layer        | ✅ Complete      |
 
@@ -131,7 +132,9 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 ## Architecture Decisions
 
 - **Object storage**: Cloudflare R2 (free tier) over AWS S3. S3-compatible API — same SDK, different endpoint. No region required. Env vars: `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`.
-- **No orchestration framework**: The pipeline is a custom persisted state machine. LangChain, LlamaIndex, and similar frameworks are explicitly excluded. Handoffs are persisted Postgres rows, not in-memory chains.
+- **No orchestration framework**: The pipeline is a custom persisted state machine. LangChain, LlamaIndex, Airflow, Dagster, Prefect, and similar frameworks are explicitly excluded. Handoffs are persisted Postgres rows, not in-memory chains.
+- **DAG fork-join stage orchestration (Unit 44)**: Stages execute as a Directed Acyclic Graph. `PRICING`, `FEATURE`, and `POSITIONING` run concurrently upon `VERIFIER` completion, joining before `STRATEGIST`. Replays invalidate only downstream DAG descendants.
+- **5-Layer Modular Prompt Architecture**: All agent LLM prompts strictly conform to the 5-layer modular structure (Layer 1: Static System Prompt, Layer 2: Static Few-Shot Examples, Layer 3: Static Tools/Schema Spec, Layer 4: Dynamic Scraped Context, Layer 5: Dynamic User Turn Directive) to enable LLM prompt prefix caching and zero-hallucination structured extraction.
 - **Gemini free tier as LLM default**: via Vercel AI SDK. Provider is swappable through the registry — no pipeline stage imports Gemini SDK directly.
 - **DuckDuckGo HTML endpoint as default search**: no API key required. Brave API is a configured optional upgrade.
 - **Semantic deduplication via pgvector**: embedding-based candidate clustering added as Unit 41, running as a post-harvest step inside the Discovery stage before Verifier runs.

@@ -28,6 +28,48 @@ Two and only two deployables:
 - **`apps/app`** — Next.js application. Owns BFF route handlers, React UI, server components, and SSE endpoints. Never calls providers, runs LLM, or accesses Redis pub/sub directly.
 - **`apps/worker`** — Standalone Node process. Owns BullMQ consumers, all agent modules, provider implementations, pipeline orchestration, and snapshot writes. Never renders UI or exports React components.
 
+```mermaid
+flowchart TD
+    subgraph Browser ["User Browser / Client"]
+        UI["React UI / Report Screens"]
+    end
+
+    subgraph AppDeployable ["Deployable 1: apps/app (Next.js / Vercel)"]
+        BFF["BFF API Routes (/api/*)"]
+        SSE["SSE Handler (/api/runs/:id/events)"]
+        Auth["Better Auth"]
+    end
+
+    subgraph QueueBroker ["Queue & Event Layer (Upstash Redis)"]
+        BullMQ[("BullMQ Queues\n(STAGE_EXECUTE, etc.)")]
+        PubSub[("Redis Pub/Sub\n(Progress Events)")]
+    end
+
+    subgraph WorkerDeployable ["Deployable 2: apps/worker (Fly.io)"]
+        WorkerEngine["Worker & DAG State Machine"]
+        Agents["8 Agent Modules\n(Profiler → Critic)"]
+        Providers["Providers Registry\n(LLM, Search, Reader, Embeddings)"]
+    end
+
+    subgraph StorageLayer ["Persistence Layer"]
+        Postgres[("Neon Postgres 16\n(Prisma Schema / State of Truth)")]
+        R2[("Cloudflare R2\n(Immutable Page Snapshots)")]
+    end
+
+    UI -->|HTTP / Mutations| BFF
+    UI <-.-|SSE Live Stream| SSE
+    BFF -->|Enqueue Jobs| BullMQ
+    BFF -->|Read Domain State| Postgres
+    
+    BullMQ -->|Consume Jobs| WorkerEngine
+    WorkerEngine --> Agents
+    Agents --> Providers
+    WorkerEngine -->|Transactional Reads/Writes| Postgres
+    WorkerEngine -->|Save HTML Snapshots| R2
+    WorkerEngine -->|Publish Stage Events| PubSub
+    PubSub -.->|Relay Events| SSE
+```
+
 They share:
 
 - **`packages/shared`** — Zod contracts: request/response, job payloads, stage artifacts, SSE events, provider interfaces, domain schemas, environment validators.
@@ -42,7 +84,7 @@ They share:
 | `apps/app/app/(workspace)/`      | RSC page tree, report screens, progress UI                                                       |
 | `apps/worker/src/agents/`        | Individual agent modules — one per pipeline role                                                 |
 | `apps/worker/src/stages/`        | Stage runner entry points wiring agents to the orchestration layer                               |
-| `apps/worker/src/orchestration/` | Stage machine, run service, replay, critic router, cancellation                                  |
+| `apps/worker/src/orchestration/` | DAG dependency resolver, stage machine, run service, replay, critic router, cancellation |
 | `apps/worker/src/providers/`     | Search, page reader, LLM, embedding implementations and registry                                 |
 | `apps/worker/src/services/`      | Evidence store, confidence scorer, domain trust, semantic clusterer, opportunity ranker          |
 | `packages/shared/src/contracts/` | All shared Zod schemas and inferred TypeScript types                                             |
@@ -67,10 +109,10 @@ They share:
 
 1. **BFF only.** The browser talks exclusively to Next.js route handlers. Redis, workers, providers, and R2 are never reachable from the client.
 2. **Two deployables.** `apps/app` and `apps/worker` do not import each other's application code.
-3. **Worker owns the pipeline.** All network-heavy and LLM work happens in the worker. BFF handlers enqueue and read persisted state.
+3. **Worker owns the pipeline.** All network-heavy and LLM work happens in the worker. Stages execute as a Directed Acyclic Graph (DAG) with fork-join parallel fan-out (`PRICING`, `FEATURE`, `POSITIONING` execute concurrently upon `VERIFIER` completion, joining before `STRATEGIST`).
 4. **Ownership is derived server-side.** Never accept client-supplied identity as proof of access.
 5. **Every fact carries evidence.** No pricing number, feature claim, or positioning statement is persisted without at least one `Evidence` row.
-6. **Stages are replayable.** Each stage reads persisted input artifacts and writes persisted output artifacts. Any stage can be re-run alone.
+6. **Stages are replayable via DAG invalidation.** Each stage reads persisted input artifacts and writes persisted output artifacts. Replaying a stage invalidates only its downstream DAG descendants without re-running unaffected parallel branches or earlier stages.
 7. **Providers are swappable.** Search, page reading, LLM, and embedding access sit behind interfaces. No pipeline stage imports a vendor SDK directly.
 8. **Retry budgets are bounded.** The Critic can force a targeted stage replay within a per-Run retry budget. No infinite loops.
 9. **Confidence is deterministic.** The 0–100 scoring formula is versioned and reproducible from persisted inputs alone — no live provider calls.

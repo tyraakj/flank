@@ -16,10 +16,26 @@ Flank is a competitive intelligence platform. A user submits their product's URL
 
 ## Core Loop
 
-```
-Paste URL → Profile product → Discover candidates → Verify competitors
-  → Extract pricing + features → Synthesize positioning → Find gaps
-  → Recommend edge → Report → Push to tools / Monitor for changes
+```mermaid
+flowchart LR
+    URL(["1. Input URL"]) --> Profiler["Profiler"]
+    Profiler --> Discovery["Discovery"]
+    Discovery --> Dedup["Semantic Dedup"]
+    Dedup --> Verifier["Verifier"]
+    
+    subgraph ParallelFanOut ["⚡ Parallel Extraction"]
+        Verifier --> Pricing["Pricing"]
+        Verifier --> Feature["Feature"]
+        Verifier --> Positioning["Positioning"]
+    end
+    
+    Pricing --> JoinBarrier{{"Barrier Join"}}
+    Feature --> JoinBarrier
+    Positioning --> JoinBarrier
+    
+    JoinBarrier --> Strategist["Strategist"]
+    Strategist --> Critic["Critic"]
+    Critic --> Report(["Report & Export"])
 ```
 
 ## Agent Roster
@@ -60,11 +76,11 @@ Paste URL → Profile product → Discover candidates → Verify competitors
 ### In Scope
 
 - Single-URL competitive analysis with fully automated research
-- Multi-agent pipeline: profiler → discovery → semantic dedup → verifier → pricing → features → positioning → strategy → critic
+- Multi-agent DAG pipeline: profiler → discovery → semantic dedup → verifier → [pricing || features || positioning] → strategy → critic
 - Evidence system: every persisted claim backed by URL, excerpt, content hash, and snapshot
 - Confidence scoring: deterministic 0–100 per claim and per report section
 - Partial report access after verify stage completes
-- Stage replayability: any stage can re-run from persisted inputs without re-running earlier stages
+- Stage replayability with scoped DAG invalidation: any stage can re-run without re-running upstream or unaffected parallel sibling stages
 - Critic-driven bounded retry loop
 - Diff reports: second run on same target produces a change set
 - Integrations: Slack, Notion, Linear/Jira, Google Sheets, webhooks, REST API v1, MCP server

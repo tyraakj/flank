@@ -31,6 +31,28 @@
 - Log model name, prompt version, input tokens, output tokens, and estimated cost on every LLM call.
 - Set unresolved or unknown fields to `"unknown"` — never invent values.
 
+### Prompt Architecture (5-Layer Modular Structure)
+
+All agent LLM prompts must strictly follow the 5-layer modular structure to maximize prompt caching, precision, and deterministic parsing:
+
+1. **Layer 1: System Prompt (Static Prefix)**
+   - Role definition and persona (e.g. *Principal Pricing Analyst*, *Taxonomy Specialist*).
+   - Core invariants, domain definitions, and hard negative constraints (e.g. *"Never infer numeric prices from discounts"*, *"Mark missing as unknown"*).
+2. **Layer 2: Static Examples (Static Few-Shot)**
+   - Concrete few-shot input/output pairs showing desired JSON behavior.
+   - Guard examples for observed edge cases (e.g. monthly vs annual split, roadmap announcements vs shipped features, directory rejections).
+3. **Layer 3: Tools & Output Schema Specification (Static)**
+   - Exact Zod schema shape, field types, enum vocabularies, and format specifications.
+   - Validation expectations and error recovery rules.
+4. **Layer 4: Dynamic Context (Dynamic)**
+   - Scraped page content (homepage, pricing, about, changelog).
+   - Upstream entity state (TargetProfile, verified Competitors, candidate excerpts).
+   - Clearly separated by demarcated headers (`=== SECTION: HOMEPAGE ===`).
+5. **Layer 5: User Turn / Directive (Dynamic)**
+   - The immediate actionable extraction or synthesis command.
+
+*Note: Keeping Layers 1–3 strictly static at the start of the prompt enables LLM provider **Prompt Caching** (Gemini/Anthropic/OpenAI), drastically reducing latency and token costs across repeated calls.*
+
 ## Provider Implementations
 
 - All providers live in `apps/worker/src/providers/` and implement the interfaces defined in `packages/shared/src/contracts/providers.ts`.
