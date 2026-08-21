@@ -140,6 +140,7 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 - **DuckDuckGo HTML endpoint as default search**: no API key required. Brave API is a configured optional upgrade.
 - **No full CQRS or Event Sourcing**: Single authoritative Neon Postgres database for all relational domain state. Commands are asynchronous via BullMQ $\to$ Worker DAG; queries are instant (<50ms) via BFF Prisma reads with strong consistency (zero eventual consistency lag).
 - **Fault tolerance & zero single points of failure**: Stateless compute redundancy (Vercel edge + Fly.io workers), multi-AZ distributed storage (Neon Postgres + Cloudflare R2 + Upstash Redis), BullMQ stalled-job lock auto-reassignment with Postgres DAG state resumption, and multi-tier provider failovers with deterministic fallbacks.
+- **3-Layer Evaluation & Alerting Framework**: Layer 1 (Deterministic harness/Zod schema tests in CI), Layer 2 (Sampling-based fact accuracy and 100% format compliance via Critic), and Layer 3 (Automated periodic golden-set regression benchmarks in GitHub Actions). Includes standardized telemetry alerts for latency, error rates, and token cost spikes.
 - **Semantic deduplication via pgvector**: embedding-based candidate clustering added as Unit 41, running as a post-harvest step inside the Discovery stage before Verifier runs.
 
 ---

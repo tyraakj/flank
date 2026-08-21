@@ -93,11 +93,35 @@ All agent LLM prompts must strictly follow the 5-layer modular structure to maxi
 - Use semantic HTML tables for tabular data. Do not emulate tables with generic divs.
 - Match loading skeleton layouts to final content dimensions. Never use a centered spinner on data-dense report screens.
 
-## Observability
+## Evaluation & Observability Framework
 
+### 3-Layer Evaluation Framework
+1. **Layer 1: Harness Correctness (Deterministic, CI-Testable)**
+   - Validate orchestration flow, Zod schema conformity, state machine transitions, and result assembly.
+2. **Layer 2: Agent Output Quality (Sampling-Based Quality Scoring)**
+   - Verify fact accuracy against source evidence, format compliance (100% target), and reasoning plausibility via Critic gates.
+3. **Layer 3: End-to-End Regression (Automated Periodic Evals)**
+   - Run fixed golden-set benchmarks (`packages/evals/`) weekly; compare against baselines to block quality/precision regressions.
+
+### Standard Operational Metrics & Alert Thresholds
+- **Orchestration Layer**:
+  - `Job success rate`: Alert when $< 98\%$
+  - `Mean job latency (P50)`: Alert when $> 2\times\text{ baseline}$
+  - `Tool call success rate`: Alert when $< 95\%$
+  - `Subagent agreement`: Alert when $< 90\%$
+- **Output Quality**:
+  - `Judge score (0–10)`: Alert when $< \text{baseline} - 1\text{ std}$
+  - `Fact accuracy`: Alert when below target threshold
+  - `Format compliance`: Alert when $< 100\%$ (zero tolerance for malformed schemas)
+- **Cost & Efficiency**:
+  - `Mean token cost`: Alert when $>$ budget ceiling
+  - `Cache hit rate`: Alert when drops $> 10\%$
+  - `Cost per accuracy point`: Alert when trending upward
+
+### Logging & Telemetry
 - Emit structured JSON logs from both `apps/app` and `apps/worker` with correlation IDs: Workspace, Target, Run, Stage, queue job, provider call.
 - Redact credentials, API keys, webhook secrets, authorization headers, raw prompts containing private context, raw page bodies, and unredacted provider responses before logs leave the process.
-- Record token counts, estimated cost, and latency on every LLM and embedding call.
+- Record model name, prompt version, input tokens, output tokens, estimated cost, and latency on every LLM and embedding call.
 
 ## File Organization
 
