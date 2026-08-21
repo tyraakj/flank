@@ -36,8 +36,8 @@
 All agent LLM prompts must strictly follow the 5-layer modular structure to maximize prompt caching, precision, and deterministic parsing:
 
 1. **Layer 1: System Prompt (Static Prefix)**
-   - Role definition and persona (e.g. *Principal Pricing Analyst*, *Taxonomy Specialist*).
-   - Core invariants, domain definitions, and hard negative constraints (e.g. *"Never infer numeric prices from discounts"*, *"Mark missing as unknown"*).
+   - Role definition and persona (e.g. _Principal Pricing Analyst_, _Taxonomy Specialist_).
+   - Core invariants, domain definitions, and hard negative constraints (e.g. _"Never infer numeric prices from discounts"_, _"Mark missing as unknown"_).
 2. **Layer 2: Static Examples (Static Few-Shot)**
    - Concrete few-shot input/output pairs showing desired JSON behavior.
    - Guard examples for observed edge cases (e.g. monthly vs annual split, roadmap announcements vs shipped features, directory rejections).
@@ -51,7 +51,7 @@ All agent LLM prompts must strictly follow the 5-layer modular structure to maxi
 5. **Layer 5: User Turn / Directive (Dynamic)**
    - The immediate actionable extraction or synthesis command.
 
-*Note: Keeping Layers 1–3 strictly static at the start of the prompt enables LLM provider **Prompt Caching** (Gemini/Anthropic/OpenAI), drastically reducing latency and token costs across repeated calls.*
+_Note: Keeping Layers 1–3 strictly static at the start of the prompt enables LLM provider **Prompt Caching** (Gemini/Anthropic/OpenAI), drastically reducing latency and token costs across repeated calls._
 
 ## Provider Implementations
 
@@ -96,6 +96,7 @@ All agent LLM prompts must strictly follow the 5-layer modular structure to maxi
 ## Evaluation & Observability Framework
 
 ### 3-Layer Evaluation Framework
+
 1. **Layer 1: Harness Correctness (Deterministic, CI-Testable)**
    - Validate orchestration flow, Zod schema conformity, state machine transitions, and result assembly.
 2. **Layer 2: Agent Output Quality (Sampling-Based Quality Scoring)**
@@ -104,6 +105,7 @@ All agent LLM prompts must strictly follow the 5-layer modular structure to maxi
    - Run fixed golden-set benchmarks (`packages/evals/`) weekly; compare against baselines to block quality/precision regressions.
 
 ### Standard Operational Metrics & Alert Thresholds
+
 - **Orchestration Layer**:
   - `Job success rate`: Alert when $< 98\%$
   - `Mean job latency (P50)`: Alert when $> 2\times\text{ baseline}$
@@ -119,6 +121,7 @@ All agent LLM prompts must strictly follow the 5-layer modular structure to maxi
   - `Cost per accuracy point`: Alert when trending upward
 
 ### Logging & Telemetry
+
 - Emit structured JSON logs from both `apps/app` and `apps/worker` with correlation IDs: Workspace, Target, Run, Stage, queue job, provider call.
 - Redact credentials, API keys, webhook secrets, authorization headers, raw prompts containing private context, raw page bodies, and unredacted provider responses before logs leave the process.
 - Record model name, prompt version, input tokens, output tokens, estimated cost, and latency on every LLM and embedding call.

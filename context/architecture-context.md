@@ -60,7 +60,7 @@ flowchart TD
     UI <-.-|SSE Live Stream| SSE
     BFF -->|Enqueue Jobs| BullMQ
     BFF -->|Read Domain State| Postgres
-    
+
     BullMQ -->|Consume Jobs| WorkerEngine
     WorkerEngine --> Agents
     Agents --> Providers
@@ -84,7 +84,7 @@ They share:
 | `apps/app/app/(workspace)/`      | RSC page tree, report screens, progress UI                                                       |
 | `apps/worker/src/agents/`        | Individual agent modules — one per pipeline role                                                 |
 | `apps/worker/src/stages/`        | Stage runner entry points wiring agents to the orchestration layer                               |
-| `apps/worker/src/orchestration/` | DAG dependency resolver, stage machine, run service, replay, critic router, cancellation |
+| `apps/worker/src/orchestration/` | DAG dependency resolver, stage machine, run service, replay, critic router, cancellation         |
 | `apps/worker/src/providers/`     | Search, page reader, LLM, embedding implementations and registry                                 |
 | `apps/worker/src/services/`      | Evidence store, confidence scorer, domain trust, semantic clusterer, opportunity ranker          |
 | `packages/shared/src/contracts/` | All shared Zod schemas and inferred TypeScript types                                             |
@@ -98,6 +98,7 @@ They share:
 - **pgvector**: vector column on `CandidateEmbedding` in Postgres; HNSW index for cosine nearest-neighbour queries during semantic deduplication.
 
 ### Command / Query Flow
+
 - **Command Path (Async Mutations)**: Client mutations (`POST /api/.../runs`, curation patches, cancels) validate via Zod and enqueue minimal job intents into BullMQ. The worker executes jobs in the background and commits normalized entities to Postgres.
 - **Query Path (Instant Reads)**: Report reads (`GET /api/.../reports/*`) query Postgres directly via Prisma with strong consistency (<50ms), returning formatted view DTOs with `Cache-Control: no-store`.
 - **Streaming Path (Live Updates)**: Real-time stage progress streams through Redis Pub/Sub $\to$ BFF SSE endpoint $\to$ client `EventSource`.

@@ -22,17 +22,17 @@ flowchart LR
     Profiler --> Discovery["Discovery"]
     Discovery --> Dedup["Semantic Dedup"]
     Dedup --> Verifier["Verifier"]
-    
+
     subgraph ParallelFanOut ["⚡ Parallel Extraction"]
         Verifier --> Pricing["Pricing"]
         Verifier --> Feature["Feature"]
         Verifier --> Positioning["Positioning"]
     end
-    
+
     Pricing --> JoinBarrier{{"Barrier Join"}}
     Feature --> JoinBarrier
     Positioning --> JoinBarrier
-    
+
     JoinBarrier --> Strategist["Strategist"]
     Strategist --> Critic["Critic"]
     Critic --> Report(["Report & Export"])

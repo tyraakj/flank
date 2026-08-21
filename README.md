@@ -26,17 +26,17 @@ flowchart LR
     Profiler --> Discovery["Discovery"]
     Discovery --> Dedup["Semantic Dedup"]
     Dedup --> Verifier["Verifier"]
-    
+
     subgraph ParallelFanOut ["⚡ Parallel Extraction"]
         Verifier --> Pricing["Pricing"]
         Verifier --> Feature["Feature"]
         Verifier --> Positioning["Positioning"]
     end
-    
+
     Pricing --> JoinBarrier{{"Barrier Join"}}
     Feature --> JoinBarrier
     Positioning --> JoinBarrier
-    
+
     JoinBarrier --> Strategist["Strategist"]
     Strategist --> Critic["Critic"]
     Critic --> Report(["Report & Export"])
@@ -48,16 +48,16 @@ Re-running on the same target produces a **diff** against the previous run — n
 
 ## Tech Stack
 
-| Layer | Technology | Role |
-|---|---|---|
-| **App Framework** | Next.js (App Router) + TypeScript | React Server Components, BFF API route handlers |
-| **Database** | Postgres 16 + Prisma | Neon Postgres (Prisma client, single source of truth) |
-| **Vector Search** | pgvector (HNSW index) | Semantic competitor deduplication via Gemini embeddings |
-| **Queue & Cache** | Redis + BullMQ | Upstash Redis for asynchronous DAG stage execution |
-| **Worker Runtime** | Standalone Node.js | Fly.io worker running autonomous agent stages |
-| **Object Storage** | Cloudflare R2 | SHA-256 content-hash addressed HTML page snapshots |
-| **LLM Engine** | Vercel AI SDK | Provider-agnostic (Google Gemini default) |
-| **Web Extraction** | HTTP Reader + Playwright | Public web scraping with `robots.txt` compliance |
+| Layer              | Technology                        | Role                                                    |
+| ------------------ | --------------------------------- | ------------------------------------------------------- |
+| **App Framework**  | Next.js (App Router) + TypeScript | React Server Components, BFF API route handlers         |
+| **Database**       | Postgres 16 + Prisma              | Neon Postgres (Prisma client, single source of truth)   |
+| **Vector Search**  | pgvector (HNSW index)             | Semantic competitor deduplication via Gemini embeddings |
+| **Queue & Cache**  | Redis + BullMQ                    | Upstash Redis for asynchronous DAG stage execution      |
+| **Worker Runtime** | Standalone Node.js                | Fly.io worker running autonomous agent stages           |
+| **Object Storage** | Cloudflare R2                     | SHA-256 content-hash addressed HTML page snapshots      |
+| **LLM Engine**     | Vercel AI SDK                     | Provider-agnostic (Google Gemini default)               |
+| **Web Extraction** | HTTP Reader + Playwright          | Public web scraping with `robots.txt` compliance        |
 
 ---
 
@@ -85,6 +85,7 @@ packages/
 ## Quickstart
 
 ### Prerequisites
+
 - Node.js 20+
 - pnpm 9+
 - Docker (optional for local Postgres)
@@ -121,6 +122,7 @@ pnpm db:studio      # Open Prisma Studio visual database editor
 ## Documentation
 
 Full architectural specifications, data models, and agent workflows are maintained in [`context/`](./context/):
+
 - [`context/project-overview.md`](./context/project-overview.md) — Product definition and roadmap
 - [`context/architecture-context.md`](./context/architecture-context.md) — System boundaries and invariants
 - [`context/code-standards.md`](./context/code-standards.md) — Prompt conventions and development rules

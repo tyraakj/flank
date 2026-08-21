@@ -29,7 +29,7 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 | 06   | BFF API Surface                   | ✅ Complete      |
 | 07   | Queue and Worker Runtime          | ✅ Complete      |
 | 08   | Run Orchestration                 | ✅ Complete      |
-| 44   | DAG Stage Orchestration           | ⬜ Not started |
+| 44   | DAG Stage Orchestration           | ⬜ Not started   |
 | 09   | SSE Progress Channel              | ✅ Complete      |
 | 10   | Provider Abstraction Layer        | ✅ Complete      |
 

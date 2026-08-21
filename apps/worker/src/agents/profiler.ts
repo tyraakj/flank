@@ -223,10 +223,10 @@ export async function runProfilerAgent(
     }
   }
 
-// ============================================================================
-// LAYER 1: SYSTEM PROMPT (STATIC PREFIX - CACHE CANDIDATE)
-// ============================================================================
-const PROFILER_SYSTEM_PROMPT = `You are a Principal Product Marketing Strategist and Competitive Intelligence Specialist at Flank.
+  // ============================================================================
+  // LAYER 1: SYSTEM PROMPT (STATIC PREFIX - CACHE CANDIDATE)
+  // ============================================================================
+  const PROFILER_SYSTEM_PROMPT = `You are a Principal Product Marketing Strategist and Competitive Intelligence Specialist at Flank.
 Your mission is to perform an exhaustive, evidence-based market and product profile analysis of a target software company from its live website content (including Homepage, Pricing, and About/Product pages).
 
 ### CORE ANALYSIS DIRECTIVES & CONSTRAINTS:
@@ -235,10 +235,10 @@ Your mission is to perform an exhaustive, evidence-based market and product prof
 3. Strict Fallback to 'unknown': If a dimension (e.g., pricing model, ICP) cannot be determined from the provided text, explicitly output "unknown" rather than speculating.
 4. Language Preservation & Normalization: If the website is non-English, detect the language code accurately, provide standardized English classifications for category, ICP, and pricingModel, while preserving the semantic meaning of the original copy.`;
 
-// ============================================================================
-// LAYER 2: STATIC FEW-SHOT EXAMPLES (STATIC - CACHE CANDIDATE)
-// ============================================================================
-const PROFILER_STATIC_EXAMPLES = `### FEW-SHOT EXAMPLES & EDGE CASE GUARDS:
+  // ============================================================================
+  // LAYER 2: STATIC FEW-SHOT EXAMPLES (STATIC - CACHE CANDIDATE)
+  // ============================================================================
+  const PROFILER_STATIC_EXAMPLES = `### FEW-SHOT EXAMPLES & EDGE CASE GUARDS:
 
 Example 1: B2B Developer Tool (SaaS with Freemium & Per-Seat Tiers)
 Target URL: https://example-apm.io
@@ -280,10 +280,10 @@ Output:
   "sourceNotes": "Self-hosted GitHub repository; no commercial pricing tiers detected on public site."
 }`;
 
-// ============================================================================
-// LAYER 3: TOOLS & OUTPUT SCHEMA SPECIFICATION (STATIC - CACHE CANDIDATE)
-// ============================================================================
-const PROFILER_TOOLS_SPEC = `### OUTPUT FORMAT SPECIFICATION:
+  // ============================================================================
+  // LAYER 3: TOOLS & OUTPUT SCHEMA SPECIFICATION (STATIC - CACHE CANDIDATE)
+  // ============================================================================
+  const PROFILER_TOOLS_SPEC = `### OUTPUT FORMAT SPECIFICATION:
 Extract and format your output strictly conforming to the TargetProfile schema:
 - category: Standard industry B2B/B2C category (e.g. "Continuous Integration / Continuous Deployment (CI/CD)").
 - icp: Concrete buyer/user persona (maturity, title, company size).
