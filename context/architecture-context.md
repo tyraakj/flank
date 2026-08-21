@@ -92,10 +92,15 @@ They share:
 
 ## Storage Model
 
-- **Postgres (via Prisma)**: all relational domain data — Workspaces, Targets, Runs, Stages, Candidates, Competitors, PricingPlans, FeatureClaims, Positioning, Opportunities, Evidence, QualityReports, Confidence, Diffs, Integrations, ApiKeys, RunMetrics, StageMetrics, CandidateEmbeddings.
+- **Postgres (via Prisma)**: all relational domain data — Workspaces, Targets, Runs, Stages, Candidates, Competitors, PricingPlans, FeatureClaims, Positioning, Opportunities, Evidence, QualityReports, Confidence, Diffs, Integrations, ApiKeys, RunMetrics, StageMetrics, CandidateEmbeddings. Single authoritative relational database; no dual read/write databases or event sourcing (full CQRS excluded to eliminate eventual consistency lag).
 - **Cloudflare R2**: raw public-page snapshots (content-hash keyed), PDF export files. Metadata and storage keys are stored in Postgres; the worker is the only component that writes to R2.
 - **Redis (Upstash)**: BullMQ job queues and pub/sub channels for SSE progress events. Hosted via Upstash Serverless Redis (standard TCP connection). Not a source of truth — all authoritative state lives in Postgres.
 - **pgvector**: vector column on `CandidateEmbedding` in Postgres; HNSW index for cosine nearest-neighbour queries during semantic deduplication.
+
+### Command / Query Flow
+- **Command Path (Async Mutations)**: Client mutations (`POST /api/.../runs`, curation patches, cancels) validate via Zod and enqueue minimal job intents into BullMQ. The worker executes jobs in the background and commits normalized entities to Postgres.
+- **Query Path (Instant Reads)**: Report reads (`GET /api/.../reports/*`) query Postgres directly via Prisma with strong consistency (<50ms), returning formatted view DTOs with `Cache-Control: no-store`.
+- **Streaming Path (Live Updates)**: Real-time stage progress streams through Redis Pub/Sub $\to$ BFF SSE endpoint $\to$ client `EventSource`.
 
 ## Auth and Ownership Model
 

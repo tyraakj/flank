@@ -138,6 +138,7 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 - **5-Layer Modular Prompt Architecture**: All agent LLM prompts strictly conform to the 5-layer modular structure (Layer 1: Static System Prompt, Layer 2: Static Few-Shot Examples, Layer 3: Static Tools/Schema Spec, Layer 4: Dynamic Scraped Context, Layer 5: Dynamic User Turn Directive) to enable LLM prompt prefix caching and zero-hallucination structured extraction.
 - **Gemini free tier as LLM default**: via Vercel AI SDK. Provider is swappable through the registry — no pipeline stage imports Gemini SDK directly.
 - **DuckDuckGo HTML endpoint as default search**: no API key required. Brave API is a configured optional upgrade.
+- **No full CQRS or Event Sourcing**: Single authoritative Neon Postgres database for all relational domain state. Commands are asynchronous via BullMQ $\to$ Worker DAG; queries are instant (<50ms) via BFF Prisma reads with strong consistency (zero eventual consistency lag).
 - **Semantic deduplication via pgvector**: embedding-based candidate clustering added as Unit 41, running as a post-harvest step inside the Discovery stage before Verifier runs.
 
 ---
