@@ -48,6 +48,7 @@ Complete Unit 04 (Auth and Workspaces) and Unit 05 (Data Model) integration.
 | 19   | Evidence and Snapshot Store      | ⬜ Not started |
 | 20   | Confidence Scoring               | ⬜ Not started |
 | 41   | Semantic Candidate Deduplication | ⬜ Not started |
+| 45   | Agent Memory & Cache Lifecycle   | ⬜ Not started |
 
 ### Experience
 

@@ -113,7 +113,9 @@ They share:
 4. **Ownership is derived server-side.** Never accept client-supplied identity as proof of access.
 5. **Every fact carries evidence.** No pricing number, feature claim, or positioning statement is persisted without at least one `Evidence` row.
 6. **Stages are replayable via DAG invalidation.** Each stage reads persisted input artifacts and writes persisted output artifacts. Replaying a stage invalidates only its downstream DAG descendants without re-running unaffected parallel branches or earlier stages.
-7. **Providers are swappable.** Search, page reading, LLM, and embedding access sit behind interfaces. No pipeline stage imports a vendor SDK directly.
-8. **Retry budgets are bounded.** The Critic can force a targeted stage replay within a per-Run retry budget. No infinite loops.
-9. **Confidence is deterministic.** The 0–100 scoring formula is versioned and reproducible from persisted inputs alone — no live provider calls.
-10. **Eval gates block regressions.** Changes to agent prompts, model config, Zod contracts, or provider adapters require a passing golden-set CI run.
+7. **Dual Memory separation.** Ephemeral in-context Working Memory (Layer 4 of prompt, bounded to 30k chars, section-chunked) is strictly separated from unbounded storage-backed Persistent Memory (Postgres + Cloudflare R2). Working memory is seeded once per stage task from persistent curations and snapshots.
+8. **Cache-driven change detection.** Public page snapshots are cached with SHA-256 content hashes. Parallel intra-run stages share cached reads idempotently. Inter-run scans use HTTP 304 conditional revalidation; content hash discrepancies trigger immutable R2 snapshot versioning and feed the market diff engine.
+9. **Providers are swappable.** Search, page reading, LLM, and embedding access sit behind interfaces. No pipeline stage imports a vendor SDK directly.
+10. **Retry budgets are bounded.** The Critic can force a targeted stage replay within a per-Run retry budget. No infinite loops.
+11. **Confidence is deterministic.** The 0–100 scoring formula is versioned and reproducible from persisted inputs alone — no live provider calls.
+12. **Eval gates block regressions.** Changes to agent prompts, model config, Zod contracts, or provider adapters require a passing golden-set CI run.
