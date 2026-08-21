@@ -124,3 +124,4 @@ They share:
 10. **Retry budgets are bounded.** The Critic can force a targeted stage replay within a per-Run retry budget. No infinite loops.
 11. **Confidence is deterministic.** The 0–100 scoring formula is versioned and reproducible from persisted inputs alone — no live provider calls.
 12. **Eval gates block regressions.** Changes to agent prompts, model config, Zod contracts, or provider adapters require a passing golden-set CI run.
+13. **Fault tolerance & zero single points of failure.** Worker crashes recover automatically via BullMQ stalled-job reassignments and resume execution directly from persisted Postgres stage state. Provider outages or rate-limits fail over to secondary providers or deterministic rule fallbacks. Competitor network errors or 404s record typed partial evidence without halting sibling competitor analyses.
